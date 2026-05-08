@@ -1,0 +1,9 @@
+# Data Pipeline Configurations
+data:
+  min_valid_date: "2010-01-01"
+  top_n_tickers: 10000
+  exposure_imputation_value: "SH"
+  paths:
+    edgar: "data/raw/edgar_*.parquet"
+    fred: "data/raw/fred_*.parquet"
+    ofr: "data/raw/ofr_*.parquet"

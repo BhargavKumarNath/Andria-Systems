@@ -1,0 +1,22 @@
+# Execution & Data Processing
+duckdb
+polars
+pyarrow
+
+# Machine Learning & Stats
+scikit-learn
+scipy
+
+# Visualization & BI
+plotly
+dash
+
+# Utilities
+pyyaml
+structlog
+
+# Testing & Quality
+pytest
+pytest-benchmark
+psutil
+ruff
