@@ -21,8 +21,8 @@ from pathlib import Path
 from datetime import datetime
 
 # CONFIGURATION
-RAW_PATH = Path("data/raw/edgar")
-OUTPUT_PATH = Path("data/processed")
+RAW_PATH = Path("dataset/raw/edgar")
+OUTPUT_PATH = Path("dataset/processed")
 OUTPUT_FILE = OUTPUT_PATH / "EDGAR_preprocess.parquet"
 
 # DuckDB settings
@@ -220,10 +220,10 @@ def main():
     
     # Sanity check: final row count should equal infotable_count (LEFT JOIN)
     if final_count != infotable_count:
-        print(f"  WARNING: Row count changed after join!")
+        print("  WARNING: Row count changed after join!")
         print(f"           INFOTABLE: {infotable_count:,}")
         print(f"           FINAL:     {final_count:,}")
-        print(f"           Difference indicates duplicates in COVERPAGE.")
+        print("           Difference indicates duplicates in COVERPAGE.")
     
     # 6. Export to Parquet
     print(f"[{datetime.now()}] Exporting to Parquet...")

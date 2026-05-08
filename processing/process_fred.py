@@ -19,8 +19,8 @@ from pathlib import Path
 from datetime import datetime
 
 # CONFIGURATION
-RAW_PATH = Path("data/raw/fred")
-OUTPUT_PATH = Path("data/processed")
+RAW_PATH = Path("dataset/raw/fred")
+OUTPUT_PATH = Path("dataset/processed")
 OUTPUT_FILE = OUTPUT_PATH / "FRED_preprocess.parquet"
 
 

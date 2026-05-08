@@ -4,6 +4,6 @@ data:
   top_n_tickers: 10000
   exposure_imputation_value: "SH"
   paths:
-    edgar: "data/raw/edgar_*.parquet"
-    fred: "data/raw/fred_*.parquet"
-    ofr: "data/raw/ofr_*.parquet"
+    edgar: "dataset/raw/edgar_*.parquet"
+    fred: "dataset/raw/fred_*.parquet"
+    ofr: "dataset/raw/ofr_*.parquet"

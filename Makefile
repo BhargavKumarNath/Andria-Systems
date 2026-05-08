@@ -4,8 +4,8 @@ install:
 	uv pip install -r requirements.txt || pip install -r requirements.txt
 
 lint:
-	ruff check src/ tests/
-	ruff format src/ tests/
+	ruff check src/ tests/ processing/
+	ruff format src/ tests/ processing/
 
 test:
 	pytest tests/ -v --disable-warnings

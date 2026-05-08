@@ -21,7 +21,7 @@ jobs:
         pip install -r requirements.txt
     - name: Lint with Ruff
       run: |
-        ruff check src/ tests/
+        python -m ruff check src/ tests/ processing/
     - name: Test with pytest
       run: python -m pytest tests/ -v
       env:

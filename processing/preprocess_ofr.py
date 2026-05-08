@@ -18,8 +18,8 @@ from pathlib import Path
 from datetime import datetime
 
 # CONFIGURATION
-RAW_PATH = Path("data/raw/ofr")
-OUTPUT_PATH = Path("data/processed")
+RAW_PATH = Path("dataset/raw/ofr")
+OUTPUT_PATH = Path("dataset/processed")
 OUTPUT_FILE = OUTPUT_PATH / "OFR_preprocess.parquet"
 
 
@@ -54,7 +54,7 @@ def main():
     # 1. Read all JSON files into DuckDB
     print(f"[{datetime.now()}] Reading JSON files with DuckDB...")
     
-    # Use recursive glob: data/raw/ofr/**/*.json
+    # Use recursive glob: dataset/raw/ofr/**/*.json
     pattern = str(RAW_PATH / "**" / "*.json")
     
     con.execute(f"""
@@ -113,12 +113,12 @@ def main():
         SELECT COALESCE(SUM(n_obs::BIGINT), 0) FROM ofr_raw
     """).fetchone()[0]
     
-    print(f"\nValidation:")
+    print("\nValidation:")
     print(f"  Expected observations (sum of n_obs): {expected_obs:,}")
     print(f"  Actual observations in output:        {obs_count:,}")
     
     if obs_count != expected_obs:
-        print(f"  WARNING: Observation count mismatch!")
+        print("  WARNING: Observation count mismatch!")
     
     # 4. Export to Parquet
     print(f"[{datetime.now()}] Exporting to Parquet...")
