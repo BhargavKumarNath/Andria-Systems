@@ -1,4 +1,5 @@
 """Dashboard header component."""
+
 from __future__ import annotations
 
 import dash_bootstrap_components as dbc
@@ -13,10 +14,12 @@ def build_header() -> dbc.Navbar:
                     dbc.Row(
                         [
                             dbc.Col(html.Img(height="30px")),
-                            dbc.Col(dbc.NavbarBrand(
-                                "ANDRIA SYSTEMS",
-                                className="ms-2 andria-brand",
-                            )),
+                            dbc.Col(
+                                dbc.NavbarBrand(
+                                    "ANDRIA SYSTEMS",
+                                    className="ms-2 andria-brand",
+                                )
+                            ),
                         ],
                         align="center",
                         className="g-0",

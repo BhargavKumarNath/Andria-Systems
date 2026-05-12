@@ -1,4 +1,5 @@
 """Dashboard sidebar navigation."""
+
 from __future__ import annotations
 
 import dash_bootstrap_components as dbc
@@ -6,11 +7,11 @@ from dash import html
 
 
 _NAV_ITEMS = [
-    ("fa-chart-line",   "Overview",      "/"),
-    ("fa-dna",          "Archetypes",    "/archetypes"),
-    ("fa-bolt",         "Signals",       "/signals"),
-    ("fa-wave-square",  "Macro Regime",  "/regime"),
-    ("fa-network-wired","Intelligence",  "/intelligence"),
+    ("fa-chart-line", "Overview", "/"),
+    ("fa-dna", "Archetypes", "/archetypes"),
+    ("fa-bolt", "Signals", "/signals"),
+    ("fa-wave-square", "Macro Regime", "/regime"),
+    ("fa-network-wired", "Intelligence", "/intelligence"),
 ]
 
 

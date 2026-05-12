@@ -1,4 +1,5 @@
 """OFR financial stress data ingestion — raw files → single Parquet."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -50,6 +51,7 @@ class OFRIngester:
                 if existing.exists():
                     logger.warning("ofr_using_existing_processed", path=str(existing))
                     import shutil
+
                     shutil.copy(existing, self._out)
                     return self._out
                 raise IngestionError("No CSV files found and no existing processed OFR parquet")

@@ -1,11 +1,7 @@
-"""Dashboard data service — loads real pipeline artifacts with caching.
+"""Dashboard data service — loads real pipeline artifacts with caching."""
 
-"""
 from __future__ import annotations
-
-
 import polars as pl
-
 from andria.core.config import Settings
 from andria.core.logging import get_logger
 from andria.ingestion.registry import DatasetRegistry

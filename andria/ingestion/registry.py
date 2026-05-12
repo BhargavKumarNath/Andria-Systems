@@ -6,6 +6,7 @@ Responsibilities:
 - Validate processed datasets against their expected schemas
 - Track which datasets are available (vs. missing) for pipeline gating
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -131,8 +132,10 @@ class DatasetRegistry:
             try:
                 if contract is not None:
                     # Sample 1000 rows to validate schema without full load
-                    sample = pl.read_parquet(path) if path.is_file() else pl.read_parquet(
-                        list(path.rglob("*.parquet"))[0]
+                    sample = (
+                        pl.read_parquet(path)
+                        if path.is_file()
+                        else pl.read_parquet(list(path.rglob("*.parquet"))[0])
                     )
                     contract.validate(sample.head(1000))
                 results[name] = (True, f"OK — {path}")

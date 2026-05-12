@@ -7,11 +7,11 @@ Improvements over previous processing/preprocess_edgar.py:
 - Row-count integrity assertion
 - Raises IngestionError on failure (no sys.exit)
 """
+
 from __future__ import annotations
 
 import duckdb
 from pathlib import Path
-
 from andria.core.config import Settings
 from andria.core.exceptions import IngestionError
 from andria.core.logging import get_logger
@@ -79,7 +79,8 @@ class EDGARIngester:
                 sep='\\t', header=true, all_varchar=true,
                 filename=true, ignore_errors=false)
         """)
-        n = con.execute("SELECT COUNT(*) FROM infotable_all").fetchone()[0]
+        n_row = con.execute("SELECT COUNT(*) FROM infotable_all").fetchone()
+        n = n_row[0] if n_row else 0
         logger.info("infotable_loaded", rows=n)
 
     def _load_coverpage(self, con: duckdb.DuckDBPyConnection) -> None:
@@ -93,16 +94,18 @@ class EDGARIngester:
                 sep='\\t', header=true, all_varchar=true,
                 filename=true, ignore_errors=false)
         """)
-        dups = con.execute("""
+        dups_row = con.execute("""
             SELECT COUNT(*) FROM (
                 SELECT ACCESSION_NUMBER, source_quarter FROM coverpage_all
                 GROUP BY 1,2 HAVING COUNT(*) > 1)
-        """).fetchone()[0]
+        """).fetchone()
+        dups = dups_row[0] if dups_row else 0
         if dups > 0:
             logger.warning("coverpage_duplicates", count=dups)
 
     def _load_meta(self, con: duckdb.DuckDBPyConnection, meta_files: list[Path]) -> None:
         import json
+
         con.execute("""
             CREATE OR REPLACE TABLE meta_all (
                 quarter VARCHAR, meta_json VARCHAR, meta_file VARCHAR)
@@ -145,8 +148,10 @@ class EDGARIngester:
                 ON i.ACCESSION_NUMBER = c.ACCESSION_NUMBER AND i.source_quarter = c.source_quarter
             LEFT JOIN meta_all m ON i.source_quarter = m.quarter
         """)
-        n_info = con.execute("SELECT COUNT(*) FROM infotable_all").fetchone()[0]
-        n_comb = con.execute("SELECT COUNT(*) FROM edgar_combined").fetchone()[0]
+        n_info_row = con.execute("SELECT COUNT(*) FROM infotable_all").fetchone()
+        n_info = n_info_row[0] if n_info_row else 0
+        n_comb_row = con.execute("SELECT COUNT(*) FROM edgar_combined").fetchone()
+        n_comb = n_comb_row[0] if n_comb_row else 0
         if n_comb != n_info:
             logger.warning("row_count_mismatch", infotable=n_info, combined=n_comb)
         logger.info("edgar_combined_built", rows=n_comb)

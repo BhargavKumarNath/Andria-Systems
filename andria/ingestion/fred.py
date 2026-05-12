@@ -1,8 +1,7 @@
 """FRED macro data ingestion — raw CSV → single Parquet."""
+
 from __future__ import annotations
-
 from pathlib import Path
-
 from andria.core.config import Settings
 from andria.core.exceptions import IngestionError
 from andria.core.logging import get_logger
@@ -41,7 +40,8 @@ class FREDIngester:
                     header=true, all_varchar=false,
                     filename=true, ignore_errors=true)
             """)
-            n = con.execute("SELECT COUNT(*) FROM fred_combined").fetchone()[0]
+            n_row = con.execute("SELECT COUNT(*) FROM fred_combined").fetchone()
+            n = n_row[0] if n_row else 0
             out_str = str(self._out).replace("\\", "/")
             con.execute(f"""
                 COPY fred_combined TO '{out_str}'

@@ -15,6 +15,7 @@ Usage:
     with db_factory.connect_parquet(cfg.paths.processed / "edgar") as conn:
         df = conn.execute("SELECT * FROM edgar LIMIT 10").pl()
 """
+
 from __future__ import annotations
 
 from contextlib import contextmanager
@@ -86,5 +87,5 @@ class DuckDBConnectionFactory:
             yield conn
 
 
-# Module-level singleton factory — inject this into functions, never call duckdb directly
+# Module-level singleton factory
 db_factory = DuckDBConnectionFactory()

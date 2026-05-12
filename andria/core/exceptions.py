@@ -3,6 +3,7 @@
 All exceptions are typed and carry structured context.
 Never raise bare Exception — always raise a domain-specific subclass.
 """
+
 from __future__ import annotations
 
 

@@ -8,12 +8,10 @@ Usage:
     from andria.core.schemas import ManagerDNAContract
     df = ManagerDNAContract.validate(df)   # raises DataContractError on failure
 """
+
 from __future__ import annotations
-
 import polars as pl
-
 from andria.core.exceptions import DataContractError
-
 
 class _SchemaContract:
     """Base class for DataFrame schema contracts."""
@@ -43,8 +41,7 @@ class _SchemaContract:
         return df
 
 
-# ── EDGAR Raw ─────────────────────────────────────────────────────────────────
-
+# EDGAR Raw
 class EDGARRawContract(_SchemaContract):
     name = "EDGARRaw"
     required = {
@@ -59,8 +56,7 @@ class EDGARRawContract(_SchemaContract):
     nullable = {"PUTCALL", "SSHPRNAMT"}
 
 
-# ── Manager DNA Features ──────────────────────────────────────────────────────
-
+# Manager DNA Features
 class ManagerDNAContract(_SchemaContract):
     name = "ManagerDNA"
     required = {
@@ -82,8 +78,7 @@ class ManagerDNAContract(_SchemaContract):
     }
 
 
-# ── Clustered Managers ────────────────────────────────────────────────────────
-
+# Clustered Managers
 class ClusteredManagerContract(_SchemaContract):
     name = "ClusteredManager"
     required = {
@@ -96,8 +91,7 @@ class ClusteredManagerContract(_SchemaContract):
     }
 
 
-# ── RACS Signals ──────────────────────────────────────────────────────────────
-
+# RACS Signals
 class RACSContract(_SchemaContract):
     name = "RACS"
     required = {
@@ -115,8 +109,7 @@ class RACSContract(_SchemaContract):
     }
 
 
-# ── Regime Time Series ────────────────────────────────────────────────────────
-
+# Regime Time Series
 class RegimeContract(_SchemaContract):
     name = "Regime"
     required = {

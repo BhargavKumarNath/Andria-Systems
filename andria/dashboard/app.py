@@ -7,13 +7,11 @@ Five pages:
     /regime     Regime         — HMM timeline, transition matrix, regime returns
     /intelligence Intelligence — Crowding map, similarity network, overlap Sankey
 """
-from __future__ import annotations
 
+from __future__ import annotations
 import dash
 import dash_bootstrap_components as dbc
-
 from andria.core.config import Settings
-
 
 def create_app(cfg: Settings) -> dash.Dash:
     """Factory function — creates and returns a configured Dash application.
@@ -60,6 +58,7 @@ def create_app(cfg: Settings) -> dash.Dash:
 
     # Register callbacks
     from andria.dashboard.callbacks import register_all
+
     register_all(app, cfg)
 
     return app

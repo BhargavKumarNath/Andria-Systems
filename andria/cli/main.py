@@ -17,6 +17,7 @@ Commands:
 
     andria info                  Print current config + artifact paths
 """
+
 from __future__ import annotations
 
 from typing import Annotated
@@ -61,6 +62,7 @@ def ingest_edgar(
     """Ingest raw EDGAR TSV files → Hive-partitioned Parquet."""
     _setup(log_level, json_logs)
     from andria.ingestion.edgar import EDGARIngester
+
     cfg = get_settings()
     ingester = EDGARIngester(cfg)
     ingester.run()
@@ -74,6 +76,7 @@ def ingest_fred(
     """Ingest FRED macro CSV files → single Parquet."""
     _setup(log_level, json_logs)
     from andria.ingestion.fred import FREDIngester
+
     cfg = get_settings()
     FREDIngester(cfg).run()
 
@@ -86,6 +89,7 @@ def ingest_ofr(
     """Ingest OFR financial stress files → single Parquet."""
     _setup(log_level, json_logs)
     from andria.ingestion.ofr import OFRIngester
+
     cfg = get_settings()
     OFRIngester(cfg).run()
 
@@ -98,6 +102,7 @@ def ingest_all(
     """Run full ingestion pipeline (EDGAR + FRED + OFR)."""
     _setup(log_level, json_logs)
     from andria.orchestration.pipeline import PipelineOrchestrator
+
     cfg = get_settings()
     PipelineOrchestrator(cfg).run_ingestion()
 
@@ -111,6 +116,7 @@ def run_phase1(
     """Build Manager DNA features, run HDBSCAN clustering, generate archetype embeddings."""
     _setup(log_level, json_logs)
     from andria.orchestration.pipeline import PipelineOrchestrator
+
     cfg = get_settings()
     PipelineOrchestrator(cfg).run_phase1()
 
@@ -123,6 +129,7 @@ def run_phase2(
     """Fit HMM macro regime model, compute RACS signals, build crowding analytics."""
     _setup(log_level, json_logs)
     from andria.orchestration.pipeline import PipelineOrchestrator
+
     cfg = get_settings()
     PipelineOrchestrator(cfg).run_phase2()
 
@@ -136,6 +143,7 @@ def validate(
     """Run data contract validation checks on processed datasets."""
     _setup(log_level, json_logs)
     from andria.ingestion.registry import DatasetRegistry
+
     cfg = get_settings()
     registry = DatasetRegistry(cfg)
     results = registry.validate_all()
@@ -162,6 +170,7 @@ def serve(
     """Launch the Andria institutional analytics dashboard."""
     _setup(log_level, json_logs)
     from andria.dashboard.app import create_app
+
     cfg = get_settings()
     dash_port = port or cfg.dashboard.port
     dash_debug = debug or cfg.dashboard.debug
@@ -180,6 +189,7 @@ def report(
     """Generate HTML research reports from pipeline artifacts."""
     _setup(log_level, json_logs)
     from andria.research.reports import ReportGenerator
+
     cfg = get_settings()
     ReportGenerator(cfg).generate(run_id=run_id)
 
@@ -189,6 +199,7 @@ def report(
 def info() -> None:
     """Print current configuration and artifact paths."""
     from andria import __version__
+
     cfg = get_settings()
     table = Table(title=f"Andria Systems v{__version__}")
     table.add_column("Setting", style="cyan")

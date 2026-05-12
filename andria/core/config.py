@@ -9,6 +9,7 @@ Usage:
     cfg = get_settings()
     print(cfg.paths.processed)
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -21,7 +22,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 PROJECT_ROOT = Path(__file__).parents[2]
 
 
-# ── Sub-models ───────────────────────────────────────────────────────────────
+# Sub-models
+
 
 class PathsConfig(BaseModel):
     raw_edgar: Path = PROJECT_ROOT / "dataset/raw/edgar"
@@ -74,14 +76,17 @@ class HMMConfig(BaseModel):
     n_iter: int = 1000
     random_state: int = 42
     features: list[str] = [
-        "vix_level", "yield_spread_10y2y", "credit_spread_hy",
-        "fed_funds_delta", "ofr_stress_index",
+        "vix_level",
+        "yield_spread_10y2y",
+        "credit_spread_hy",
+        "fed_funds_delta",
+        "ofr_stress_index",
     ]
     regime_prototypes: dict[str, list[float]] = {
-        "Goldilocks":     [-1.2,  0.5, -0.8, -0.3, -1.0],
-        "Recovery":       [-0.3,  0.2, -0.1,  0.5, -0.3],
-        "Rate_Shock":     [ 0.5, -1.5,  0.3,  1.8,  0.5],
-        "Recession_Fear": [ 2.0, -0.5,  2.0, -1.0,  2.0],
+        "Goldilocks": [-1.2, 0.5, -0.8, -0.3, -1.0],
+        "Recovery": [-0.3, 0.2, -0.1, 0.5, -0.3],
+        "Rate_Shock": [0.5, -1.5, 0.3, 1.8, 0.5],
+        "Recession_Fear": [2.0, -0.5, 2.0, -1.0, 2.0],
     }
 
 
@@ -104,8 +109,7 @@ class DashboardConfig(BaseModel):
     theme: str = "CYBORG"
 
 
-# ── Root Settings ─────────────────────────────────────────────────────────────
-
+# Root Settings
 class Settings(BaseSettings):
     """Root settings object. Load once via get_settings()."""
 

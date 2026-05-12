@@ -8,6 +8,7 @@ Each pipeline run produces:
     signals/
     regime/
 """
+
 from __future__ import annotations
 
 import json
@@ -27,9 +28,12 @@ logger = get_logger(__name__)
 def _git_sha() -> str:
     try:
         import subprocess
+
         result = subprocess.run(
             ["git", "rev-parse", "--short", "HEAD"],
-            capture_output=True, text=True, timeout=3,
+            capture_output=True,
+            text=True,
+            timeout=3,
         )
         return result.stdout.strip() if result.returncode == 0 else "unknown"
     except Exception:
@@ -74,9 +78,7 @@ class PipelineOrchestrator:
             "input_hashes": self._registry.build_input_hashes(),
             "error": error,
         }
-        (run_dir / "manifest.json").write_text(
-            json.dumps(manifest, indent=2, default=str)
-        )
+        (run_dir / "manifest.json").write_text(json.dumps(manifest, indent=2, default=str))
         logger.info("manifest_written", run_id=run_id, stage=stage, status=status)
 
     # Ingestion
@@ -94,8 +96,9 @@ class PipelineOrchestrator:
             OFRIngester(self._cfg).run()
             self._write_manifest(run_dir, run_id, "ingestion", {}, started)
         except Exception as exc:
-            self._write_manifest(run_dir, run_id, "ingestion", {}, started,
-                                  status="failed", error=str(exc))
+            self._write_manifest(
+                run_dir, run_id, "ingestion", {}, started, status="failed", error=str(exc)
+            )
             raise PipelineError("ingestion", exc) from exc
 
     # Phase 1: Features + Clustering
@@ -124,6 +127,7 @@ class PipelineOrchestrator:
             latest.mkdir(parents=True, exist_ok=True)
             (latest / "manager_dna.parquet").unlink(missing_ok=True)
             import shutil
+
             shutil.copy(out_path, latest / "manager_dna.parquet")
 
             # Step 2: Clustering + archetype labeling
@@ -138,8 +142,9 @@ class PipelineOrchestrator:
             self._write_manifest(run_dir, run_id, "phase1", params, started)
             logger.info("pipeline_phase1_complete", run_id=run_id)
         except Exception as exc:
-            self._write_manifest(run_dir, run_id, "phase1", params, started,
-                                  status="failed", error=str(exc))
+            self._write_manifest(
+                run_dir, run_id, "phase1", params, started, status="failed", error=str(exc)
+            )
             raise PipelineError("phase1", exc) from exc
 
     # Phase 2: Signals + Regime
@@ -158,7 +163,6 @@ class PipelineOrchestrator:
             "racs": self._cfg.signals.racs.model_dump(),
         }
         try:
-
             # Step 1: Fit HMM macro regime model
             detector = MacroRegimeDetector(self._cfg)
             regime_df = detector.fit_predict()
@@ -167,6 +171,7 @@ class PipelineOrchestrator:
             regime_latest = self._cfg.paths.artifacts / "regime"
             regime_latest.mkdir(parents=True, exist_ok=True)
             import shutil
+
             shutil.copy(regime_path, regime_latest / "regime_timeseries.parquet")
 
             # Step 2: Compute regime-conditioned RACS signals
@@ -181,6 +186,7 @@ class PipelineOrchestrator:
             self._write_manifest(run_dir, run_id, "phase2", params, started)
             logger.info("pipeline_phase2_complete", run_id=run_id)
         except Exception as exc:
-            self._write_manifest(run_dir, run_id, "phase2", params, started,
-                                  status="failed", error=str(exc))
+            self._write_manifest(
+                run_dir, run_id, "phase2", params, started, status="failed", error=str(exc)
+            )
             raise PipelineError("phase2", exc) from exc
