@@ -6,3 +6,6 @@
 .pytest_cache/
 __pycache__/
 *.py[cod]
+.agents/
+graphify-out/
+.gitignore
