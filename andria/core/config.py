@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 PROJECT_ROOT = Path(__file__).parents[2]
@@ -31,6 +31,14 @@ class PathsConfig(BaseModel):
     raw_ofr: Path = PROJECT_ROOT / "dataset/raw/ofr"
     processed: Path = PROJECT_ROOT / "dataset/processed"
     artifacts: Path = PROJECT_ROOT / "artifacts"
+    
+    @model_validator(mode="after")
+    def _make_absolute(self) -> PathsConfig:
+        for field in ["raw_edgar", "raw_fred", "raw_ofr", "processed", "artifacts"]:
+            val = getattr(self, field)
+            if not val.is_absolute():
+                setattr(self, field, PROJECT_ROOT / val)
+        return self
 
     model_config = {"arbitrary_types_allowed": True}
 

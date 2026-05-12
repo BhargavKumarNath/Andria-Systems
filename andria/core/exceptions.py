@@ -55,3 +55,7 @@ class SignalError(AndriaError):
 
 class ArtifactError(AndriaError):
     """Raised when an artifact cannot be read or written."""
+
+
+class RegimeError(AndriaError):
+    """Raised when the macro regime model encounters an error."""

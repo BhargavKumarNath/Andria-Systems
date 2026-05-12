@@ -32,6 +32,7 @@ def create_app(cfg: Settings) -> dash.Dash:
     app = dash.Dash(
         __name__,
         use_pages=True,
+        pages_folder="layout/pages",
         external_stylesheets=[theme, dbc.icons.FONT_AWESOME],
         suppress_callback_exceptions=True,
         title="Andria Systems | Institutional Analytics",

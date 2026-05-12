@@ -40,7 +40,18 @@ class DashboardDataService:
 
     def load_system_health(self) -> dict[str, object]:
         """Returns real data health metrics from artifact manifests."""
-        raise NotImplementedError("Implemented in Step 3")
+        try:
+            cl = self.load_clustered_managers()
+            rc = self.load_racs_signals()
+            rg = self.load_regime_series()
+            return {
+                "managers": len(cl),
+                "signals": len(rc),
+                "regime_updates": len(rg),
+                "status": "HEALTHY"
+            }
+        except Exception:
+            return {"status": "DEGRADED"}
 
     def pipeline_status(self) -> dict[str, bool]:
         """Returns which pipeline stages have completed."""
