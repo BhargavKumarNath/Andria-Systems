@@ -10,17 +10,16 @@ Each pipeline run produces:
 """
 
 from __future__ import annotations
-
 import json
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-
 from andria.core.config import Settings
 from andria.core.exceptions import DataNotFoundError, PipelineError
 from andria.core.logging import get_logger
 from andria.ingestion.registry import DatasetRegistry
+from rich.progress import Progress, TextColumn, BarColumn, TimeElapsedColumn
 
 logger = get_logger(__name__)
 
@@ -116,28 +115,44 @@ class PipelineOrchestrator:
             "min_quarters_active": self._cfg.features.manager_dna.min_quarters_active,
             "clustering": self._cfg.clustering.model_dump(),
         }
+        
         try:
-            # Step 1: Build 15-feature Manager DNA
-            builder = ManagerDNABuilder(self._cfg)
-            dna_df = builder.build()
-            out_path = run_dir / "features" / "manager_dna.parquet"
-            dna_df.write_parquet(out_path)
-            # Symlink latest for downstream consumers
-            latest = self._cfg.paths.artifacts / "features"
-            latest.mkdir(parents=True, exist_ok=True)
-            (latest / "manager_dna.parquet").unlink(missing_ok=True)
-            import shutil
-
-            shutil.copy(out_path, latest / "manager_dna.parquet")
-
-            # Step 2: Clustering + archetype labeling
-            engine = ClusteringEngine(self._cfg)
-            clustered_df = engine.fit_predict(dna_df)
-            clust_path = run_dir / "clusters" / "clustered_managers.parquet"
-            clustered_df.write_parquet(clust_path)
-            clust_latest = self._cfg.paths.artifacts / "clusters"
-            clust_latest.mkdir(parents=True, exist_ok=True)
-            shutil.copy(clust_path, clust_latest / "clustered_managers.parquet")
+            with Progress(
+                TextColumn("[progress.description]{task.description}"),
+                BarColumn(),
+                TimeElapsedColumn(),
+            ) as progress:
+                p1 = progress.add_task("[cyan]Building Manager DNA features...", total=100)
+                
+                # Step 1: Build 15-feature Manager DNA
+                builder = ManagerDNABuilder(self._cfg)
+                dna_df = builder.build()
+                progress.update(p1, advance=50, description="[cyan]DNA Built. Saving features...")
+                
+                out_path = run_dir / "features" / "manager_dna.parquet"
+                dna_df.write_parquet(out_path)
+                # Symlink latest for downstream consumers
+                latest = self._cfg.paths.artifacts / "features"
+                latest.mkdir(parents=True, exist_ok=True)
+                (latest / "manager_dna.parquet").unlink(missing_ok=True)
+                import shutil
+                shutil.copy(out_path, latest / "manager_dna.parquet")
+                
+                progress.update(p1, advance=10, description="[magenta]Running HDBSCAN clustering...")
+                
+                # Step 2: Clustering + archetype labeling
+                engine = ClusteringEngine(self._cfg)
+                clustered_df = engine.fit_predict(dna_df)
+                
+                progress.update(p1, advance=30, description="[magenta]Clustering complete. Saving artifacts...")
+                
+                clust_path = run_dir / "clusters" / "clustered_managers.parquet"
+                clustered_df.write_parquet(clust_path)
+                clust_latest = self._cfg.paths.artifacts / "clusters"
+                clust_latest.mkdir(parents=True, exist_ok=True)
+                shutil.copy(clust_path, clust_latest / "clustered_managers.parquet")
+                
+                progress.update(p1, advance=10, description="[green]Phase 1 Complete!")
 
             self._write_manifest(run_dir, run_id, "phase1", params, started)
             logger.info("pipeline_phase1_complete", run_id=run_id)
@@ -163,25 +178,39 @@ class PipelineOrchestrator:
             "racs": self._cfg.signals.racs.model_dump(),
         }
         try:
-            # Step 1: Fit HMM macro regime model
-            detector = MacroRegimeDetector(self._cfg)
-            regime_df = detector.fit_predict()
-            regime_path = run_dir / "regime" / "regime_timeseries.parquet"
-            regime_df.write_parquet(regime_path)
-            regime_latest = self._cfg.paths.artifacts / "regime"
-            regime_latest.mkdir(parents=True, exist_ok=True)
-            import shutil
+            with Progress(
+                TextColumn("[progress.description]{task.description}"),
+                BarColumn(),
+                TimeElapsedColumn(),
+            ) as progress:
+                p2 = progress.add_task("[cyan]Fitting HMM Regime Model...", total=100)
 
-            shutil.copy(regime_path, regime_latest / "regime_timeseries.parquet")
+                # Step 1: Fit HMM macro regime model
+                detector = MacroRegimeDetector(self._cfg)
+                regime_df = detector.fit_predict()
+                
+                progress.update(p2, advance=40, description="[cyan]HMM Fit. Computing RACS signals...")
+                
+                regime_path = run_dir / "regime" / "regime_timeseries.parquet"
+                regime_df.write_parquet(regime_path)
+                regime_latest = self._cfg.paths.artifacts / "regime"
+                regime_latest.mkdir(parents=True, exist_ok=True)
+                import shutil
+                shutil.copy(regime_path, regime_latest / "regime_timeseries.parquet")
 
-            # Step 2: Compute regime-conditioned RACS signals
-            racs_engine = RACSEngine(self._cfg)
-            racs_df = racs_engine.compute(regime_df)
-            racs_path = run_dir / "signals" / "racs_signals.parquet"
-            racs_df.write_parquet(racs_path)
-            sig_latest = self._cfg.paths.artifacts / "signals"
-            sig_latest.mkdir(parents=True, exist_ok=True)
-            shutil.copy(racs_path, sig_latest / "racs_signals.parquet")
+                # Step 2: Compute regime-conditioned RACS signals
+                racs_engine = RACSEngine(self._cfg)
+                racs_df = racs_engine.compute(regime_df)
+                
+                progress.update(p2, advance=50, description="[magenta]Signals computed. Finalizing...")
+                
+                racs_path = run_dir / "signals" / "racs_signals.parquet"
+                racs_df.write_parquet(racs_path)
+                sig_latest = self._cfg.paths.artifacts / "signals"
+                sig_latest.mkdir(parents=True, exist_ok=True)
+                shutil.copy(racs_path, sig_latest / "racs_signals.parquet")
+                
+                progress.update(p2, advance=10, description="[green]Phase 2 Complete!")
 
             self._write_manifest(run_dir, run_id, "phase2", params, started)
             logger.info("pipeline_phase2_complete", run_id=run_id)

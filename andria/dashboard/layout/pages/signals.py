@@ -4,7 +4,6 @@ import dash_bootstrap_components as dbc
 import plotly.express as px
 from andria.core.config import get_settings
 from andria.dashboard.data_service import DashboardDataService
-
 dash.register_page(__name__, path="/signals", name="Signals")
 
 cfg = get_settings()
@@ -20,18 +19,24 @@ def layout():
             
         racs_df = data_service.load_racs_signals().to_pandas()
         
-        # We can scatter racs_raw vs regime_adjusted_racs to show the penalty/boost
+        # Scatter: conviction_raw (pre-adjustment) vs regime_adjusted_racs (post-adjustment)
         fig_scatter = px.scatter(
             racs_df,
-            x="racs_raw",
+            x="conviction_raw",
             y="regime_adjusted_racs",
             color="crowding_penalty",
-            hover_name="CUSIP",
-            size="activist_buyers_count",
+            hover_name="cusip",
+            size="activist_buyers",
             template="plotly_dark",
-            title="RACS Signal Adjustment (Crowding & Regime)",
+            title="RACS Signal Adjustment — Conviction vs Regime-Adjusted Score",
             height=500,
-            color_continuous_scale="Viridis"
+            color_continuous_scale="Viridis",
+            labels={
+                "conviction_raw": "Raw Conviction Score",
+                "regime_adjusted_racs": "Regime-Adjusted RACS",
+                "crowding_penalty": "Crowding Penalty",
+                "activist_buyers": "Activist Buyers",
+            }
         )
         
         return dbc.Container([

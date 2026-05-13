@@ -71,7 +71,7 @@ def layout():
                     dbc.CardHeader("Top Conviction Signals (RACS v2)"),
                     dbc.CardBody([
                         dbc.Table.from_dataframe(
-                            racs_df.select(["CUSIP", "activist_buyers_count", "regime_adjusted_racs"]).to_pandas(),
+                            racs_df.select(["cusip", "activist_buyers", "regime_adjusted_racs"]).to_pandas(),
                             striped=True, bordered=True, hover=True, size="sm"
                         )
                     ])

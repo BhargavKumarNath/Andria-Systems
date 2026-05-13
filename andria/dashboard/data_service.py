@@ -5,7 +5,6 @@ import polars as pl
 from andria.core.config import Settings
 from andria.core.logging import get_logger
 from andria.ingestion.registry import DatasetRegistry
-
 logger = get_logger(__name__)
 
 
@@ -13,7 +12,7 @@ class DashboardDataService:
     """Loads and caches real pipeline artifacts for dashboard consumption.
 
     All methods raise DataNotFoundError if the required artifact doesn't exist
-    — the dashboard shows a data-health warning card instead of fake data.
+    — the dashboard shows a data-health warning card.
     """
 
     def __init__(self, cfg: Settings) -> None:

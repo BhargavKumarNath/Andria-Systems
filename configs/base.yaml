@@ -11,7 +11,7 @@ paths:
   artifacts: "artifacts"
 
 ingest:
-  memory_limit_gb: 10
+  memory_limit_gb: 6
   parquet_compression: "zstd"
   row_group_size: 100000
   partition_edgar: true          # write dataset/processed/edgar/quarter=*/

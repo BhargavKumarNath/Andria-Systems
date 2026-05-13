@@ -43,15 +43,52 @@ def layout():
             height=400
         )
         
+        pie_guide = [
+            ("Segments", "Each segment is a manager archetype. Larger segment = more managers belong to that group."),
+            ("Hover", "Hover over a segment to see the archetype name and manager count."),
+            ("Click legend", "Click an archetype name in the legend to hide/show it on the chart."),
+        ]
+        box_guide = [
+            ("X-axis", "Manager archetype (e.g. Conviction Activists, Index Huggers, Noise)."),
+            ("Y-axis (HHI)", "Herfindahl-Hirschman Index — portfolio concentration (0 = fully diversified, 1 = single position)."),
+            ("Box", "The box spans Q1–Q3. The line inside is the median concentration for that archetype."),
+            ("Whiskers", "Extend to 1.5× IQR. Points beyond are outliers (unusually concentrated or diversified managers)."),
+            ("Interpretation", "High HHI Conviction Activists signal fewer, larger bets — typical of activist hedge funds."),
+        ]
+
         return dbc.Container([
             dbc.Row([
                 dbc.Col([
-                    html.H3("Market Intelligence & Crowding", className="mb-3"),
+                    html.H3("Market Intelligence & Crowding", className="mb-1"),
                     html.P(
-                        "Deep dive into behavioral profiles of institutional managers.",
-                        className="text-muted"
+                        "Deep dive into behavioral profiles of institutional managers across archetypes.",
+                        className="text-muted mb-3",
                     )
                 ], width=12)
+            ]),
+
+            # Pie guide + chart
+            dbc.Row([
+                dbc.Col(
+                    dbc.Alert([
+                        html.Strong("Capital Allocation Pie — How to read: "),
+                        html.Ul([
+                            html.Li([html.Strong(k + ": "), v])
+                            for k, v in pie_guide
+                        ], className="mb-0 mt-1"),
+                    ], color="info", className="py-2 mb-2"),
+                    width=5,
+                ),
+                dbc.Col(
+                    dbc.Alert([
+                        html.Strong("HHI Boxplot — How to read: "),
+                        html.Ul([
+                            html.Li([html.Strong(k + ": "), v])
+                            for k, v in box_guide
+                        ], className="mb-0 mt-1"),
+                    ], color="secondary", className="py-2 mb-2"),
+                    width=7,
+                ),
             ]),
             dbc.Row([
                 dbc.Col(dbc.Card(dcc.Graph(figure=fig_pie), className="mb-4 shadow-sm"), width=5),

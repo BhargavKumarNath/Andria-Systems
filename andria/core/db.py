@@ -17,13 +17,10 @@ Usage:
 """
 
 from __future__ import annotations
-
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Generator
-
 import duckdb
-
 from andria.core.config import get_settings
 from andria.core.logging import get_logger
 
@@ -36,17 +33,23 @@ class DuckDBConnectionFactory:
     def __init__(
         self,
         memory_limit_gb: int | None = None,
-        threads: int = 8,
+        threads: int = 4,
         read_only: bool = False,
     ) -> None:
         cfg = get_settings()
         self._memory_gb = memory_limit_gb or cfg.ingest.memory_limit_gb
         self._threads = threads
         self._read_only = read_only
+        
+        self._temp_dir = cfg.project_root / ".tmp" / "duckdb"
+        self._temp_dir.mkdir(parents=True, exist_ok=True)
 
     def _configure(self, conn: duckdb.DuckDBPyConnection) -> None:
         conn.execute(f"SET memory_limit = '{self._memory_gb}GB'")
+        conn.execute(f"SET temp_directory = '{str(self._temp_dir).replace(chr(92), '/')}'")
+        conn.execute("SET max_temp_directory_size = '20GiB'")
         conn.execute(f"SET threads = {self._threads}")
+        conn.execute("SET preserve_insertion_order = false")
         conn.execute("SET enable_progress_bar = true")
         conn.execute("SET enable_progress_bar_print = true")
 
@@ -78,11 +81,21 @@ class DuckDBConnectionFactory:
         """
         glob = str(dataset_path / "**/*.parquet") if dataset_path.is_dir() else str(dataset_path)
         with self.connect() as conn:
-            hive = str(hive_partitioning).lower()
-            conn.execute(
-                f"CREATE OR REPLACE VIEW {view_name} AS "
-                f"SELECT * FROM read_parquet('{glob}', hive_partitioning={hive})"
-            )
+            hive = str(hive_partitioning and dataset_path.is_dir()).lower()
+            if dataset_path.is_file() and dataset_path.name == "EDGAR_preprocess.parquet":
+                conn.execute(
+                    f"CREATE OR REPLACE VIEW {view_name} AS "
+                    f"SELECT *, "
+                    f"CASE WHEN UPPER(TRIM(PUTCALL)) = 'PUT' THEN 'Put' "
+                    f"WHEN UPPER(TRIM(PUTCALL)) = 'CALL' THEN 'Call' "
+                    f"ELSE 'Equity' END AS exposure_type "
+                    f"FROM read_parquet('{glob}', hive_partitioning={hive})"
+                )
+            else:
+                conn.execute(
+                    f"CREATE OR REPLACE VIEW {view_name} AS "
+                    f"SELECT * FROM read_parquet('{glob}', hive_partitioning={hive})"
+                )
             logger.debug("parquet_view_registered", view=view_name, path=str(dataset_path))
             yield conn
 

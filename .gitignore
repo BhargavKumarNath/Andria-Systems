@@ -8,4 +8,5 @@ __pycache__/
 *.py[cod]
 .agents/
 graphify-out/
+.tmp/
 .gitignore

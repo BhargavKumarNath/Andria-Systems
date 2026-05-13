@@ -1,10 +1,10 @@
 {
-  "run_id": "20260512T144511_a33184",
+  "run_id": "20260513T081932_24ace4",
   "stage": "phase1",
-  "git_sha": "8e207df",
-  "started_at": "2026-05-12T14:45:11.996618+00:00",
-  "completed_at": "2026-05-12T14:45:12.051638+00:00",
-  "status": "failed",
+  "git_sha": "6812215",
+  "started_at": "2026-05-13T08:19:32.852796+00:00",
+  "completed_at": "2026-05-13T08:22:29.373118+00:00",
+  "status": "success",
   "params": {
     "min_quarters_active": 4,
     "clustering": {
@@ -33,5 +33,5 @@
     "fred": "c977f806d953cdd814638c1c29d4fb1a5ee26fea5e5a823bbcc6267fd90935fa",
     "ofr": "012a7817fe690e1ccbf541a7d784a2d08d13cd1da314b20983cf98739dfe2846"
   },
-  "error": "IO Error: No files found that match the pattern \"dataset\\processed\\edgar\\**\\*.parquet\"\n\nLINE 1: CREATE OR REPLACE VIEW edgar AS SELECT * FROM read_parquet('dataset\\processed\\edgar\\**\\*.parquet', hive_p...\n                                                      ^"
+  "error": null
 }

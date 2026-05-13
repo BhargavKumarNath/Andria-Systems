@@ -37,23 +37,49 @@ def layout():
             color_discrete_sequence=px.colors.qualitative.Pastel
         )
         
+        regime_guide = [
+            ("X-axis (Date)", "Quarterly timeline from 2004 onwards based on FRED & OFR macro data."),
+            ("Y-axis (Probability)", "Probability (0–1) that the market is in each regime at that point in time. All bands sum to 1."),
+            ("Colour bands", "Each colour represents one HMM regime state: Goldilocks, Recovery, Rate Shock, or Recession Fear."),
+            ("Band width", "Wider = higher conviction that this regime is active. Thin slivers indicate low-probability regimes."),
+            ("Transitions", "Abrupt shifts between dominant colours indicate regime change events (e.g., COVID crash, rate hike cycle)."),
+            ("Hover", "Mouse over the chart to see exact probability values at any date."),
+        ]
+
         return dbc.Container([
             dbc.Row([
                 dbc.Col([
-                    html.H3("Macro Regime Detection", className="mb-3"),
+                    html.H3("Macro Regime Detection", className="mb-1"),
                     html.P(
-                        "A Gaussian Hidden Markov Model dynamically identifies financial market regimes "
-                        "from FRED (Yield Curve, Credit Spreads, VIX) and OFR Financial Stress data. "
-                        "Centroids are mapped to semantic configurations via Cosine Similarity.",
-                        className="text-muted"
+                        "A Gaussian Hidden Markov Model identifies financial market regimes from "
+                        "FRED (Yield Curve, Credit Spreads, VIX) and OFR Financial Stress data. "
+                        "Regime centroids are mapped to semantic labels via Cosine Similarity.",
+                        className="text-muted mb-3",
                     ),
-                    dbc.Card(dcc.Graph(figure=fig_area), className="mb-4 shadow-sm"),
                 ], width=12)
+            ]),
+
+            dbc.Row([
+                dbc.Col(
+                    dbc.Alert([
+                        html.Strong("How to interpret this chart  "),
+                        html.Br(),
+                        html.Ul([
+                            html.Li([html.Strong(k + ": "), v])
+                            for k, v in regime_guide
+                        ], className="mb-0 mt-1"),
+                    ], color="secondary", className="py-2 mb-3"),
+                    width=12,
+                )
+            ]),
+
+            dbc.Row([
+                dbc.Col(dbc.Card(dcc.Graph(figure=fig_area), className="mb-4 shadow-sm"), width=12),
             ]),
             dbc.Row([
                 dbc.Col([
                     dbc.Card([
-                        dbc.CardHeader("Historical Timeline (Quarterly)"),
+                        dbc.CardHeader("Historical Timeline (Quarterly) — Most Recent First"),
                         dbc.CardBody([
                             dbc.Table.from_dataframe(
                                 regime_df[["date", "regime_label", "regime_prob"]].sort_values("date", ascending=False).head(20),

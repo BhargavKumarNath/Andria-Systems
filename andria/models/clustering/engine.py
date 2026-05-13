@@ -95,10 +95,11 @@ class ClusteringEngine:
             val = internal_validation(X_scaled, labels)
             sil = val["silhouette"]
 
-            logger.debug(
-                "hdbscan_sweep_iteration",
+            logger.info(
+                "hdbscan_sweep_progress",
+                iteration=f"{sizes.index(size) + 1}/{len(sizes)}",
                 size=size,
-                silhouette=sil,
+                silhouette=round(sil, 4),
                 n_clusters=len(set(labels)) - 1,
             )
 

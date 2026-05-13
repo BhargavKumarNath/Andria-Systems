@@ -13,6 +13,7 @@ from __future__ import annotations
 import duckdb
 from pathlib import Path
 from andria.core.config import Settings
+from andria.core.db import db_factory
 from andria.core.exceptions import IngestionError
 from andria.core.logging import get_logger
 
@@ -52,18 +53,12 @@ class EDGARIngester:
             meta_count=len(meta_files),
         )
 
-        con: duckdb.DuckDBPyConnection = duckdb.connect()
-        try:
-            con.execute(f"SET memory_limit = '{self._mem}GB'")
-            con.execute("SET enable_progress_bar = true")
-
+        with db_factory.connect() as con:
             self._load_infotable(con)
             self._load_coverpage(con)
             self._load_meta(con, meta_files)
             self._build_combined(con)
             self._export(con)
-        finally:
-            con.close()
 
         logger.info("edgar_ingestion_complete", output_dir=str(self._out))
         return self._out
