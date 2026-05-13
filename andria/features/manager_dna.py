@@ -63,7 +63,7 @@ class ManagerDNABuilder:
                 GROUP BY 1
                 HAVING COUNT(DISTINCT source_quarter) >= {min_q}
             """)
-            n_mgr = conn.execute("SELECT COUNT(*) FROM eligible_managers").fetchone()[0]
+            n_mgr = (conn.execute("SELECT COUNT(*) FROM eligible_managers").fetchone() or (0,))[0]
             logger.info("dna_stage_done", stage="1/6", eligible_managers=n_mgr)
 
             # ── Stage 2: Quarterly portfolios (grouped, much smaller) ────

@@ -60,7 +60,7 @@ def layout():
                 dbc.Col(dbc.Card([
                     dbc.CardBody([
                         html.H6("Total Signals", className="card-subtitle"),
-                        html.H2(health["signals"], className="text-primary mt-2"),
+                        html.H2(str(health["signals"]), className="text-primary mt-2"),
                         html.Small("Regime-adjusted RACS", className="text-muted")
                     ])
                 ], className="mb-4 text-center"), width=3),

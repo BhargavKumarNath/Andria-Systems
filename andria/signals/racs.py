@@ -69,7 +69,7 @@ class RACSEngine:
                 FROM clusters
                 WHERE archetype_label LIKE '%Conviction Activists%'
             """)
-            n_act = conn.execute("SELECT COUNT(*) FROM activists").fetchone()[0]
+            n_act = (conn.execute("SELECT COUNT(*) FROM activists").fetchone() or (0,))[0]
             logger.info("racs_stage_done", stage="1/5", activist_count=n_act)
 
             # Stage 2: Activist holdings + weights (filtered subset)

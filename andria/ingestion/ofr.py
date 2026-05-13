@@ -54,7 +54,7 @@ class OFRIngester:
                     return self._out
                 raise IngestionError("No CSV files found and no existing processed OFR parquet")
 
-            n = con.execute("SELECT COUNT(*) FROM ofr_combined").fetchone()[0]
+            n = (con.execute("SELECT COUNT(*) FROM ofr_combined").fetchone() or (0,))[0]
             out_str = str(self._out).replace("\\", "/")
             con.execute(f"""
                 COPY ofr_combined TO '{out_str}'
