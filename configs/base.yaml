@@ -1,6 +1,5 @@
 # ============================================================================
 # Andria Systems — Canonical Configuration
-# All hardcoded values live here. Nothing magic in code.
 # ============================================================================
 
 paths:
@@ -69,3 +68,14 @@ dashboard:
   cache_timeout_seconds: 300
   max_rows_table: 500
   theme: "CYBORG"
+
+backtest:
+  filing_lag_days: 45
+  holding_period_days: 90
+  costs:
+    large_cap_bps: 0.0020  # 20 bps
+    small_cap_bps: 0.0050  # 50 bps
+    small_cap_threshold_usd: 2000000000  # $2B market cap proxy via ADTV
+    market_impact_gamma: 0.1
+  significance:
+    fdr_alpha: 0.05        # False Discovery Rate

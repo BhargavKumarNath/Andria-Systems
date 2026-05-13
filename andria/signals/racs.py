@@ -53,7 +53,7 @@ class RACSEngine:
                 pl.col("date").dt.year().cast(pl.Utf8).alias("r_year"),
                 pl.col("date").dt.quarter().cast(pl.Utf8).alias("r_qtr"),
             ]
-        ).with_columns((pl.col("r_year") + "Q" + pl.col("r_qtr")).alias("source_quarter"))
+        ).with_columns((pl.col("r_year") + "_Q" + pl.col("r_qtr")).alias("source_quarter"))
 
         with self._factory.connect_parquet(edgar_path, view_name="edgar") as conn:
             # Register DataFrames as views
@@ -181,4 +181,3 @@ class RACSEngine:
         logger.info("racs_signals_computed", rows=len(validated))
 
         return validated
-

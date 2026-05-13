@@ -52,6 +52,8 @@ class ClusteringError(AndriaError):
 class SignalError(AndriaError):
     """Raised when signal generation encounters invalid state."""
 
+class BacktestError(AndriaError):
+    """Raised when the backtesting engine encounters a runtime error."""
 
 class ArtifactError(AndriaError):
     """Raised when an artifact cannot be read or written."""
@@ -59,3 +61,4 @@ class ArtifactError(AndriaError):
 
 class RegimeError(AndriaError):
     """Raised when the macro regime model encounters an error."""
+

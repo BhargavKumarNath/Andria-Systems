@@ -11,10 +11,8 @@ Usage:
 """
 
 from __future__ import annotations
-
 from pathlib import Path
 from typing import Any
-
 import yaml
 from pydantic import BaseModel, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -108,6 +106,23 @@ class RACSConfig(BaseModel):
 class SignalsConfig(BaseModel):
     racs: RACSConfig = RACSConfig()
 
+class BacktestCostsConfig(BaseModel):
+    large_cap_bps: float = 0.0020  # 20 bps for large cap
+    small_cap_threshold_usd: float = 2_000_000_000.0
+    small_cap_bps: float = 0.0050  # 50 bps for small cap
+    market_impact_gamma: float = 0.1  # Square root impact model coefficient
+
+class SignificanceConfig(BaseModel):
+    """Statistical significance parameters for FDR/Benjamini-Hochberg"""
+    fdr_alpha: float = 0.05
+    min_obs_per_regime: int = 30
+
+class BacktestConfig(BaseModel):
+    costs: BacktestCostsConfig = BacktestCostsConfig()
+    significance: SignificanceConfig = SignificanceConfig()
+    filing_lag_days: int = 45
+    holding_period_days: int = 90
+    top_n_decile: float = 0.1
 
 class DashboardConfig(BaseModel):
     port: int = 8050
@@ -135,6 +150,7 @@ class Settings(BaseSettings):
     clustering: ClusteringConfig = ClusteringConfig()
     hmm: HMMConfig = HMMConfig()
     signals: SignalsConfig = SignalsConfig()
+    backtest: BacktestConfig = BacktestConfig()
     dashboard: DashboardConfig = DashboardConfig()
 
     @classmethod
