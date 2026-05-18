@@ -148,6 +148,7 @@ unique_cusips = signals_df["cusip"].unique().to_list()
 dates = pd.date_range("2000-01-01", "2027-01-01", freq="B")
 n_days = len(dates)
 rng = np.random.default_rng(42)
+PRICING_SOURCE = "synthetic_gbm"
 
 print(f"Generating mock pricing for {len(unique_cusips)} tickers (2000-2027)...")
 pricing_chunks = []
@@ -169,6 +170,7 @@ for ticker in unique_cusips:
 
 mock_pricing = pl.concat(pricing_chunks)
 print(f"Mock pricing ready: {len(mock_pricing)} rows.")
+print("WARNING: Pricing source is synthetic_gbm. Results are pipeline diagnostics, not alpha evidence.")
 
 # %% [markdown]
 # ## 2. Execute Backtest Engine
@@ -193,9 +195,11 @@ ff_model = RiskFactorModel(start_date="2000-01-01")
 
 try:
     ledger = ff_model.orthogonalize(ledger)
-    print("Risk Factor Neutralization Complete.")
+    rfn_status = ff_model.last_diagnostics
+    print(f"Risk Factor Neutralization status: {rfn_status}")
     print("Ledger now contains 'idiosyncratic_alpha' column.")
 except Exception as e:
+    rfn_status = {"status": "skipped", "reason": str(e)}
     print(f"Skipping RFN due to network error: {e}")
 
 # %% [markdown]
@@ -274,5 +278,40 @@ split_metrics = ledger.group_by("split").agg(
 ).to_pandas()
 
 print(split_metrics)
+
+# %%
+diagnostic_flags = []
+if PRICING_SOURCE != "real_market":
+    diagnostic_flags.append("BLOCKER: pricing is synthetic_gbm, so returns/Sharpe/p-values are not alpha evidence.")
+if len(ledger) < 250:
+    diagnostic_flags.append(f"BLOCKER: only {len(ledger)} trade-level observations; statistical power is weak.")
+
+small_regimes = regime_df.loc[regime_df["n_obs"].astype(int) < 30, ["regime_label", "n_obs"]]
+if not small_regimes.empty:
+    regime_counts = ", ".join(
+        f"{row.regime_label}=n{int(row.n_obs)}" for row in small_regimes.itertuples(index=False)
+    )
+    diagnostic_flags.append(f"WARNING: small regime buckets: {regime_counts}.")
+
+if rfn_status.get("status") != "complete":
+    diagnostic_flags.append(f"WARNING: RFN did not complete cleanly: {rfn_status}.")
+elif rfn_status.get("r_squared") is not None and float(rfn_status["r_squared"]) < 0.10:
+    diagnostic_flags.append(
+        f"WARNING: RFN R^2 is low ({rfn_status['r_squared']}); factor attribution is weak."
+    )
+
+split_return_range = split_metrics["mean_return"].max() - split_metrics["mean_return"].min()
+if split_return_range > 0.05:
+    diagnostic_flags.append(
+        f"WARNING: split instability is high; mean return range is {split_return_range:.2%}."
+    )
+
+print("\nEvaluation Gate")
+if diagnostic_flags:
+    print("Status: NOT INVESTABLE / RESEARCH ONLY")
+    for flag in diagnostic_flags:
+        print(f"- {flag}")
+else:
+    print("Status: Passed basic diagnostic gates.")
 
 # %%

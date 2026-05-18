@@ -20,6 +20,7 @@ class RiskFactorModel:
     def __init__(self, start_date: str = "2000-01-01"):
         self.start_date = start_date
         self._factors_df: pl.DataFrame | None = None
+        self.last_diagnostics: dict[str, float | int | str | bool] = {}
 
     def fetch_factors(self) -> pl.DataFrame:
         """Downloads FF5 + Momentum from Ken French's data library."""
@@ -150,6 +151,14 @@ class RiskFactorModel:
             logger.warning("not_enough_data_for_orthogonalization", 
                            trades_survived=len(reg_data),
                            total_ledger=final_ledger.height)
+            self.last_diagnostics = {
+                "status": "skipped",
+                "reason": "not_enough_data",
+                "trades_survived": len(reg_data),
+                "total_ledger": final_ledger.height,
+                "r_squared": None,
+                "annualized_alpha_bps": None,
+            }
             return final_ledger.drop(["_idx"]).with_columns(pl.lit(None).alias("idiosyncratic_alpha"))
 
         # 4. Run OLS Regression
@@ -160,9 +169,18 @@ class RiskFactorModel:
         X = sm.add_constant(X, has_constant="add")
         
         model = sm.OLS(y, X).fit()
+        r_squared = round(float(model.rsquared), 3)
+        annualized_alpha_bps = round(float(model.params["const"]) * 4 * 10000, 1)
         logger.info("risk_factor_regression_complete", 
-                    r_squared=round(float(model.rsquared), 3), 
-                    annualized_alpha_bps=round(float(model.params["const"]) * 4 * 10000, 1))
+                    r_squared=r_squared, 
+                    annualized_alpha_bps=annualized_alpha_bps)
+        self.last_diagnostics = {
+            "status": "complete",
+            "trades_survived": len(reg_data),
+            "total_ledger": final_ledger.height,
+            "r_squared": r_squared,
+            "annualized_alpha_bps": annualized_alpha_bps,
+        }
         
         # 5. Extract Idiosyncratic Alpha (Residuals + Intercept)
         # alpha = actual - expected_from_beta
