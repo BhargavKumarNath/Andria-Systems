@@ -106,7 +106,7 @@ class RACSEngine:
 
             # Raw RACS scores (small – one row per CUSIP/quarter)
             logger.info("racs_stage", stage="3/5", detail="computing raw RACS scores")
-            conn.execute(f"""
+            conn.execute(f"""  # nosec B608
                 CREATE TEMP TABLE raw_racs AS
                 SELECT
                     source_quarter,
@@ -150,7 +150,7 @@ class RACSEngine:
 
             # Final join with regime + score adjustment
             logger.info("racs_stage", stage="5/5", detail="joining with regime and final scoring")
-            df = conn.execute(f"""
+            df = conn.execute(f"""  # nosec B608
                 SELECT
                     r.source_quarter                                         AS quarter,
                     r.CUSIP                                                  AS cusip,

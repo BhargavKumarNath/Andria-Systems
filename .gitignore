@@ -1,5 +1,6 @@
 /data/
 /dataset/
+/datasets/
 .idea/
 .venv/
 .env
@@ -9,13 +10,13 @@ __pycache__/
 .agents/
 .tmp/
 .gitignore
-# graphify-out
-# docs/
-# .benchmarks/
-# .agents/
-# .ruff_cache/
 
-# reports/
+graphify-out/
 docs/
+.benchmarks/
+.ruff_cache/
+reports/
+artifacts/
+
 frontend/.next/
 frontend/node_modules/

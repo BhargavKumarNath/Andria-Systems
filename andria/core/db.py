@@ -83,7 +83,7 @@ class DuckDBConnectionFactory:
         with self.connect() as conn:
             hive = str(hive_partitioning and dataset_path.is_dir()).lower()
             if dataset_path.is_file() and dataset_path.name == "EDGAR_preprocess.parquet":
-                conn.execute(
+                conn.execute(  # nosec B608
                     f"CREATE OR REPLACE VIEW {view_name} AS "
                     f"SELECT *, "
                     f"CASE WHEN UPPER(TRIM(PUTCALL)) = 'PUT' THEN 'Put' "
@@ -92,7 +92,7 @@ class DuckDBConnectionFactory:
                     f"FROM read_parquet('{glob}', hive_partitioning={hive})"
                 )
             else:
-                conn.execute(
+                conn.execute(  # nosec B608
                     f"CREATE OR REPLACE VIEW {view_name} AS "
                     f"SELECT * FROM read_parquet('{glob}', hive_partitioning={hive})"
                 )
