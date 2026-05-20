@@ -22,10 +22,6 @@ Usage::
 
 from __future__ import annotations
 
-import json
-import time
-from pathlib import Path
-
 import polars as pl
 import requests
 
@@ -73,7 +69,7 @@ class CUSIPMapper:
         path = self._cfg.cusip_map_path
         if path.exists():
             df = pl.read_parquet(path)
-            self._map = dict(zip(df["cusip"].to_list(), df["ticker"].to_list()))
+            self._map = dict(zip(df["cusip"].to_list(), df["ticker"].to_list(), strict=False))
             logger.info("cusip_map_cache_loaded", n_entries=len(self._map))
             return True
         return False
@@ -151,9 +147,8 @@ class CUSIPMapper:
             Dict mapping each input CUSIP to a Yahoo Finance ticker symbol,
             or ``None`` if unmapped. Unmapped CUSIPs are logged as warnings.
         """
-        if self._map is None:
-            if not self._load_cache():
-                self.build()
+        if self._map is None and not self._load_cache():
+            self.build()
 
         assert self._map is not None
         result: dict[str, str | None] = {}

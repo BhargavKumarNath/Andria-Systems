@@ -17,10 +17,13 @@ Usage:
 """
 
 from __future__ import annotations
+
+from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Generator
+
 import duckdb
+
 from andria.core.config import get_settings
 from andria.core.logging import get_logger
 

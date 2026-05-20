@@ -20,16 +20,14 @@ Run:
 """
 from __future__ import annotations
 
-import datetime
-import json
 import math
 from datetime import date, timedelta
-from pathlib import Path
-from typing import Any
+
 import numpy as np
 import polars as pl
 import pytest
 from scipy.stats import ks_2samp
+
 from andria.backtest.capacity import CapacityAnalyzer
 from andria.backtest.costs import TransactionCostModel
 from andria.backtest.diagnostics import (
@@ -41,8 +39,8 @@ from andria.backtest.diagnostics import (
 from andria.backtest.engine import AlphaFactoryEngine
 from andria.backtest.execution import ExecutionEngine
 from andria.backtest.leakage_audit import (
-    LeakageAuditReport,
     AuditFinding,
+    LeakageAuditReport,
     check_duplicate_signals,
     check_forward_contamination,
     check_future_timestamps,
@@ -59,6 +57,7 @@ from andria.backtest.walk_forward import WalkForwardValidator
 from andria.core.config import get_settings
 from andria.core.exceptions import BacktestError
 from andria.utils.market_calendar import MarketCalendar
+
 
 #Shared fixtures
 @pytest.fixture(scope="module")
@@ -555,7 +554,7 @@ class TestExecutionRealism:
         })
         eng = ExecutionEngine()
         result = eng.apply(ledger, pricing)
-        assert result["adv_capped"][0] == True, "Large position should be ADV-capped"
+        assert result["adv_capped"][0], "Large position should be ADV-capped"
 
     def test_costs_model_net_return_lower_than_gross(self):
         """Net return must always be < gross return (costs always positive)."""
@@ -574,7 +573,7 @@ class TestExecutionRealism:
 
     def test_large_cap_bps_lower_than_small_cap(self):
         """Large cap tickers must receive lower fixed cost than small cap."""
-        rng = np.random.default_rng(11)
+        np.random.default_rng(11)
         large = pl.DataFrame({
             "close_price": [500.0],
             "volume_30d_avg": [1e8],  # high ADTV → large cap
@@ -745,7 +744,7 @@ class TestOverfittingDiagnostics:
         sig = result["is_significant"]
         # Document that this is a numpy bool, not Python bool
         is_native_bool = type(sig) is bool
-        is_numpy_bool = hasattr(sig, '__class__') and 'numpy' in str(type(sig))
+        hasattr(sig, '__class__') and 'numpy' in str(type(sig))
         if not is_native_bool:
             pytest.xfail(
                 "BUG IN DeflatedSharpeRatio.compute(): is_significant returns "
@@ -1297,7 +1296,7 @@ class TestEngineIntegration:
         ledger = ledger.with_columns(pl.col("net_fwd_return"))
         metrics = regime_conditional_metrics(ledger)
         assert isinstance(metrics, dict)
-        for regime, m in metrics.items():
+        for _regime, m in metrics.items():
             assert "sharpe" in m
             assert "n_obs" in m
             assert "fdr_significant" in m
@@ -1353,8 +1352,6 @@ class TestMethodologyFlaws:
         Verify that SignalDecayAnalyzer correctly computes dates using strict
         trading day arithmetic rather than calendar day approximations.
         """
-        from andria.backtest.signal_decay import SignalDecayAnalyzer
-        from andria.utils.market_calendar import MarketCalendar
         # Simple test to confirm the class instantiates and the method logic works
         # Real integration tests for decay are in SUITE 7
         assert True, "SignalDecayAnalyzer now strictly uses MarketCalendar"

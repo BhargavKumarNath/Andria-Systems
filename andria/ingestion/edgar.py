@@ -10,8 +10,10 @@ Improvements over previous processing/preprocess_edgar.py:
 
 from __future__ import annotations
 
-import duckdb
 from pathlib import Path
+
+import duckdb
+
 from andria.core.config import Settings
 from andria.core.db import db_factory
 from andria.core.exceptions import IngestionError
@@ -33,7 +35,6 @@ class EDGARIngester:
 
     def run(self) -> Path:
         """Execute full ingestion. Returns output directory path."""
-        import duckdb
 
         if not self._raw.exists():
             raise IngestionError(f"Raw EDGAR path not found: {self._raw}")

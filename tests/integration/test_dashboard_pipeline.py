@@ -1,9 +1,9 @@
-import pytest
+import duckdb
 import numpy as np
 import polars as pl
-import duckdb
-from src.models.regime_hmm import MacroRegimeDetector
 from src.features.signal_features import compute_smart_money_signals
+from src.models.regime_hmm import MacroRegimeDetector
+
 
 def test_hmm_semantic_mapping():
     np.random.seed(42)

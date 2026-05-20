@@ -1,10 +1,12 @@
 import os
+from datetime import date
+
+import polars as pl
 import psutil
 import pytest
-import polars as pl
-from datetime import date
-from src.data.quality_checks import check_suspicious_dates, check_null_rates
+from src.data.quality_checks import check_null_rates, check_suspicious_dates
 from src.data.verify_data_summary import verify_dataset_shape
+
 
 # Fixture to generate a 100 row sample dataset for tests
 @pytest.fixture(scope="session")

@@ -4,7 +4,9 @@ Peak memory approx: < 100 MB (pure vectorized Polars operations).
 """
 
 from __future__ import annotations
+
 import polars as pl
+
 from andria.core.config import get_settings
 
 

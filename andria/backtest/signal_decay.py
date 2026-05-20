@@ -21,9 +21,11 @@ Usage::
 """
 
 from __future__ import annotations
+
 import numpy as np
 import polars as pl
 from scipy.stats import spearmanr
+
 from andria.core.logging import get_logger
 from andria.utils.market_calendar import MarketCalendar
 

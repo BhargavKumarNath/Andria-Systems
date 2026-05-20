@@ -5,9 +5,12 @@ Call `configure_logging()` once at application startup (CLI entrypoint).
 """
 
 from __future__ import annotations
+
 import logging
 import sys
+
 import structlog
+
 
 def configure_logging(level: str = "INFO", json_logs: bool = False) -> None:
     """Configure structlog for the entire process.

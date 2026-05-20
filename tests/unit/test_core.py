@@ -1,11 +1,12 @@
 """Unit tests for core infrastructure."""
 from __future__ import annotations
 
+import polars as pl
+import pytest
+
 from andria.core.config import get_settings
 from andria.core.exceptions import DataContractError, DataNotFoundError
 from andria.core.schemas import ManagerDNAContract
-import polars as pl
-import pytest
 
 
 def test_settings_loads() -> None:

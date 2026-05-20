@@ -1,7 +1,8 @@
 import dash
-from dash import html, dcc
 import dash_bootstrap_components as dbc
 import plotly.express as px
+from dash import dcc, html
+
 from andria.core.config import get_settings
 from andria.dashboard.data_service import DashboardDataService
 
@@ -37,7 +38,7 @@ def layout():
                     dbc.CardBody([
                         html.H6("System Health", className="card-subtitle"),
                         html.H2(health["status"], className="text-success mt-2"),
-                        html.Small(f"Artifacts synced.", className="text-muted")
+                        html.Small("Artifacts synced.", className="text-muted")
                     ])
                 ], className="mb-4 text-center"), width=3),
                 

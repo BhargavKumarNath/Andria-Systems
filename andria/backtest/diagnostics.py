@@ -4,9 +4,11 @@ Peak memory approx: < 50 MB.
 """
 
 from __future__ import annotations
+
 import numpy as np
 import polars as pl
 import scipy.stats as stats
+
 from andria.core.config import get_settings
 from andria.core.exceptions import BacktestError
 
@@ -53,7 +55,7 @@ def benjamini_hochberg_fdr(p_values: list[float], alpha: float = 0.05) -> list[b
     critical_values = (ranks / n) * alpha
     
     # A p-value is significant if it is <= critical value
-    return [bool(p <= cv) for p, cv in zip(p_values, critical_values)]
+    return [bool(p <= cv) for p, cv in zip(p_values, critical_values, strict=False)]
 
 
 def regime_conditional_metrics(df: pl.DataFrame) -> dict[str, dict[str, float]]:
@@ -72,7 +74,7 @@ def regime_conditional_metrics(df: pl.DataFrame) -> dict[str, dict[str, float]]:
         if len(regime_data) > 1:
             t_stat, p_val = stats.ttest_1samp(regime_data.to_numpy(), popmean=0.0, alternative='greater')
         else:
-            t_stat, p_val = 0.0, 1.0
+            _t_stat, p_val = 0.0, 1.0
             
         p_values.append(p_val)
         results[regime] = {
@@ -87,7 +89,7 @@ def regime_conditional_metrics(df: pl.DataFrame) -> dict[str, dict[str, float]]:
     alpha = get_settings().backtest.significance.fdr_alpha
     is_significant = benjamini_hochberg_fdr(p_values, alpha=alpha)
     
-    for regime, sig in zip(regimes, is_significant):
+    for regime, sig in zip(regimes, is_significant, strict=False):
         results[regime]["fdr_significant"] = sig
         
     return results
@@ -133,7 +135,6 @@ def regime_transition_metrics(df: pl.DataFrame, transition_window_days: int = 10
         }
 
     # Tag each trade as "at_transition" if within transition_window_days of any transition
-    from datetime import timedelta as _td
 
     def is_near_transition(exec_dt: object) -> bool:
         for t_date in transition_dates:

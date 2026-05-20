@@ -1,7 +1,8 @@
 import dash
-from dash import html, dcc
 import dash_bootstrap_components as dbc
 import plotly.express as px
+from dash import dcc, html
+
 from andria.core.config import get_settings
 from andria.dashboard.data_service import DashboardDataService
 
@@ -19,7 +20,7 @@ def layout():
             ], className="mt-4")
             
         cluster_df = data_service.load_clustered_managers().to_pandas()
-        racs_df = data_service.load_racs_signals().to_pandas()
+        data_service.load_racs_signals().to_pandas()
         
         # Showing Archetype Composition (Pie) and 
         # Feature Box plots for Archetypes to show behavioral differences

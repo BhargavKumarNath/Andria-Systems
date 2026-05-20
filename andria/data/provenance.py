@@ -23,11 +23,14 @@ Usage::
 """
 
 from __future__ import annotations
+
 import json
 from dataclasses import asdict, dataclass, field
-from datetime import date, datetime
+from datetime import datetime
 from pathlib import Path
+
 import polars as pl
+
 from andria.core.logging import get_logger
 
 logger = get_logger(__name__)

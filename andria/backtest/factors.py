@@ -4,13 +4,16 @@ Fetches Fama-French 5-factor + Momentum data and computes orthogonalized idiosyn
 """
 
 from __future__ import annotations
+
 import warnings
 
 import pandas as pd
 import pandas_datareader.data as web
 import polars as pl
 import statsmodels.api as sm
+
 from andria.core.logging import get_logger
+
 logger = get_logger(__name__)
 
 

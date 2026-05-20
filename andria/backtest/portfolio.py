@@ -15,8 +15,8 @@ Usage::
 
 from __future__ import annotations
 
-import polars as pl
 import numpy as np
+import polars as pl
 
 from andria.core.logging import get_logger
 
@@ -50,7 +50,7 @@ class PortfolioConstructor:
         self.max_position_pct = max_position_pct
         self.max_sector_pct = max_sector_pct
         if weight_scheme not in ("equal_risk", "racs_weighted"):
-            raise ValueError(f"weight_scheme must be 'equal_risk' or 'racs_weighted'")
+            raise ValueError("weight_scheme must be 'equal_risk' or 'racs_weighted'")
         self.weight_scheme = weight_scheme
 
     def apply(self, ledger: pl.DataFrame) -> pl.DataFrame:

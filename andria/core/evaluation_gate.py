@@ -1,6 +1,8 @@
 import structlog
 from pydantic import BaseModel
-from andria.core.artifact_registry import ArtifactRegistry, RunManifest
+
+from andria.core.artifact_registry import ArtifactRegistry
+
 logger = structlog.get_logger(__name__)
 
 

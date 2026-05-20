@@ -13,9 +13,12 @@ Usage::
 """
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 import numpy as np
 import polars as pl
+
 from andria.backtest.diagnostics import calculate_max_drawdown, calculate_sharpe
 from andria.core.logging import get_logger
 

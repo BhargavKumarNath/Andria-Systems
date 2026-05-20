@@ -164,7 +164,6 @@ def check_overlapping_labels(
             from datetime import datetime as _dt
             exec_dt = _dt.fromisoformat(exec_dt).date()
 
-        exit_dt = exec_dt  # approximate: we only have exec_date here
 
         if cusip == prev_cusip and prev_exit is not None and exec_dt < prev_exit:
             overlap_count += 1

@@ -19,12 +19,15 @@ Usage::
 """
 
 from __future__ import annotations
+
+import contextlib
 import hashlib
 import json
 import subprocess
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
 from andria.core.config import Settings, get_settings
 from andria.core.logging import get_logger
 
@@ -43,14 +46,13 @@ def set_global_seed(seed: int) -> None:
         seed: Integer seed value (use ``cfg.experiment.seed``).
     """
     import random
+
     import numpy as np
 
     random.seed(seed)
     np.random.seed(seed)
 
-    try:
-        import sklearn
-    except ImportError:
+    with contextlib.suppress(ImportError):
         pass
 
     logger.info("global_seed_set", seed=seed)

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import dash
+
 from andria.core.config import Settings
 
 

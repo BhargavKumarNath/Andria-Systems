@@ -5,9 +5,11 @@ and external validity metrics (ANOVA, KS-tests) to verify cluster robustness.
 """
 
 from __future__ import annotations
+
 import numpy as np
 from scipy import stats
 from sklearn.metrics import calinski_harabasz_score, davies_bouldin_score, silhouette_score
+
 from andria.core.logging import get_logger
 
 logger = get_logger(__name__)

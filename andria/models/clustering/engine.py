@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import numpy as np
 import polars as pl
-from sklearn.cluster import HDBSCAN
-from sklearn.preprocessing import RobustScaler
-from sklearn.metrics.pairwise import cosine_similarity
 import umap
+from sklearn.cluster import HDBSCAN
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.preprocessing import RobustScaler
 
 from andria.core.config import Settings
 from andria.core.exceptions import ClusteringError

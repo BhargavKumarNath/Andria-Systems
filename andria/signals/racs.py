@@ -1,7 +1,9 @@
 """RACS v2 — Regime-Conditioned Activist Conviction Score."""
 
 from __future__ import annotations
+
 import polars as pl
+
 from andria.core.config import Settings
 from andria.core.db import DuckDBConnectionFactory, db_factory
 from andria.core.logging import get_logger

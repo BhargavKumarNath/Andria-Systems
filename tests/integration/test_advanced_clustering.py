@@ -1,8 +1,8 @@
-import pytest
 import numpy as np
 import polars as pl
-from src.utils.quant_stats import cohens_d, compute_bootstrap_ci, rigorous_cluster_validation
 from src.models.advanced_clustering import AdvancedManagerClustering
+from src.utils.quant_stats import cohens_d, compute_bootstrap_ci, rigorous_cluster_validation
+
 
 def test_cohens_d():
     # Large effect size
@@ -32,7 +32,9 @@ def test_rigorous_validation():
     assert res["mann_whitney_pval"] < 0.01
 
 def test_clustering_sweep_memory_constraint():
-    import psutil, os
+    import os
+
+    import psutil
     process = psutil.Process(os.getpid())
     mem_before = process.memory_info().rss
     

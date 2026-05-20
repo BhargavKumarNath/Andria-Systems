@@ -1,9 +1,11 @@
 import dash
-from dash import html, dcc
 import dash_bootstrap_components as dbc
 import plotly.express as px
+from dash import dcc, html
+
 from andria.core.config import get_settings
 from andria.dashboard.data_service import DashboardDataService
+
 dash.register_page(__name__, path="/signals", name="Signals")
 
 cfg = get_settings()

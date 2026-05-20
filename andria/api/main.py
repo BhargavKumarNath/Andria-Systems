@@ -1,5 +1,5 @@
 import os
-from typing import Dict, Any
+from typing import Any
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -9,8 +9,8 @@ from andria.api.cache import cached
 from andria.api.schemas import (
     PortfolioDiagnosticsDTO,
     PortfolioResponse,
-    RegimeStateDTO,
     RegimesResponse,
+    RegimeStateDTO,
     SignalDTO,
     SignalsResponse,
 )
@@ -48,7 +48,7 @@ def verify_hf_token(credentials: HTTPAuthorizationCredentials = Depends(security
     return credentials.credentials
 
 
-def get_latest_published_run() -> Dict[str, Any]:
+def get_latest_published_run() -> dict[str, Any]:
     """Helper to fetch the latest published run metadata."""
     published_runs = registry.list_published_runs()
     if not published_runs:
@@ -66,7 +66,7 @@ def get_latest_published_run() -> Dict[str, Any]:
 
 
 @app.get("/health")
-def health_check() -> Dict[str, str]:
+def health_check() -> dict[str, str]:
     return {"status": "ok"}
 
 

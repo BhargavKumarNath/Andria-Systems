@@ -14,7 +14,6 @@ Peak memory approx: ~2-3 GB for 116M EDGAR rows + 10Y pricing history.
 
 from __future__ import annotations
 
-from datetime import timedelta
 import warnings
 
 import polars as pl

@@ -10,8 +10,11 @@ Usage:
 """
 
 from __future__ import annotations
+
 import polars as pl
+
 from andria.core.exceptions import DataContractError
+
 
 class _SchemaContract:
     """Base class for DataFrame schema contracts."""

@@ -1,7 +1,9 @@
 import time
-from typing import Any, Dict
+from typing import Any
+
 import structlog
 from prefect import flow, task
+
 from andria.core.artifact_registry import ArtifactRegistry
 from andria.core.evaluation_gate import EvaluationGate
 from andria.core.telemetry import PIPELINE_LATENCY
@@ -10,7 +12,7 @@ logger = structlog.get_logger(__name__)
 
 
 @task(retries=2, retry_delay_seconds=10)
-def ingest_data() -> Dict[str, Any]:
+def ingest_data() -> dict[str, Any]:
     """Ingest EDGAR, FRED, and OFR data."""
     logger.info("ingestion_started")
     # Simulation of ingestion
@@ -20,7 +22,7 @@ def ingest_data() -> Dict[str, Any]:
 
 
 @task
-def extract_manager_dna(ingestion_meta: Dict[str, Any]) -> Dict[str, Any]:
+def extract_manager_dna(ingestion_meta: dict[str, Any]) -> dict[str, Any]:
     """Extract manager DNA and cluster."""
     logger.info("clustering_started")
     time.sleep(1.0)
@@ -29,7 +31,7 @@ def extract_manager_dna(ingestion_meta: Dict[str, Any]) -> Dict[str, Any]:
 
 
 @task
-def generate_signals(dna_meta: Dict[str, Any]) -> None:
+def generate_signals(dna_meta: dict[str, Any]) -> None:
     """Generate RACS signals."""
     logger.info("signal_generation_started")
     time.sleep(1.0)

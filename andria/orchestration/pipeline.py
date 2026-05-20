@@ -10,16 +10,19 @@ Each pipeline run produces:
 """
 
 from __future__ import annotations
+
 import json
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+
+from rich.progress import BarColumn, Progress, TextColumn, TimeElapsedColumn
+
 from andria.core.config import Settings
 from andria.core.exceptions import DataNotFoundError, PipelineError
 from andria.core.logging import get_logger
 from andria.ingestion.registry import DatasetRegistry
-from rich.progress import Progress, TextColumn, BarColumn, TimeElapsedColumn
 
 logger = get_logger(__name__)
 
@@ -48,7 +51,7 @@ class PipelineOrchestrator:
         self._artifacts_root = cfg.paths.artifacts
 
     def _new_run_dir(self) -> tuple[str, Path]:
-        ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
+        ts = datetime.now(UTC).strftime("%Y%m%dT%H%M%S")
         run_id = f"{ts}_{uuid.uuid4().hex[:6]}"
         run_dir = self._artifacts_root / "runs" / run_id
         run_dir.mkdir(parents=True, exist_ok=True)
@@ -71,7 +74,7 @@ class PipelineOrchestrator:
             "stage": stage,
             "git_sha": _git_sha(),
             "started_at": started_at.isoformat(),
-            "completed_at": datetime.now(timezone.utc).isoformat(),
+            "completed_at": datetime.now(UTC).isoformat(),
             "status": status,
             "params": params,
             "input_hashes": self._registry.build_input_hashes(),
@@ -88,7 +91,7 @@ class PipelineOrchestrator:
 
         logger.info("pipeline_ingestion_start")
         run_id, run_dir = self._new_run_dir()
-        started = datetime.now(timezone.utc)
+        started = datetime.now(UTC)
         try:
             EDGARIngester(self._cfg).run()
             FREDIngester(self._cfg).run()
@@ -110,7 +113,7 @@ class PipelineOrchestrator:
 
         logger.info("pipeline_phase1_start")
         run_id, run_dir = self._new_run_dir()
-        started = datetime.now(timezone.utc)
+        started = datetime.now(UTC)
         params = {
             "min_quarters_active": self._cfg.features.manager_dna.min_quarters_active,
             "clustering": self._cfg.clustering.model_dump(),
@@ -172,7 +175,7 @@ class PipelineOrchestrator:
 
         logger.info("pipeline_phase2_start")
         run_id, run_dir = self._new_run_dir()
-        started = datetime.now(timezone.utc)
+        started = datetime.now(UTC)
         params = {
             "hmm": self._cfg.hmm.model_dump(),
             "racs": self._cfg.signals.racs.model_dump(),

@@ -1,10 +1,13 @@
 """FRED macro data ingestion — raw CSV → single Parquet."""
 
 from __future__ import annotations
+
 from pathlib import Path
+
 from andria.core.config import Settings
 from andria.core.exceptions import IngestionError
 from andria.core.logging import get_logger
+
 logger = get_logger(__name__)
 
 

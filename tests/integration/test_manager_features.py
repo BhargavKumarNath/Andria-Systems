@@ -1,11 +1,13 @@
-import pytest
-import duckdb
-import polars as pl
 import os
-import psutil
+
+import duckdb
 import numpy as np
+import polars as pl
+import psutil
+import pytest
 from src.features.manager_features import build_manager_features
 from src.models.clustering import ManagerClusteringEngine, validate_clusters_anova
+
 
 @pytest.fixture
 def mock_db():
@@ -95,7 +97,7 @@ def test_memory_constraint_manager_features(mock_db):
     process = psutil.Process(os.getpid())
     mem_before = process.memory_info().rss
     
-    df = build_manager_features(mock_db)
+    build_manager_features(mock_db)
     
     mem_after = process.memory_info().rss
     memory_used_mb = (mem_after - mem_before) / (1024 * 1024)

@@ -1,4 +1,3 @@
-from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -26,14 +25,14 @@ class SignalDTO(BaseModel):
 
 class SignalsResponse(APIResponseBase):
     """API contract for delivering the latest valid signals."""
-    signals: List[SignalDTO]
+    signals: list[SignalDTO]
 
 
 class RegimeStateDTO(BaseModel):
     """View-model for macro regime conditions."""
     current_regime: str
     transition_probability: float
-    features: Dict[str, float]
+    features: dict[str, float]
     
     model_config = ConfigDict(frozen=True)
 

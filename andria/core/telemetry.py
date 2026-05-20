@@ -1,5 +1,6 @@
 import logging
 import sys
+
 import structlog
 from prometheus_client import Counter, Gauge, Histogram
 

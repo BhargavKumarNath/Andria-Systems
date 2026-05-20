@@ -1,8 +1,8 @@
 import dash
-from dash import html, dcc
 import dash_bootstrap_components as dbc
 import plotly.express as px
-import plotly.graph_objects as go
+from dash import dcc, html
+
 from andria.core.config import get_settings
 from andria.dashboard.data_service import DashboardDataService
 

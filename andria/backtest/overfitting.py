@@ -198,10 +198,7 @@ class DeflatedSharpeRatio:
         kurt = float(stats.kurtosis(r))  # excess kurtosis
 
         # Serial correlation (lag-1 autocorrelation)
-        if n > 1:
-            serial_corr = float(np.corrcoef(r[:-1], r[1:])[0, 1])
-        else:
-            serial_corr = 0.0
+        serial_corr = float(np.corrcoef(r[:-1], r[1:])[0, 1]) if n > 1 else 0.0
 
         # Effective N adjusted for serial correlation
         n_eff = n * (1 - serial_corr) / (1 + serial_corr) if abs(serial_corr) < 1 else n

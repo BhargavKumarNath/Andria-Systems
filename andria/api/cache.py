@@ -1,6 +1,7 @@
 import time
+from collections.abc import Callable
 from functools import wraps
-from typing import Any, Callable, Dict, Tuple
+from typing import Any
 
 
 class TTLCache:
@@ -10,7 +11,7 @@ class TTLCache:
     
     def __init__(self, ttl_seconds: int = 60):
         self.ttl_seconds = ttl_seconds
-        self._cache: Dict[str, Tuple[float, Any]] = {}
+        self._cache: dict[str, tuple[float, Any]] = {}
         
     def get(self, key: str) -> Any:
         if key in self._cache:

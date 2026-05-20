@@ -1,15 +1,13 @@
 """Pytest configuration and shared fixtures for Andria Systems tests."""
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Generator
+from collections.abc import Generator
 
 import duckdb
 import polars as pl
 import pytest
 
 from andria.core.config import Settings
-
 
 #Settings fixture
 

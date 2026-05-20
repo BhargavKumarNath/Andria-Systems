@@ -11,9 +11,11 @@ Usage:
 """
 
 from __future__ import annotations
+
 import uuid
 from pathlib import Path
 from typing import Any
+
 import yaml
 from pydantic import BaseModel, Field, computed_field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -30,7 +32,7 @@ class PathsConfig(BaseModel):
     artifacts: Path = PROJECT_ROOT / "artifacts"
 
     @model_validator(mode="after")
-    def _make_absolute(self) -> "PathsConfig":
+    def _make_absolute(self) -> PathsConfig:
         for field in ["raw_edgar", "raw_fred", "raw_ofr", "processed", "artifacts"]:
             val = getattr(self, field)
             if not val.is_absolute():
@@ -148,7 +150,7 @@ class MarketDataConfig(BaseModel):
     stale_threshold_days: int = 5  # flag data older than N trading days
 
     @model_validator(mode="after")
-    def _make_absolute(self) -> "MarketDataConfig":
+    def _make_absolute(self) -> MarketDataConfig:
         if not self.cache_dir.is_absolute():
             self.cache_dir = PROJECT_ROOT / self.cache_dir
         if not self.cusip_map_path.is_absolute():
@@ -207,7 +209,7 @@ class Settings(BaseSettings):
         return str(uuid.uuid4())[:8]
 
     @classmethod
-    def from_yaml(cls, path: Path | None = None) -> "Settings":
+    def from_yaml(cls, path: Path | None = None) -> Settings:
         """Load settings from YAML, then apply env-var overrides."""
         yaml_path = path or (PROJECT_ROOT / "configs" / "base.yaml")
         raw: dict[str, Any] = {}
