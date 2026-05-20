@@ -56,6 +56,6 @@ jobs:
       env:
         HF_TOKEN: ${{ secrets.HF_TOKEN }}
       run: |
-        git remote add space https://huggingface.co/spaces/YOUR_HF_ORG/andria-backend
+        git remote add space https://huggingface.co/spaces/Bhargav12321/andria-backend
         # Pushing code securely to Hugging Face Space using the token
-        git push --force https://user:$HF_TOKEN@huggingface.co/spaces/YOUR_HF_ORG/andria-backend main
+        git push --force https://user:$HF_TOKEN@huggingface.co/spaces/Bhargav12321/andria-backend main
