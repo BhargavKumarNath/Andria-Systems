@@ -1,7 +1,6 @@
 """Dashboard header component."""
 
 from __future__ import annotations
-
 import dash_bootstrap_components as dbc
 from dash import html
 

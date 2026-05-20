@@ -24,7 +24,7 @@ class ClusteringEngine:
     def __init__(self, cfg: Settings) -> None:
         self._cfg = cfg
 
-        # We exclude names and non-behavioral info from feature space
+        # Exclude names and non-behavioral info from feature space
         # All columns in ManagerDNAContract except manager_name
         self._feature_cols = [
             "avg_hhi",

@@ -1,13 +1,11 @@
 """Macro Regime Hidden Markov Model — stable semantic mapping via cosine similarity."""
 
 from __future__ import annotations
-
 import numpy as np
 import polars as pl
 from hmmlearn import hmm
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics.pairwise import cosine_similarity
-
 from andria.core.config import Settings
 from andria.core.db import DuckDBConnectionFactory, db_factory
 from andria.core.exceptions import RegimeError

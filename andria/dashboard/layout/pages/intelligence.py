@@ -21,7 +21,7 @@ def layout():
         cluster_df = data_service.load_clustered_managers().to_pandas()
         racs_df = data_service.load_racs_signals().to_pandas()
         
-        # We can show Archetype Composition (Pie) and 
+        # Showing Archetype Composition (Pie) and 
         # Feature Box plots for Archetypes to show behavioral differences
         
         fig_pie = px.pie(

@@ -13,6 +13,10 @@ dependencies = [
     "duckdb>=1.1.0",
     "polars>=1.0.0",
     "pyarrow>=16.0.0",
+    # Phase 4: Real market data
+    "yfinance>=0.2.40",
+    "exchange-calendars>=4.5.0",
+    "pandas-datareader>=0.10.0",
     # Config & validation
     "pydantic>=2.7.0",
     "pydantic-settings>=2.3.0",
@@ -29,6 +33,8 @@ dependencies = [
     "statsmodels>=0.14.2",
     "joblib>=1.4.0",
     "numpy>=1.26.0",
+    # Phase 4: Experiment tracking
+    "mlflow>=2.13.0",
     # Viz & Dashboard
     "plotly>=5.22.0",
     "dash>=2.17.0",

@@ -45,7 +45,7 @@ class RACSEngine:
 
         logger.info("computing_racs_v2", edgar=str(edgar_path), clusters=str(clusters_path))
 
-        # Register the regime dataframe in duckdb so we can join it
+        # Register the regime dataframe in duckdb it can join it
         # Since regime_df has a Date column and edgar has source_quarter (e.g. 2021Q1),
         # We'll extract year/quarter from regime_df to match.
         regime_df = regime_df.with_columns(
@@ -61,7 +61,7 @@ class RACSEngine:
             conn.register("clusters", clusters_df.to_arrow())
             conn.register("regimes", regime_df.to_arrow())
 
-            # Stage 1: Identify activist managers (tiny result)
+            # Identify activist managers (tiny result)
             logger.info("racs_stage", stage="1/5", detail="identifying activist managers")
             conn.execute("""
                 CREATE TEMP TABLE activists AS
@@ -72,7 +72,7 @@ class RACSEngine:
             n_act = (conn.execute("SELECT COUNT(*) FROM activists").fetchone() or (0,))[0]
             logger.info("racs_stage_done", stage="1/5", activist_count=n_act)
 
-            # Stage 2: Activist holdings + weights (filtered subset)
+            # Activist holdings + weights (filtered subset)
             logger.info("racs_stage", stage="2/5", detail="computing activist weights")
             conn.execute("""
                 CREATE TEMP TABLE activist_weights AS
@@ -104,7 +104,7 @@ class RACSEngine:
             """)
             logger.info("racs_stage_done", stage="2/5")
 
-            # Stage 3: Raw RACS scores (small – one row per CUSIP/quarter)
+            # Raw RACS scores (small – one row per CUSIP/quarter)
             logger.info("racs_stage", stage="3/5", detail="computing raw RACS scores")
             conn.execute(f"""
                 CREATE TEMP TABLE raw_racs AS
@@ -122,7 +122,7 @@ class RACSEngine:
             conn.execute("DROP TABLE activist_weights")
             logger.info("racs_stage_done", stage="3/5")
 
-            # Stage 4: Crowding penalty (only for relevant CUSIPs)
+            # Crowding penalty (only for relevant CUSIPs)
             logger.info("racs_stage", stage="4/5", detail="computing crowding penalty")
             conn.execute("""
                 CREATE TEMP TABLE crowding AS
@@ -148,7 +148,7 @@ class RACSEngine:
             """)
             logger.info("racs_stage_done", stage="4/5")
 
-            # Stage 5: Final join with regime + score adjustment
+            # Final join with regime + score adjustment
             logger.info("racs_stage", stage="5/5", detail="joining with regime and final scoring")
             df = conn.execute(f"""
                 SELECT

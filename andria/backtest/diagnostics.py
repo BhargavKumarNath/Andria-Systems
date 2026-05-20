@@ -91,3 +91,80 @@ def regime_conditional_metrics(df: pl.DataFrame) -> dict[str, dict[str, float]]:
         results[regime]["fdr_significant"] = sig
         
     return results
+
+
+def regime_transition_metrics(df: pl.DataFrame, transition_window_days: int = 10) -> dict[str, object]:
+    """Analyse performance during regime transitions vs. stable regime periods.
+
+    Many strategies fail during regime transitions due to factor rotation and
+    liquidity stress. This function flags trades initiated within
+    ``transition_window_days`` of a detected regime change.
+
+    Args:
+        df:                      Trade ledger with ``exec_date``, ``regime_label``,
+                                 ``net_fwd_return``.
+        transition_window_days:  Number of calendar days before/after a regime
+                                 change that define the "transition zone".
+
+    Returns:
+        Dict with keys ``"in_regime"``, ``"at_transition"``, containing
+        Sharpe, mean return, and n_obs for each bucket.
+    """
+    required = {"exec_date", "regime_label", "net_fwd_return"}
+    if not required.issubset(set(df.columns)):
+        return {"error": f"Missing columns: {required - set(df.columns)}"}
+
+    # Detect regime change dates: where regime_label differs from previous row
+    sorted_df = df.sort("exec_date")
+    regime_labels = sorted_df["regime_label"].to_list()
+    exec_dates = sorted_df["exec_date"].to_list()
+
+    transition_dates: list = []
+    for i in range(1, len(regime_labels)):
+        if regime_labels[i] != regime_labels[i - 1]:
+            transition_dates.append(exec_dates[i])
+
+    if not transition_dates:
+        return {
+            "in_regime": {"n_obs": df.height, "sharpe": calculate_sharpe(df["net_fwd_return"]),
+                          "mean_return": float(df["net_fwd_return"].mean() or 0.0)},
+            "at_transition": {"n_obs": 0, "sharpe": 0.0, "mean_return": 0.0},
+            "n_detected_transitions": 0,
+        }
+
+    # Tag each trade as "at_transition" if within transition_window_days of any transition
+    from datetime import timedelta as _td
+
+    def is_near_transition(exec_dt: object) -> bool:
+        for t_date in transition_dates:
+            try:
+                if abs((exec_dt - t_date).days) <= transition_window_days:
+                    return True
+            except Exception:
+                pass
+        return False
+
+    transition_flags = [is_near_transition(d) for d in exec_dates]
+    sorted_df = sorted_df.with_columns(
+        pl.Series("at_transition", transition_flags, dtype=pl.Boolean)
+    )
+
+    in_regime = sorted_df.filter(~pl.col("at_transition"))
+    at_transition = sorted_df.filter(pl.col("at_transition"))
+
+    def _metrics(sub: pl.DataFrame) -> dict[str, object]:
+        if sub.height == 0:
+            return {"n_obs": 0, "sharpe": 0.0, "mean_return": 0.0}
+        return {
+            "n_obs": sub.height,
+            "sharpe": round(calculate_sharpe(sub["net_fwd_return"]), 4),
+            "mean_return": round(float(sub["net_fwd_return"].mean() or 0.0), 6),
+            "max_drawdown": round(calculate_max_drawdown(sub["net_fwd_return"]), 4),
+        }
+
+    return {
+        "in_regime": _metrics(in_regime),
+        "at_transition": _metrics(at_transition),
+        "n_detected_transitions": len(transition_dates),
+        "transition_window_days": transition_window_days,
+    }

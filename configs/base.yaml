@@ -79,3 +79,27 @@ backtest:
     market_impact_gamma: 0.1
   significance:
     fdr_alpha: 0.05        # False Discovery Rate
+
+# Phase 4: Real Market Data
+market_data:
+  cache_dir: "dataset/processed/market"
+  cusip_map_path: "dataset/processed/cusip_ticker_map.parquet"
+  max_tickers_per_batch: 100          # yfinance rate-limit buffer
+  request_delay_seconds: 0.5          # polite delay between batches
+  start_date: "2000-01-01"
+  adj_close_only: true                # always use split+div adjusted close
+  stale_threshold_days: 5             # data older than N trading days → stale flag
+
+# Phase 4: Execution Realism
+# (extends backtest.costs — appended separately to avoid yaml merge conflicts)
+execution:
+  fill_delay_days: 1                  # T+1 open entry (most impactful realism fix)
+  adv_participation_limit: 0.05       # max 5% of ADTV per position
+  execution_mode: "market"            # "market" | "vwap"
+  vwap_slippage_discount: 0.5         # fraction of market slippage saved via VWAP
+
+# Phase 4: Research Governance
+experiment:
+  seed: 42
+  mlflow_tracking_uri: "artifacts/mlflow"
+  mlflow_experiment_name: "andria_phase4"

@@ -7,7 +7,6 @@ from andria.core.db import DuckDBConnectionFactory, db_factory
 from andria.core.logging import get_logger
 from andria.core.schemas import ManagerDNAContract
 from andria.ingestion.registry import DatasetRegistry
-
 logger = get_logger(__name__)
 
 
@@ -54,7 +53,7 @@ class ManagerDNABuilder:
         top_n = self._cfg.features.manager_dna.top_n_concentration
 
         with self._factory.connect_parquet(edgar_path, view_name="edgar") as conn:
-            # ── Stage 1: Eligible managers (small result set) ─────────────
+            # Stage 1: Eligible managers (small result set)
             logger.info("dna_stage", stage="1/6", detail="filtering eligible managers")
             conn.execute(f"""
                 CREATE TEMP TABLE eligible_managers AS
@@ -66,7 +65,7 @@ class ManagerDNABuilder:
             n_mgr = (conn.execute("SELECT COUNT(*) FROM eligible_managers").fetchone() or (0,))[0]
             logger.info("dna_stage_done", stage="1/6", eligible_managers=n_mgr)
 
-            # ── Stage 2: Quarterly portfolios (grouped, much smaller) ────
+            # Stage 2: Quarterly portfolios (grouped, much smaller)
             logger.info("dna_stage", stage="2/6", detail="building quarterly portfolios")
             conn.execute("""
                 CREATE TEMP TABLE quarterly_portfolios AS
@@ -92,7 +91,7 @@ class ManagerDNABuilder:
             """)
             logger.info("dna_stage_done", stage="2/6")
 
-            # ── Stage 3: Quarterly manager aggregates ─────────────────────
+            # Stage 3: Quarterly manager aggregates
             logger.info("dna_stage", stage="3/6", detail="aggregating quarterly manager stats")
             conn.execute("""
                 CREATE TEMP TABLE quarterly_manager_aggs AS
@@ -111,7 +110,7 @@ class ManagerDNABuilder:
             """)
             logger.info("dna_stage_done", stage="3/6")
 
-            # ── Stage 4: HHI + top-N concentration per quarter ────────────
+            # Stage 4: HHI + top-N concentration per quarter
             logger.info("dna_stage", stage="4/6", detail="computing HHI and concentration")
             conn.execute(f"""
                 CREATE TEMP TABLE quarterly_features AS
@@ -141,7 +140,7 @@ class ManagerDNABuilder:
             conn.execute("DROP TABLE quarterly_portfolios")
             logger.info("dna_stage_done", stage="4/6")
 
-            # ── Stage 5: Position history (holding duration) ──────────────
+            # Stage 5: Position history (holding duration)
             logger.info("dna_stage", stage="5/6", detail="computing holding durations")
             conn.execute("""
                 CREATE TEMP TABLE manager_position_stats AS
@@ -159,7 +158,7 @@ class ManagerDNABuilder:
             """)
             logger.info("dna_stage_done", stage="5/6")
 
-            # ── Stage 6: Final aggregation ─────────────────────────────────
+            # Stage 6: Final aggregation
             logger.info("dna_stage", stage="6/6", detail="final manager-level aggregation")
             df = conn.execute(f"""
                 WITH joined AS (

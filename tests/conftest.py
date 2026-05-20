@@ -11,7 +11,7 @@ import pytest
 from andria.core.config import Settings
 
 
-# ── Settings fixture ──────────────────────────────────────────────────────────
+#Settings fixture
 
 @pytest.fixture(scope="session")
 def test_cfg() -> Settings:
@@ -27,7 +27,7 @@ def test_cfg() -> Settings:
     )
 
 
-# ── DuckDB in-memory fixture ──────────────────────────────────────────────────
+# DuckDB in-memory fixture
 
 @pytest.fixture
 def duckdb_conn() -> Generator[duckdb.DuckDBPyConnection, None, None]:
@@ -63,8 +63,7 @@ def mock_edgar_conn(duckdb_conn: duckdb.DuckDBPyConnection) -> duckdb.DuckDBPyCo
     return duckdb_conn
 
 
-# ── Sample DataFrames ─────────────────────────────────────────────────────────
-
+# Sample DataFrames
 @pytest.fixture
 def sample_manager_dna() -> pl.DataFrame:
     """Small synthetic Manager DNA DataFrame matching ManagerDNAContract."""

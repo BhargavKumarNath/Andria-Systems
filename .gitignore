@@ -7,6 +7,10 @@
 __pycache__/
 *.py[cod]
 .agents/
-graphify-out/
 .tmp/
 .gitignore
+graphify-out
+docs/
+.benchmarks/
+.agents/
+.ruff_cache/
