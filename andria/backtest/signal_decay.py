@@ -22,6 +22,8 @@ Usage::
 
 from __future__ import annotations
 
+from datetime import date
+
 import numpy as np
 import polars as pl
 from scipy.stats import spearmanr
@@ -104,7 +106,7 @@ class SignalDecayAnalyzer:
 
             # Exit price: exec_date + horizon trading days
             # Using precise MarketCalendar trading-day arithmetic
-            def add_td(dt: "date", h: int = horizon) -> "date":
+            def add_td(dt: date, h: int = horizon) -> date:
                 return calendar.add_trading_days(dt, h)
 
             exit_col = entry.with_columns(
