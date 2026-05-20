@@ -40,6 +40,11 @@ dependencies = [
     "dash>=2.17.0",
     "dash-bootstrap-components>=1.6.0",
     "pandas>=2.2.0",
+    # Phase 5: API, Orchestration, Telemetry
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.29.0",
+    "prefect>=2.19.0",
+    "prometheus-client>=0.20.0",
 ]
 
 [project.optional-dependencies]
@@ -51,6 +56,8 @@ dev = [
     "pytest-cov>=5.0.0",
     "psutil>=5.9.0",
     "pre-commit>=3.7.0",
+    "bandit>=1.7.8",
+    "pip-audit>=2.7.2",
 ]
 
 [project.scripts]

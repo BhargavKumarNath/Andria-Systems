@@ -1,28 +1,61 @@
-name: Andria Systems CI
+name: Andria Systems Institutional CI/CD
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ main ]
+    branches: [ "main" ]
 
 jobs:
-  test:
+  validate:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python 3.13
+
+    - name: Set up Python 3.12
       uses: actions/setup-python@v5
       with:
-        python-version: "3.13"
+        python-version: "3.12"
+        cache: 'pip'
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -e .[dev]
+
+    - name: Security Scan (Bandit)
+      run: |
+        bandit -r andria/ -ll
+
+    - name: Dependency Vulnerability Audit (pip-audit)
+      run: |
+        pip-audit
+
     - name: Lint with Ruff
       run: |
-        python -m ruff check src/ tests/ processing/
-    - name: Test with pytest
-      run: python -m pytest tests/ -v
+        ruff check andria/ tests/
+
+    - name: Static Type Checking (MyPy)
+      run: |
+        mypy andria/
+
+    - name: Run Pytest with Strict Coverage
+      run: |
+        pytest tests/ -v --cov=andria --cov-report=xml --cov-fail-under=85
+
+  deploy-to-hf-spaces:
+    needs: validate
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Push to Hugging Face Space
       env:
-        PYTHONPATH: ${{ github.workspace }}
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: |
+        git remote add space https://huggingface.co/spaces/YOUR_HF_ORG/andria-backend
+        # Pushing code securely to Hugging Face Space using the token
+        git push --force https://user:$HF_TOKEN@huggingface.co/spaces/YOUR_HF_ORG/andria-backend main
