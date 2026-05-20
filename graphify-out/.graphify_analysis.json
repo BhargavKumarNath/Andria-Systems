@@ -1,0 +1,309 @@
+{
+  "communities": {
+    "0": [
+      "models_clustering_managerclusteringengine",
+      "models_clustering_managerclusteringengine_fit_predict",
+      "models_clustering_managerclusteringengine_init",
+      "models_clustering_rationale_1",
+      "models_clustering_rationale_15",
+      "models_clustering_rationale_27",
+      "models_clustering_rationale_53",
+      "models_clustering_validate_clusters_anova",
+      "models_run_phase1_eda_generate_realistic_manager_data",
+      "models_run_phase1_eda_main",
+      "models_run_phase1_eda_rationale_1",
+      "models_run_phase1_eda_rationale_16",
+      "research_run_phase1_institutional_main",
+      "research_run_phase1_institutional_rationale_1",
+      "src_models_clustering_py",
+      "src_models_run_phase1_eda_py",
+      "src_research_run_phase1_institutional_py",
+      "tests_test_manager_features_test_anova_validation"
+    ],
+    "1": [
+      "features_signal_features_compute_smart_money_signals",
+      "features_signal_features_rationale_1",
+      "features_signal_features_rationale_13",
+      "models_regime_hmm_macroregimedetector",
+      "models_regime_hmm_macroregimedetector_fit_predict",
+      "models_regime_hmm_macroregimedetector_init",
+      "models_regime_hmm_macroregimedetector_semantic_mapping",
+      "models_regime_hmm_rationale_1",
+      "models_regime_hmm_rationale_32",
+      "models_regime_hmm_rationale_55",
+      "src_features_signal_features_py",
+      "src_models_regime_hmm_py",
+      "tests_test_dashboard_pipeline_py",
+      "tests_test_dashboard_pipeline_test_hmm_semantic_mapping",
+      "tests_test_dashboard_pipeline_test_racs_calculation"
+    ],
+    "2": [
+      "src_utils_quant_stats_py",
+      "tests_test_advanced_clustering_py",
+      "tests_test_advanced_clustering_test_bootstrap_ci",
+      "tests_test_advanced_clustering_test_clustering_sweep_memory_constraint",
+      "tests_test_advanced_clustering_test_cohens_d",
+      "tests_test_advanced_clustering_test_rigorous_validation",
+      "utils_quant_stats_cohens_d",
+      "utils_quant_stats_compute_bootstrap_ci",
+      "utils_quant_stats_rationale_1",
+      "utils_quant_stats_rationale_11",
+      "utils_quant_stats_rationale_20",
+      "utils_quant_stats_rationale_27",
+      "utils_quant_stats_rigorous_cluster_validation"
+    ],
+    "3": [
+      "data_quality_checks_check_null_rates",
+      "data_quality_checks_check_suspicious_dates",
+      "data_quality_checks_rationale_1",
+      "data_quality_checks_rationale_15",
+      "data_quality_checks_rationale_51",
+      "src_data_quality_checks_py",
+      "tests_test_quality_checks_py",
+      "tests_test_quality_checks_rationale_55",
+      "tests_test_quality_checks_sample_edgar_parquet",
+      "tests_test_quality_checks_test_check_null_rates",
+      "tests_test_quality_checks_test_check_suspicious_dates",
+      "tests_test_quality_checks_test_memory_constraint_suspicious_dates"
+    ],
+    "4": [
+      "dashboard_data_loader_dashboarddataloader",
+      "dashboard_data_loader_dashboarddataloader_init",
+      "dashboard_data_loader_dashboarddataloader_load_regime_timeseries",
+      "dashboard_data_loader_dashboarddataloader_load_system_health",
+      "dashboard_data_loader_dashboarddataloader_load_top_signals",
+      "dashboard_data_loader_rationale_1",
+      "dashboard_data_loader_rationale_14",
+      "dashboard_data_loader_rationale_23",
+      "dashboard_data_loader_rationale_35",
+      "src_dashboard_data_loader_py"
+    ],
+    "5": [
+      "features_manager_features_build_manager_features",
+      "features_manager_features_rationale_1",
+      "features_manager_features_rationale_17",
+      "src_features_manager_features_py",
+      "tests_test_manager_features_mock_db",
+      "tests_test_manager_features_py",
+      "tests_test_manager_features_rationale_12",
+      "tests_test_manager_features_test_build_manager_features",
+      "tests_test_manager_features_test_clustering_engine",
+      "tests_test_manager_features_test_memory_constraint_manager_features"
+    ],
+    "6": [
+      "models_advanced_clustering_advancedmanagerclustering",
+      "models_advanced_clustering_advancedmanagerclustering_compare_baselines",
+      "models_advanced_clustering_advancedmanagerclustering_generate_manifold",
+      "models_advanced_clustering_advancedmanagerclustering_init",
+      "models_advanced_clustering_advancedmanagerclustering_sweep_hdbscan",
+      "models_advanced_clustering_rationale_1",
+      "models_advanced_clustering_rationale_23",
+      "models_advanced_clustering_rationale_37",
+      "models_advanced_clustering_rationale_78",
+      "src_models_advanced_clustering_py"
+    ],
+    "7": [
+      "data_verify_data_summary_rationale_1",
+      "data_verify_data_summary_rationale_9",
+      "data_verify_data_summary_verify_dataset_shape",
+      "src_data_verify_data_summary_py",
+      "tests_test_quality_checks_test_verify_dataset_shape"
+    ],
+    "8": [
+      "processing_preprocess_edgar_main",
+      "processing_preprocess_edgar_py",
+      "processing_preprocess_edgar_rationale_33",
+      "processing_preprocess_edgar_validate_environment"
+    ],
+    "9": [
+      "processing_preprocess_ofr_main",
+      "processing_preprocess_ofr_py",
+      "processing_preprocess_ofr_validate_environment"
+    ],
+    "10": [
+      "processing_process_fred_main",
+      "processing_process_fred_py",
+      "processing_process_fred_validate_environment"
+    ],
+    "11": [
+      "dashboard_app_rationale_1",
+      "src_dashboard_app_py"
+    ],
+    "12": [
+      "dataset_init_py"
+    ],
+    "13": [
+      "src_init_py"
+    ],
+    "14": [
+      "src_data_init_py"
+    ],
+    "15": [
+      "tests_init_py"
+    ]
+  },
+  "cohesion": {
+    "0": 0.12,
+    "1": 0.14,
+    "2": 0.21,
+    "3": 0.2,
+    "4": 0.2,
+    "5": 0.22,
+    "6": 0.2,
+    "7": 0.4,
+    "8": 0.67,
+    "9": 1.0,
+    "10": 1.0,
+    "11": 1.0,
+    "12": 1.0,
+    "13": 1.0,
+    "14": 1.0,
+    "15": 1.0
+  },
+  "gods": [
+    {
+      "id": "models_advanced_clustering_advancedmanagerclustering",
+      "label": "AdvancedManagerClustering",
+      "degree": 7
+    },
+    {
+      "id": "models_clustering_managerclusteringengine",
+      "label": "ManagerClusteringEngine",
+      "degree": 6
+    },
+    {
+      "id": "utils_quant_stats_rigorous_cluster_validation",
+      "label": "rigorous_cluster_validation()",
+      "degree": 6
+    },
+    {
+      "id": "dashboard_data_loader_dashboarddataloader",
+      "label": "DashboardDataLoader",
+      "degree": 5
+    },
+    {
+      "id": "models_regime_hmm_macroregimedetector",
+      "label": "MacroRegimeDetector",
+      "degree": 5
+    },
+    {
+      "id": "data_quality_checks_check_suspicious_dates",
+      "label": "check_suspicious_dates()",
+      "degree": 4
+    },
+    {
+      "id": "features_manager_features_build_manager_features",
+      "label": "build_manager_features()",
+      "degree": 4
+    },
+    {
+      "id": "models_clustering_validate_clusters_anova",
+      "label": "validate_clusters_anova()",
+      "degree": 4
+    },
+    {
+      "id": "models_run_phase1_eda_generate_realistic_manager_data",
+      "label": "generate_realistic_manager_data()",
+      "degree": 4
+    },
+    {
+      "id": "models_run_phase1_eda_main",
+      "label": "main()",
+      "degree": 4
+    }
+  ],
+  "surprises": [
+    {
+      "source": "test_clustering_sweep_memory_constraint()",
+      "target": "AdvancedManagerClustering",
+      "source_files": [
+        "tests/test_advanced_clustering.py",
+        "src/models/advanced_clustering.py"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities; peripheral node `test_clustering_sweep_memory_constraint()` unexpectedly reaches hub `AdvancedManagerClustering`"
+    },
+    {
+      "source": "test_clustering_engine()",
+      "target": "ManagerClusteringEngine",
+      "source_files": [
+        "tests/test_manager_features.py",
+        "src/models/clustering.py"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities; peripheral node `test_clustering_engine()` unexpectedly reaches hub `ManagerClusteringEngine`"
+    },
+    {
+      "source": "test_hmm_semantic_mapping()",
+      "target": "MacroRegimeDetector",
+      "source_files": [
+        "tests/test_dashboard_pipeline.py",
+        "src/models/regime_hmm.py"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `test_hmm_semantic_mapping()` unexpectedly reaches hub `MacroRegimeDetector`"
+    },
+    {
+      "source": "test_rigorous_validation()",
+      "target": "rigorous_cluster_validation()",
+      "source_files": [
+        "tests/test_advanced_clustering.py",
+        "src/utils/quant_stats.py"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `test_rigorous_validation()` unexpectedly reaches hub `rigorous_cluster_validation()`"
+    },
+    {
+      "source": "test_check_suspicious_dates()",
+      "target": "check_suspicious_dates()",
+      "source_files": [
+        "tests/test_quality_checks.py",
+        "src/data/quality_checks.py"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `main()` connect `Community 0` to `Community 2`, `Community 6`?",
+      "why": "High betweenness centrality (0.131) - this node is a cross-community bridge."
+    },
+    {
+      "type": "verify_inferred",
+      "question": "Are the 2 inferred relationships involving `AdvancedManagerClustering` (e.g. with `main()` and `test_clustering_sweep_memory_constraint()`) actually correct?",
+      "why": "`AdvancedManagerClustering` has 2 INFERRED edges - model-reasoned connections that need verification."
+    },
+    {
+      "type": "verify_inferred",
+      "question": "Are the 2 inferred relationships involving `ManagerClusteringEngine` (e.g. with `main()` and `test_clustering_engine()`) actually correct?",
+      "why": "`ManagerClusteringEngine` has 2 INFERRED edges - model-reasoned connections that need verification."
+    },
+    {
+      "type": "verify_inferred",
+      "question": "Are the 2 inferred relationships involving `rigorous_cluster_validation()` (e.g. with `main()` and `test_rigorous_validation()`) actually correct?",
+      "why": "`rigorous_cluster_validation()` has 2 INFERRED edges - model-reasoned connections that need verification."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `Ensure raw data directory exists.`, `Smart Money Heatmap - Main Application. Interactive Plotly Dash BI interface us`, `Dashboard Backend Layer. Caches and serves aggregated datasets to Dash to guara` to the rest of the system?",
+      "why": "35 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Community 0` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.12 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Community 1` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.14 - nodes in this community are weakly interconnected."
+    }
+  ]
+}

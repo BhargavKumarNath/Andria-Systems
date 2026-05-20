@@ -9,10 +9,13 @@ __pycache__/
 .agents/
 .tmp/
 .gitignore
-graphify-out
-docs/
-.benchmarks/
-.agents/
-.ruff_cache/
+# graphify-out
+# docs/
+# .benchmarks/
+# .agents/
+# .ruff_cache/
 
-reports/
+# reports/
+docs/
+frontend/.next/
+frontend/node_modules/
