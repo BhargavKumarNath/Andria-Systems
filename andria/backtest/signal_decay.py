@@ -25,6 +25,8 @@ import numpy as np
 import polars as pl
 from scipy.stats import spearmanr
 from andria.core.logging import get_logger
+from andria.utils.market_calendar import MarketCalendar
+
 logger = get_logger(__name__)
 
 _DEFAULT_HORIZONS = [1, 5, 20, 60]  # trading days
@@ -83,6 +85,8 @@ class SignalDecayAnalyzer:
         if regime_conditioned and "regime_label" in signals.columns:
             regimes += signals["regime_label"].unique().to_list()
 
+        calendar = MarketCalendar()
+
         for horizon in self.horizons:
             # Compute forward return over this horizon for each signal
             signals_h = signals.sort(["cusip", "exec_date"])
@@ -96,18 +100,18 @@ class SignalDecayAnalyzer:
                 strategy="forward",
             ).rename({"close_adj": "entry_close"})
 
-            # Exit price: exec_date + horizon trading days (approximated via calendar days)
-            # For IC analysis, we use calendar days as an approximation
-            # (exact trading day exit would require per-row calendar math)
-            approx_exit_days = int(horizon * 365 / 252)  # calendar day approximation
+            # Exit price: exec_date + horizon trading days
+            # Using precise MarketCalendar trading-day arithmetic
+            def add_td(dt):
+                return calendar.add_trading_days(dt, horizon)
 
             exit_col = entry.with_columns(
-                (pl.col("exec_date").dt.offset_by(f"{approx_exit_days}d")).alias("exit_date_approx")
-            ).sort(["cusip", "exit_date_approx"])
+                pl.col("exec_date").map_elements(add_td, return_dtype=pl.Date).alias("exit_date_exact")
+            ).sort(["cusip", "exit_date_exact"])
 
             exit_joined = exit_col.join_asof(
                 pricing_sorted.rename({"close_adj": "exit_close", "date": "exit_date_actual"}),
-                left_on="exit_date_approx",
+                left_on="exit_date_exact",
                 right_on="exit_date_actual",
                 by="cusip",
                 strategy="backward",

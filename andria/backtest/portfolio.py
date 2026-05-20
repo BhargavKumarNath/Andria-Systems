@@ -73,9 +73,11 @@ class PortfolioConstructor:
 
         ledger = self._compute_raw_weights(ledger)
         ledger = self._apply_vol_targeting(ledger)
-        ledger = self._apply_position_cap(ledger)
         ledger = self._apply_sector_cap(ledger)
         ledger = self._normalize_weights(ledger)
+        # Final redistribution ensures sum(w) = 1.0 (or max possible) 
+        # and strictly enforces position caps. Do NOT normalize after this.
+        ledger = self._apply_position_cap_final(ledger)
 
         logger.info(
             "portfolio_construction_complete",
@@ -138,10 +140,56 @@ class PortfolioConstructor:
         return ledger
 
     def _apply_position_cap(self, ledger: pl.DataFrame) -> pl.DataFrame:
-        """Cap any single position at max_position_pct."""
+        """Cap any single position at max_position_pct (applied to raw_weight pre-normalization)."""
         return ledger.with_columns(
             pl.col("raw_weight").clip(upper_bound=self.max_position_pct).alias("raw_weight")
         )
+
+    def _apply_position_cap_final(self, ledger: pl.DataFrame) -> pl.DataFrame:
+        """Enforce max_position_pct on the final normalized weights via iterative redistribution.
+
+        Redistributes excess weight proportionally to uncapped positions.
+        Handles cases where all positions cap out (e.g. N * max_cap < 1.0).
+        """
+        weight_col = "portfolio_weight" if "portfolio_weight" in ledger.columns else "raw_weight"
+        weights = ledger[weight_col].to_numpy().copy()
+        cap = self.max_position_pct
+
+        if len(weights) == 0:
+            return ledger
+
+        # If mathematically impossible to be fully invested, just cap everything
+        if len(weights) * cap <= 1.0 + 1e-6:
+            weights = np.clip(weights, 0.0, cap)
+            return ledger.with_columns(pl.Series("portfolio_weight", weights))
+
+        for _ in range(100):
+            excess = 0.0
+            uncapped_sum = 0.0
+
+            for w in weights:
+                if w > cap + 1e-9:
+                    excess += (w - cap)
+                elif w < cap - 1e-9:
+                    uncapped_sum += w
+
+            if excess <= 1e-9:
+                break
+
+            if uncapped_sum <= 1e-9:
+                weights = np.clip(weights, 0.0, cap)
+                break
+
+            redist_factor = 1.0 + (excess / uncapped_sum)
+            for i in range(len(weights)):
+                if weights[i] > cap + 1e-9:
+                    weights[i] = cap
+                elif weights[i] < cap - 1e-9:
+                    weights[i] *= redist_factor
+
+        # Final exact clip to prevent any floating point spillage
+        weights = np.clip(weights, 0.0, cap)
+        return ledger.with_columns(pl.Series("portfolio_weight", weights))
 
     def _apply_sector_cap(self, ledger: pl.DataFrame) -> pl.DataFrame:
         """Cap sector concentration at max_sector_pct.

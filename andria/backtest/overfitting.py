@@ -83,29 +83,59 @@ class ProbabilityOfBacktestOverfitting:
             logger.warning("pbo_insufficient_data", n=n, partitions=k)
             return float("nan")
 
-        # Partition returns into k sub-matrices
-        partitions = [returns[i * size: (i + 1) * size] for i in range(k)]
+        # Bailey's CSCV requires a matrix of configurations (T x M)
+        # We simulate M=21 alternative configurations to rank against
+        M = 21
+        rng = np.random.default_rng(42)  # fixed seed for deterministic reproducibility
+        
+        # Build T x M matrix of returns
+        config_returns = np.zeros((n, M))
+        config_returns[:, 0] = returns  # configuration 0 is the actual strategy
+        for i in range(1, M):
+            config_returns[:, i] = rng.permutation(returns)
+
+        # Partition returns into k sub-matrices (size x M)
+        partitions = [config_returns[i * size: (i + 1) * size, :] for i in range(k)]
 
         half = k // 2
-        is_combination = list(combinations(range(k), half))
-        all_indices = list(range(k))
+        is_combinations = list(combinations(range(k), half))
+        all_indices = set(range(k))
 
         oos_sharpes_below_median: int = 0
         total_combinations: int = 0
 
-        for is_idx in is_combination:
-            oos_idx = [i for i in all_indices if i not in is_idx]
+        for is_idx in is_combinations:
+            oos_idx = list(all_indices - set(is_idx))
 
-            is_returns = np.concatenate([partitions[i] for i in is_idx])
-            oos_returns = np.concatenate([partitions[i] for i in oos_idx])
+            is_matrix = np.concatenate([partitions[i] for i in is_idx], axis=0)
+            oos_matrix = np.concatenate([partitions[i] for i in oos_idx], axis=0)
 
-            is_sharpe = float(calculate_sharpe(pl.Series(is_returns)))
-            oos_sharpe = float(calculate_sharpe(pl.Series(oos_returns)))
+            # Calculate IS Sharpe for all M configurations
+            is_mean = np.mean(is_matrix, axis=0)
+            is_std = np.std(is_matrix, axis=0)
+            is_std[is_std == 0] = 1e-9
+            is_sharpe = is_mean / is_std
+            
+            # Identify optimal IS configuration
+            n_star = int(np.argmax(is_sharpe))
 
-            # Check if strategy selected (best IS) underperforms OOS median
-            # Simplified: check if OOS Sharpe < 0 (benchmark is zero)
-            if oos_sharpe < 0:
+            # Calculate OOS Sharpe for all M configurations
+            oos_mean = np.mean(oos_matrix, axis=0)
+            oos_std = np.std(oos_matrix, axis=0)
+            oos_std[oos_std == 0] = 1e-9
+            oos_sharpe = oos_mean / oos_std
+
+            # Find relative rank of n_star in OOS
+            n_star_oos_sharpe = oos_sharpe[n_star]
+            
+            # Rank: how many configurations have OOS Sharpe <= n_star OOS Sharpe
+            # If rank / M < 0.5, it is below median
+            rank = np.sum(oos_sharpe <= n_star_oos_sharpe)
+            omega_c = rank / M
+            
+            if omega_c < 0.5:
                 oos_sharpes_below_median += 1
+            
             total_combinations += 1
 
         pbo = oos_sharpes_below_median / total_combinations if total_combinations > 0 else float("nan")
@@ -188,7 +218,7 @@ class DeflatedSharpeRatio:
 
         # Deflated Sharpe Ratio = observed / benchmark
         dsr = sr_obs / sr_benchmark if sr_benchmark > 0 else float("nan")
-        is_significant = dsr > 1.0 if not math.isnan(dsr) else False
+        is_significant = bool(dsr > 1.0) if not math.isnan(dsr) else False
 
         result = {
             "sharpe_observed": round(sr_obs, 4),

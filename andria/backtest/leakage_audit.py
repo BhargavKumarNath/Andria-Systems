@@ -26,7 +26,7 @@ Usage::
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, timedelta
 
 import polars as pl
 
@@ -170,7 +170,7 @@ def check_overlapping_labels(
             overlap_count += 1
 
         prev_cusip = cusip
-        prev_exit = exit_dt
+        prev_exit = exec_dt + timedelta(days=holding_period_days)  # BUG FIX: was exec_dt, must add holding period
 
     if overlap_count > 0:
         return AuditFinding(

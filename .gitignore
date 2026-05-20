@@ -14,3 +14,5 @@ docs/
 .benchmarks/
 .agents/
 .ruff_cache/
+
+reports/
