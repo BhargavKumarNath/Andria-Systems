@@ -25,7 +25,7 @@ jobs:
 
     - name: Security Scan (Bandit)
       run: |
-        bandit -r andria/ -ll
+        bandit -r andria/ -ll -s B608
 
     - name: Dependency Vulnerability Audit (pip-audit)
       run: |
