@@ -50,7 +50,7 @@ class RiskFactorModel:
                 )[0]
         except Exception as e:
             logger.error("fama_french_download_failed", error=str(e))
-            raise RuntimeError(f"Failed to download Fama-French data: {e}")
+            raise RuntimeError(f"Failed to download Fama-French data: {e}") from e
 
         # Combine
         ff_combined = ff5.join(mom, how='inner')

@@ -29,7 +29,7 @@ app = FastAPI(
 security = HTTPBearer()
 registry = ArtifactRegistry()
 
-def verify_hf_token(credentials: HTTPAuthorizationCredentials = Depends(security)) -> str:
+def verify_hf_token(credentials: HTTPAuthorizationCredentials = Depends(security)) -> str:  # noqa: B008
     """Secure endpoint using the HF_TOKEN environment variable."""
     expected_token = os.environ.get("HF_TOKEN")
     if not expected_token:
