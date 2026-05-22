@@ -24,7 +24,7 @@ RUN chown -R user:user /app
 # Switch to the non-root user
 USER user
 
-EXPOSE 8050
+EXPOSE 7860
 
 # Execute uvicorn server directly instead of gunicorn
-CMD ["uvicorn", "andria.api.main:app", "--host", "0.0.0.0", "--port", "8050"]
+CMD ["uvicorn", "andria.api.main:app", "--host", "0.0.0.0", "--port", "7860"]
