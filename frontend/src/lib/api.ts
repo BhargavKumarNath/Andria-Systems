@@ -1,6 +1,7 @@
 import "server-only";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL || "http://127.0.0.1:7860";
+// Hardcoded HF space URL to guarantee connection if Vercel env vars are missing
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL || "https://bhargav12321-andria-backend.hf.space";
 
 export async function fetchFromBackend(endpoint: string) {
   const token = process.env.HF_TOKEN;
