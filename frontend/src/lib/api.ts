@@ -1,6 +1,6 @@
 import "server-only";
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://127.0.0.1:8050";
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL || "http://127.0.0.1:7860";
 
 export async function fetchFromBackend(endpoint: string) {
   const token = process.env.HF_TOKEN;
