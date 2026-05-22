@@ -56,6 +56,14 @@ jobs:
       env:
         HF_TOKEN: ${{ secrets.HF_TOKEN }}
       run: |
-        git remote add space https://huggingface.co/spaces/Bhargav12321/andria-backend
-        # Pushing code securely to Hugging Face Space using the token
-        git push --force https://user:$HF_TOKEN@huggingface.co/spaces/Bhargav12321/andria-backend main
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        
+        # We need to wipe the binaries from the git index to ensure they aren't pushed
+        git rm -r --cached artifacts/ reports/ || true
+        
+        # Create a completely fresh git history (orphan branch) to drop the old binary commits
+        git checkout --orphan hf-deploy
+        git add .
+        git commit -m "Deploying to Hugging Face Spaces"
+        git push --force https://user:$HF_TOKEN@huggingface.co/spaces/Bhargav12321/andria-backend hf-deploy:main
