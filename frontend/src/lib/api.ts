@@ -5,23 +5,35 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL |
 export async function fetchFromBackend(endpoint: string) {
   const token = process.env.HF_TOKEN;
   if (!token) {
-    throw new Error("HF_TOKEN environment variable is not set. Secure backend access is blocked.");
+    throw new Error("HF_TOKEN environment variable is not set on Vercel.");
   }
 
-  const res = await fetch(`${BACKEND_URL}${endpoint}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    // Next.js data revalidation: revalidate every 60 seconds
-    next: { revalidate: 60 },
-  });
+  // Clean the base URL to prevent double-slashes
+  const baseUrl = BACKEND_URL.replace(/\/$/, "");
+  const targetUrl = `${baseUrl}${endpoint}`;
 
-  if (!res.ok) {
-    throw new Error(`Failed to fetch ${endpoint}: ${res.statusText}`);
+  console.log(`[Vercel] Fetching from backend: ${targetUrl}`);
+
+  try {
+    const res = await fetch(targetUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      next: { revalidate: 0 }, // Disable cache temporarily for debugging
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error(`[Vercel] API Error (${res.status}):`, errText);
+      throw new Error(`API Error ${res.status}: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error(`[Vercel] Network/Fetch Error targeting ${targetUrl}:`, error);
+    throw error;
   }
-
-  return res.json();
 }
 
 export async function getSignals() {
