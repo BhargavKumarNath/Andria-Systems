@@ -16,7 +16,6 @@ RUN pip install --no-cache-dir . uvicorn
 
 # Copy application source code
 COPY andria/ ./andria/
-COPY artifacts/ ./artifacts/
 COPY configs/ ./configs/
 
 # Give ownership to the non-root user
