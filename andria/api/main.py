@@ -65,6 +65,15 @@ def get_latest_published_run() -> dict[str, Any]:
     }
 
 
+@app.get("/")
+def read_root() -> dict[str, str]:
+    return {
+        "status": "online", 
+        "system": "Andria Systems Quant Engine API",
+        "docs": "Navigate to /docs for Swagger UI"
+    }
+
+
 @app.get("/health")
 def health_check() -> dict[str, str]:
     return {"status": "ok"}
