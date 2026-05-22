@@ -70,16 +70,16 @@ def run_pipeline() -> None:
     manifest = registry.start_run()
     
     try:
-        # 1. Ingestion
+        # Ingestion
         ingest_meta = ingest_data()
         
-        # 2. Manager DNA & Clustering
+        # Manager DNA & Clustering
         dna_meta = extract_manager_dna(ingest_meta)
         
-        # 3. Signal Generation
+        # Signal Generation
         generate_signals(dna_meta)
         
-        # 4. Evaluation Gate
+        # Evaluation Gate
         passed = validate_run(
             registry=registry,
             run_id=manifest.run_id,
