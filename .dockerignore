@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+env/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# Environment secrets — NEVER bake into image
+.env
+.env.local
+.env.*.local
+
+# Development artifacts
+.agents/
+graphify-out/
+.tmp/
+tmp/
+.idea/
+.vscode/
+
+# Frontend build artifacts
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
+# Data and model artifacts (mounted at runtime or pre-built)
+dataset/
+artifacts/
+reports/
+data/
+
+# Git history not needed in image
+.git/
+.github/
+
+# Docs
+docs/
+
+# Test infrastructure not needed in production image
+tests/
+notebooks/

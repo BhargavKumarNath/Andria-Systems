@@ -1,84 +1,177 @@
-"""
-Export Static Artifacts Pipeline
+"""Export static JSON artifacts for the Next.js frontend.
 
-This script exports precomputed JSON artifacts for the purely static frontend deployment.
-It extracts data from the local Parquet/DuckDB outputs (or generates structural representations)
-and saves them to `frontend/public/data/` for zero-latency, zero-cost client-side loading.
+Reads from the latest pipeline artifacts (Parquet files in ``artifacts/``) and
+writes summarised JSON to ``frontend/public/data/``. The frontend loads these
+files at build/request time — no backend API call required.
+
+Run this after completing ``andria run phase2`` to refresh the frontend data.
+
+Usage::
+    python export_static_artifacts.py
 """
+
+from __future__ import annotations
 
 import json
 import os
-from datetime import datetime
+import sys
+from datetime import UTC, datetime
+from pathlib import Path
 
-def export_static_artifacts():
-    output_dir = os.path.join(os.path.dirname(__file__), "frontend", "public", "data")
-    os.makedirs(output_dir, exist_ok=True)
-    
-    print(f"Exporting static artifacts to {output_dir}...")
-    
-    # In a real run, this would query the local DuckDB database or read Parquet files.
-    
-    # 1. Signals Export (Top 500 signals aggregated)
-    signals_data = {
-        "run_id": "STC-2026-05",
-        "provenance_quality": 0.985,
-        "validation_passed": True,
-        "signals": [
-            {"ticker": "AAPL", "conviction_score": 0.89, "target_weight": 0.052},
-            {"ticker": "MSFT", "conviction_score": 0.85, "target_weight": 0.048},
-            {"ticker": "NVDA", "conviction_score": 0.92, "target_weight": 0.061},
-            {"ticker": "AMZN", "conviction_score": 0.78, "target_weight": 0.035},
-            {"ticker": "META", "conviction_score": 0.81, "target_weight": 0.041},
-        ]
-    }
-    
-    with open(os.path.join(output_dir, "signals.json"), "w") as f:
-        json.dump(signals_data, f, indent=2)
-    print("OK - Exported signals.json")
+PROJECT_ROOT = Path(__file__).parent
+ARTIFACTS = PROJECT_ROOT / "artifacts"
+OUT_DIR = PROJECT_ROOT / "frontend" / "public" / "data"
 
-    # 2. Regimes Export
-    regimes_data = {
-        "regime": {
-            "current_regime": "Late Cycle / Expansion",
-            "transition_probability": 0.12,
-            "hmm_state_id": 2
+_PLACEHOLDER_NOTE = "Run 'andria run phase2' to populate real data."
+
+
+def _read_parquet_safe(path: Path) -> object | None:
+    if not path.exists():
+        return None
+    try:
+        import polars as pl
+        return pl.read_parquet(path)
+    except Exception as exc:
+        print(f"  [WARN] Could not read {path.name}: {exc}")
+        return None
+
+
+def _latest_run_file(subdir: str, filename: str) -> Path | None:
+    runs = ARTIFACTS / "runs"
+    if not runs.exists():
+        return None
+    dirs = sorted(runs.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True)
+    for d in dirs:
+        p = d / subdir / filename
+        if p.exists():
+            return p
+    return None
+
+
+def export_signals() -> None:
+    path = _latest_run_file("signals", "racs_signals.parquet") or (ARTIFACTS / "signals" / "racs_signals.parquet")
+    df = _read_parquet_safe(path) if path else None
+
+    if df is not None:
+        import polars as pl
+        assert isinstance(df, pl.DataFrame)
+        cols = [c for c in ["cusip", "racs_final", "regime_label", "regime_adjusted_racs", "crowding_penalty"] if c in df.columns]
+        top = df.sort("racs_final", descending=True).head(500).select(cols) if "racs_final" in df.columns else df.head(500).select(cols)
+        signals_list = top.to_dicts()
+        data: dict = {
+            "generated_at": datetime.now(UTC).isoformat(),
+            "total_signals": df.height,
+            "note": None,
+            "signals": signals_list,
         }
-    }
-    
-    with open(os.path.join(output_dir, "regimes.json"), "w") as f:
-        json.dump(regimes_data, f, indent=2)
-    print("OK - Exported regimes.json")
-
-    # 3. Portfolio Export
-    portfolio_data = {
-        "run_id": "STC-2026-05",
-        "experiment_timestamp": datetime.utcnow().isoformat() + "Z",
-        "portfolio": {
-            "gross_exposure": 1.95,
-            "net_exposure": 0.05,
-            "estimated_turnover": 0.85,
-            "cash_drag": 0.02
+    else:
+        data = {
+            "generated_at": datetime.now(UTC).isoformat(),
+            "total_signals": 0,
+            "note": _PLACEHOLDER_NOTE,
+            "signals": [],
         }
+
+    _write(OUT_DIR / "signals.json", data)
+    print("  OK  signals.json")
+
+
+def export_regimes() -> None:
+    path = _latest_run_file("regime", "regime_timeseries.parquet") or (ARTIFACTS / "regime" / "regime_timeseries.parquet")
+    df = _read_parquet_safe(path) if path else None
+
+    if df is not None:
+        import polars as pl
+        assert isinstance(df, pl.DataFrame)
+        latest = df.sort("date", descending=True).head(1).to_dicts()
+        regime_dist = (
+            df.group_by("regime_label").len()
+            .sort("len", descending=True)
+            .to_dicts()
+        ) if "regime_label" in df.columns else []
+        data: dict = {
+            "generated_at": datetime.now(UTC).isoformat(),
+            "total_observations": df.height,
+            "note": None,
+            "current": latest[0] if latest else {},
+            "distribution": regime_dist,
+        }
+    else:
+        data = {
+            "generated_at": datetime.now(UTC).isoformat(),
+            "total_observations": 0,
+            "note": _PLACEHOLDER_NOTE,
+            "current": {},
+            "distribution": [],
+        }
+
+    _write(OUT_DIR / "regimes.json", data)
+    print("  OK  regimes.json")
+
+
+def export_clusters() -> None:
+    path = _latest_run_file("clusters", "clustered_managers.parquet") or (ARTIFACTS / "clusters" / "clustered_managers.parquet")
+    df = _read_parquet_safe(path) if path else None
+
+    if df is not None:
+        import polars as pl
+        assert isinstance(df, pl.DataFrame)
+        if "archetype_label" in df.columns:
+            counts = df.group_by("archetype_label").len().sort("len", descending=True).to_dicts()
+        else:
+            counts = []
+        umap_cols = [c for c in ["umap_1", "umap_2", "archetype_label", "cluster_id"] if c in df.columns]
+        # Downsample UMAP points to 2000 max for browser rendering
+        sample = df.select(umap_cols).sample(min(2000, df.height), seed=42).to_dicts() if umap_cols else []
+        data: dict = {
+            "generated_at": datetime.now(UTC).isoformat(),
+            "total_managers": df.height,
+            "note": None,
+            "archetypes": counts,
+            "umap_sample": sample,
+        }
+    else:
+        data = {
+            "generated_at": datetime.now(UTC).isoformat(),
+            "total_managers": 0,
+            "note": _PLACEHOLDER_NOTE,
+            "archetypes": [],
+            "umap_sample": [],
+        }
+
+    _write(OUT_DIR / "clusters.json", data)
+    print("  OK  clusters.json")
+
+
+def export_portfolio() -> None:
+    # Portfolio metrics live in the backtest ledger — surface high-level stats
+    data: dict = {
+        "generated_at": datetime.now(UTC).isoformat(),
+        "note": _PLACEHOLDER_NOTE,
+        "portfolio": {},
     }
-    
-    with open(os.path.join(output_dir, "portfolio.json"), "w") as f:
-        json.dump(portfolio_data, f, indent=2)
-    print("OK - Exported portfolio.json")
-    
-    # 4. Clusters / Archetypes Export (Downsampled for browser rendering)
-    clusters_data = {
-        "archetypes": [
-            {"id": 1, "label": "High Conviction Tech", "size": 1500},
-            {"id": 2, "label": "Value & Yield", "size": 2100},
-            {"id": 3, "label": "Macro Agnostic", "size": 1400}
-        ]
-    }
-    
-    with open(os.path.join(output_dir, "clusters.json"), "w") as f:
-        json.dump(clusters_data, f, indent=2)
-    print("OK - Exported clusters.json")
-    
-    print("\nExport complete! The frontend is now ready for static deployment.")
+    _write(OUT_DIR / "portfolio.json", data)
+    print("  OK  portfolio.json (placeholder — run backtest engine to populate)")
+
+
+def _write(path: Path, data: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, indent=2, default=str), encoding="utf-8")
+
+
+def main() -> None:
+    print(f"Exporting static artifacts → {OUT_DIR}")
+    if not ARTIFACTS.exists():
+        print(f"  [WARN] Artifacts directory not found at {ARTIFACTS}.")
+        print("         Pipeline has not been run yet. Writing placeholder files.")
+
+    export_signals()
+    export_regimes()
+    export_clusters()
+    export_portfolio()
+
+    print("\nExport complete.")
+
 
 if __name__ == "__main__":
-    export_static_artifacts()
+    main()

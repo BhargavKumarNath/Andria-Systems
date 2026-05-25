@@ -20,10 +20,10 @@ frontend/build/
 npm-debug.log*
 
 # Data & Databases
-data/
-dataset/
-artifacts/
-reports/
+/data/
+/dataset/
+/artifacts/
+/reports/
 *.parquet
 *.duckdb
 *.csv
@@ -53,4 +53,3 @@ Thumbs.db
 # Temporary files
 .tmp/
 tmp/
-docs/

@@ -60,7 +60,30 @@ def set_global_seed(seed: int) -> None:
 
 # Git provenance
 def _get_git_commit() -> str:
-    """Return current HEAD commit hash, or 'unknown' if not in a git repo."""
+    """Return the source commit SHA.
+
+    Resolution order:
+    1. ``GIT_SHA`` environment variable (set in CI/CD and embedded in .git_sha)
+    2. ``.git_sha`` file written by the deployment workflow before orphan branch creation
+    3. Live ``git rev-parse`` (works in local development)
+    4. Falls back to ``"unknown"`` if none of the above succeed.
+    """
+    import os
+
+    # Env var set by CI before the orphan branch wipes git history
+    env_sha = os.environ.get("GIT_SHA", "").strip()
+    if env_sha:
+        return env_sha
+
+    # File embedded during deployment workflow
+    sha_file = Path(__file__).parents[2] / ".git_sha"
+    if sha_file.exists():
+        content = sha_file.read_text().strip()
+        if content.startswith("GIT_SHA="):
+            return content.split("=", 1)[1].strip()
+        return content
+
+    # Live git (local development)
     try:
         result = subprocess.run(
             ["git", "rev-parse", "--short", "HEAD"],

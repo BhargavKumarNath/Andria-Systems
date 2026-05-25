@@ -27,11 +27,14 @@ from dataclasses import dataclass
 
 import numpy as np
 import polars as pl
+from rich.console import Console
+from rich.table import Table
 
 from andria.backtest.diagnostics import calculate_sharpe
 from andria.core.logging import get_logger
 
 logger = get_logger(__name__)
+_console = Console()
 
 
 @dataclass
@@ -217,13 +220,24 @@ class MonteCarloTester:
 
     @staticmethod
     def print_summary(results: list[MonteCarloResult]) -> None:
-        """Print a formatted summary of all Monte Carlo results."""
-        print(f"\n{'Test':<30} {'Observed':>10} {'5th%':>8} {'Median':>8} {'95th%':>8} {'p-value':>9} {'Sig?':>5}")
-        print("-" * 82)
+        """Display a formatted summary of all Monte Carlo results."""
+        table = Table(title="Monte Carlo Robustness Tests", show_lines=False)
+        table.add_column("Test", no_wrap=True)
+        table.add_column("Observed", justify="right")
+        table.add_column("5th%", justify="right")
+        table.add_column("Median", justify="right")
+        table.add_column("95th%", justify="right")
+        table.add_column("p-value", justify="right")
+        table.add_column("Sig?", justify="center")
         for r in results:
-            sig = "✓" if r.is_significant else "✗"
-            print(
-                f"{r.test_name:<30} {r.observed_sharpe:>10.4f} "
-                f"{r.sharpe_5pct:>8.4f} {r.sharpe_50pct:>8.4f} {r.sharpe_95pct:>8.4f} "
-                f"{r.p_value:>9.4f} {sig:>5}"
+            sig = "[green]✓[/green]" if r.is_significant else "[red]✗[/red]"
+            table.add_row(
+                r.test_name,
+                f"{r.observed_sharpe:.4f}",
+                f"{r.sharpe_5pct:.4f}",
+                f"{r.sharpe_50pct:.4f}",
+                f"{r.sharpe_95pct:.4f}",
+                f"{r.p_value:.4f}",
+                sig,
             )
+        _console.print(table)

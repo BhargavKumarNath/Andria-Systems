@@ -12,6 +12,7 @@ Each pipeline run produces:
 from __future__ import annotations
 
 import json
+import shutil
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
@@ -138,7 +139,7 @@ class PipelineOrchestrator:
                 latest = self._cfg.paths.artifacts / "features"
                 latest.mkdir(parents=True, exist_ok=True)
                 (latest / "manager_dna.parquet").unlink(missing_ok=True)
-                import shutil
+
                 shutil.copy(out_path, latest / "manager_dna.parquet")
                 
                 progress.update(p1, advance=10, description="[magenta]Running HDBSCAN clustering...")
@@ -198,7 +199,7 @@ class PipelineOrchestrator:
                 regime_df.write_parquet(regime_path)
                 regime_latest = self._cfg.paths.artifacts / "regime"
                 regime_latest.mkdir(parents=True, exist_ok=True)
-                import shutil
+
                 shutil.copy(regime_path, regime_latest / "regime_timeseries.parquet")
 
                 # Step 2: Compute regime-conditioned RACS signals

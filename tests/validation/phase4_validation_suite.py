@@ -346,29 +346,16 @@ class TestLeakageAudit:
         assert finding.severity == "WARNING"
 
     def test_overlapping_labels_detected(self):
-        """
-        KNOWN BUG IN SOURCE (check_overlapping_labels): The overlap check sets
-        exit_dt = exec_dt (line 167) instead of exec_dt + timedelta(holding_period_days),
-        which means it can never detect overlapping positions — exit always equals entry.
-        This test DOCUMENTS the bug rather than asserting correct behaviour.
-
-        Correct fix required: exit_dt = exec_dt + timedelta(days=holding_period_days)
-        """
+        """Two AAPL positions with 46-day gap and 90-day hold must be flagged as overlapping."""
         signals = pl.DataFrame({
             "cusip": ["AAPL", "AAPL"],
             "exec_date": pl.Series([date(2023, 5, 15), date(2023, 7, 1)], dtype=pl.Date),
         })
         finding = check_overlapping_labels(signals, holding_period_days=90)
-        # BUG: returns None because exit_dt is set to exec_dt not exec_dt + 90 days.
-        # These two AAPL positions clearly overlap (46-day gap, 90-day hold).
-        # The check incorrectly returns None — this IS the bug.
-        # We document this as a KNOWN_FAILURE:
-        if finding is None:
-            pytest.xfail(
-                "BUG IN check_overlapping_labels (leakage_audit.py:167): "
-                "exit_dt = exec_dt instead of exec_dt + timedelta(holding_period_days). "
-                "Overlapping position detection is broken — always returns None."
-            )
+        assert finding is not None, (
+            "check_overlapping_labels should detect these overlapping positions: "
+            "46-day gap with 90-day hold period means exit_1=2023-08-13 > entry_2=2023-07-01"
+        )
         assert finding.severity == "WARNING"
 
     def test_regime_leakage_beyond_max_date(self):
@@ -731,26 +718,15 @@ class TestOverfittingDiagnostics:
         assert required_keys.issubset(set(result.keys())), f"Missing keys: {required_keys - set(result.keys())}"
 
     def test_dsr_is_significant_is_boolean(self):
-        """
-        KNOWN BUG: dsr.compute() returns np.bool_ (numpy boolean) for is_significant,
-        not Python native bool. isinstance(np.False_, bool) == False in Python 3.x.
-        The DeflatedSharpeRatio code uses `dsr > 1.0 if not math.isnan(dsr) else False`
-        which produces a numpy bool, not a Python bool.
-        This test documents the type inconsistency.
-        """
+        """is_significant must be a Python native bool, not numpy.bool_."""
         ledger = _make_synthetic_ledger(n=100, seed=42)
         dsr_calc = DeflatedSharpeRatio(n_trials=10)
         result = dsr_calc.compute(ledger)
         sig = result["is_significant"]
-        # Document that this is a numpy bool, not Python bool
-        is_native_bool = type(sig) is bool
-        hasattr(sig, '__class__') and 'numpy' in str(type(sig))
-        if not is_native_bool:
-            pytest.xfail(
-                "BUG IN DeflatedSharpeRatio.compute(): is_significant returns "
-                f"{type(sig)} (numpy bool) instead of Python native bool. "
-                "Fix: cast result with bool() before returning."
-            )
+        assert type(sig) is bool, (  # noqa: E721 – intentional strict type check
+            f"is_significant must be Python bool, got {type(sig)}. "
+            "Ensure DeflatedSharpeRatio.compute() wraps the result with bool()."
+        )
         assert isinstance(sig, bool)
 
 

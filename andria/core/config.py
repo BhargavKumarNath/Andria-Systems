@@ -13,11 +13,12 @@ Usage:
 from __future__ import annotations
 
 import uuid
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 import yaml
-from pydantic import BaseModel, Field, computed_field, model_validator
+from pydantic import BaseModel, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 PROJECT_ROOT = Path(__file__).parents[2]
@@ -202,11 +203,9 @@ class Settings(BaseSettings):
     execution: ExecutionConfig = ExecutionConfig()
     experiment: ExperimentConfig = ExperimentConfig()
 
-    @computed_field  # type: ignore[misc]
-    @property
-    def run_id(self) -> str:
-        """Short unique ID for this settings instance — used for artifact naming."""
-        return str(uuid.uuid4())[:8]
+    run_id: str = Field(
+        default_factory=lambda: datetime.now(UTC).strftime("%Y%m%dT%H%M%S") + "_" + uuid.uuid4().hex[:6]
+    )
 
     @classmethod
     def from_yaml(cls, path: Path | None = None) -> Settings:

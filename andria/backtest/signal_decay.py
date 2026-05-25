@@ -26,7 +26,11 @@ from datetime import date
 
 import numpy as np
 import polars as pl
+from rich.console import Console
+from rich.table import Table
 from scipy.stats import spearmanr
+
+_console = Console()
 
 from andria.core.logging import get_logger
 from andria.utils.market_calendar import MarketCalendar
@@ -182,12 +186,20 @@ class SignalDecayAnalyzer:
 
     @staticmethod
     def print_summary(decay_df: pl.DataFrame) -> None:
-        """Print a formatted IC decay table."""
+        """Display a formatted IC decay table."""
         all_data = decay_df.filter(pl.col("regime") == "All").sort("horizon_days")
-        print(f"\n{'Horizon':>10} {'IC':>10} {'IC t-stat':>12} {'p-value':>10} {'N':>8}")
-        print("-" * 55)
+        table = Table(title="Signal Decay — IC by Horizon (All Regimes)", show_lines=False)
+        table.add_column("Horizon", justify="right")
+        table.add_column("IC", justify="right")
+        table.add_column("IC t-stat", justify="right")
+        table.add_column("p-value", justify="right")
+        table.add_column("N", justify="right")
         for row in all_data.iter_rows(named=True):
-            print(
-                f"{row['horizon_days']:>8}d  {row['ic']:>10.5f}  "
-                f"{row['ic_tstat']:>10.3f}  {row['ic_pvalue']:>10.4f}  {row['n_obs']:>8}"
+            table.add_row(
+                f"{row['horizon_days']}d",
+                f"{row['ic']:.5f}",
+                f"{row['ic_tstat']:.3f}",
+                f"{row['ic_pvalue']:.4f}",
+                str(row["n_obs"]),
             )
+        _console.print(table)

@@ -26,11 +26,13 @@ from __future__ import annotations
 
 import numpy as np
 import polars as pl
+from rich.console import Console
 from scipy.stats import ks_2samp, spearmanr
 
 from andria.core.logging import get_logger
 
 logger = get_logger(__name__)
+_console = Console()
 
 # PSI thresholds (industry standard)
 PSI_GREEN = 0.10   # stable
@@ -239,13 +241,18 @@ class DriftMonitor:
 
     @staticmethod
     def print_psi_report(report: dict[str, object]) -> None:
-        """Print PSI results with colour-coded status."""
-        status = report.get("overall_status", "unknown")
-        icons = {"stable": "✓", "warning": "⚠", "degraded": "✗", "unknown": "?"}
-        icon = icons.get(str(status), "?")
-        print(f"\n{icon} PSI Report — Status: {status.upper()} (reference: {report.get('reference_period')})")
-        print(f"  Max PSI: {report.get('max_psi', 'n/a')} (green <{PSI_GREEN}, yellow <{PSI_YELLOW})")
+        """Display PSI results with colour-coded status."""
+        status = str(report.get("overall_status", "unknown"))
+        colour = {"stable": "green", "warning": "yellow", "degraded": "red"}.get(status, "white")
+        _console.print(
+            f"\n[{colour}]PSI Report — Status: {status.upper()}[/{colour}]"
+            f"  (reference: {report.get('reference_period')})"
+        )
+        _console.print(
+            f"  Max PSI: {report.get('max_psi', 'n/a')} "
+            f"(green <{PSI_GREEN}, yellow <{PSI_YELLOW})"
+        )
         by_period = report.get("psi_by_period", {})
         for period, psi in sorted(by_period.items()):  # type: ignore[union-attr]
             bar = "■" * min(int(float(psi) * 40), 40)
-            print(f"  {period}: {float(psi):.4f} {bar}")
+            _console.print(f"  {period}: {float(psi):.4f} {bar}")

@@ -26,7 +26,7 @@ Usage::
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import date, timedelta
+from datetime import date, datetime as _datetime, timedelta
 
 import polars as pl
 
@@ -161,8 +161,7 @@ def check_overlapping_labels(
         cusip = row["cusip"]
         exec_dt = row["exec_date"]
         if isinstance(exec_dt, str):
-            from datetime import datetime as _dt
-            exec_dt = _dt.fromisoformat(exec_dt).date()
+            exec_dt = _datetime.fromisoformat(exec_dt).date()
 
 
         if cusip == prev_cusip and prev_exit is not None and exec_dt < prev_exit:

@@ -18,6 +18,10 @@ from dataclasses import dataclass
 
 import numpy as np
 import polars as pl
+from rich.console import Console
+from rich.table import Table
+
+_console = Console()
 
 from andria.backtest.diagnostics import calculate_max_drawdown, calculate_sharpe
 from andria.core.logging import get_logger
@@ -145,27 +149,41 @@ class WalkForwardValidator:
 
     @staticmethod
     def print_summary(results: list[FoldResult]) -> None:
-        """Print a human-readable summary of fold results."""
+        """Display a human-readable summary of fold results."""
         if not results:
-            print("No walk-forward folds completed.")
+            _console.print("[yellow]No walk-forward folds completed.[/yellow]")
             return
 
         sharpes = [r.sharpe for r in results]
-        print(f"\n{'Fold':<6} {'Train':^12} {'Test':^12} {'N':>6} {'Sharpe':>8} {'Mean Ret':>10} {'Hit%':>7}")
-        print("-" * 65)
+        table = Table(title="Walk-Forward Validation Summary", show_lines=False)
+        table.add_column("Fold", justify="right")
+        table.add_column("Train")
+        table.add_column("Test")
+        table.add_column("N", justify="right")
+        table.add_column("Sharpe", justify="right")
+        table.add_column("Mean Ret", justify="right")
+        table.add_column("Hit%", justify="right")
         for r in results:
-            print(
-                f"{r.fold:<6} {r.train_start}-{r.train_end:^12} {r.test_start}-{r.test_end:^12} "
-                f"{r.n_trades:>6} {r.sharpe:>8.3f} {r.mean_return:>10.4f} {r.hit_rate:>6.1%}"
+            table.add_row(
+                str(r.fold),
+                f"{r.train_start}–{r.train_end}",
+                f"{r.test_start}–{r.test_end}",
+                str(r.n_trades),
+                f"{r.sharpe:.3f}",
+                f"{r.mean_return:.4f}",
+                f"{r.hit_rate:.1%}",
             )
-        print("-" * 65)
-        print(f"  Sharpe across folds: mean={np.mean(sharpes):.3f}, "
-              f"std={np.std(sharpes):.3f}, "
-              f"min={min(sharpes):.3f}, max={max(sharpes):.3f}")
+        _console.print(table)
+        _console.print(
+            f"  Sharpe across folds: mean={np.mean(sharpes):.3f}, "
+            f"std={np.std(sharpes):.3f}, "
+            f"min={min(sharpes):.3f}, max={max(sharpes):.3f}"
+        )
 
-        # Monotonic degradation check
         if len(sharpes) >= 3:
             diffs = [sharpes[i + 1] - sharpes[i] for i in range(len(sharpes) - 1)]
             if all(d < 0 for d in diffs):
-                print("  ⚠ WARNING: Sharpe is monotonically decreasing across folds — "
-                      "potential in-sample overfitting.")
+                _console.print(
+                    "[bold yellow]  WARNING: Sharpe is monotonically decreasing across folds — "
+                    "potential in-sample overfitting.[/bold yellow]"
+                )

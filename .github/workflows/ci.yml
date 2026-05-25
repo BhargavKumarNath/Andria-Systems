@@ -58,12 +58,21 @@ jobs:
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        
-        # We need to wipe the binaries from the git index to ensure they aren't pushed
-        git rm -r --cached artifacts/ reports/ || true
-        
-        # Create a completely fresh git history (orphan branch) to drop the old binary commits
+
+        # Capture the source commit SHA before we manipulate history
+        SOURCE_SHA=$(git rev-parse --short HEAD)
+        echo "GIT_SHA=$SOURCE_SHA" >> $GITHUB_ENV
+
+        # Remove files that must not reach the HF Space
+        git rm -r --cached artifacts/ reports/ data/ || true
+        # Ensure .env secrets are never pushed
+        git rm --cached .env 2>/dev/null || true
+
+        # Embed the source SHA so governance.py can read it on the Space
+        echo "GIT_SHA=$SOURCE_SHA" > .git_sha
+
+        # Create a completely fresh git history (orphan branch) to drop binary commits
         git checkout --orphan hf-deploy
         git add .
-        git commit -m "Deploying to Hugging Face Spaces"
+        git commit -m "Deploy from $SOURCE_SHA"
         git push --force https://user:$HF_TOKEN@huggingface.co/spaces/Bhargav12321/andria-backend hf-deploy:main

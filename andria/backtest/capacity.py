@@ -18,6 +18,10 @@ from __future__ import annotations
 
 import numpy as np
 import polars as pl
+from rich.console import Console
+from rich.table import Table
+
+_console = Console()
 
 from andria.backtest.diagnostics import calculate_sharpe
 from andria.core.logging import get_logger
@@ -176,15 +180,23 @@ class CapacityAnalyzer:
 
     @staticmethod
     def print_capacity_cliff(capacity_df: pl.DataFrame) -> None:
-        """Print a formatted capacity analysis table."""
+        """Display a formatted capacity analysis table."""
         if capacity_df.is_empty():
-            print("No capacity data available.")
+            _console.print("[yellow]No capacity data available.[/yellow]")
             return
-        print(f"\n{'AUM':>12} {'Positions':>10} {'Excluded':>10} {'Excl%':>7} {'Sharpe':>8}")
-        print("-" * 55)
+        table = Table(title="Capacity Cliff Analysis", show_lines=False)
+        table.add_column("AUM", justify="right")
+        table.add_column("Positions", justify="right")
+        table.add_column("Excluded", justify="right")
+        table.add_column("Excl%", justify="right")
+        table.add_column("Sharpe", justify="right")
         for row in capacity_df.iter_rows(named=True):
             sharpe_str = f"{row['sharpe']:.3f}" if row["sharpe"] is not None else "n/a"
-            print(
-                f"{row['aum_label']:>12} {row['n_positions']:>10} "
-                f"{row['n_excluded']:>10} {row['exclusion_pct']:>6.1f}%  {sharpe_str:>8}"
+            table.add_row(
+                row["aum_label"],
+                str(row["n_positions"]),
+                str(row["n_excluded"]),
+                f"{row['exclusion_pct']:.1f}%",
+                sharpe_str,
             )
+        _console.print(table)

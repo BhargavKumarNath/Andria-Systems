@@ -31,7 +31,6 @@ from andria.core.logging import get_logger
 logger = get_logger(__name__)
 
 _EDGAR_COMPANY_JSON = "https://data.sec.gov/submissions/CIK{cik:010d}.json"
-_EDGAR_TICKERS_URL = "https://www.sec.gov/files/company_tickers.json"
 _HEADERS = {"User-Agent": "andria-systems research@andria.local"}
 
 
@@ -87,29 +86,43 @@ class CUSIPMapper:
         df.write_parquet(path, compression="zstd")
         logger.info("cusip_map_cache_saved", path=str(path), n_entries=len(self._map))
 
-    def _fetch_sec_tickers(self) -> dict[str, str]:
-        """Download SEC company_tickers.json → {ticker: cik} mapping."""
-        logger.info("fetching_sec_company_tickers")
+    def _fetch_sec_exchange_tickers(self) -> dict[str, str]:
+        """Download SEC company_tickers_exchange.json → {ticker: cik} mapping.
+
+        The exchange endpoint provides more comprehensive coverage than the base
+        company_tickers.json endpoint.
+        """
+        logger.info("fetching_sec_exchange_tickers")
         try:
-            resp = requests.get(_EDGAR_TICKERS_URL, headers=_HEADERS, timeout=30)
+            resp = requests.get(
+                "https://www.sec.gov/files/company_tickers_exchange.json",
+                headers=_HEADERS,
+                timeout=30,
+            )
             resp.raise_for_status()
-            raw: dict[str, dict[str, object]] = resp.json()
-            # SEC format: {"0": {"cik_str": 320193, "ticker": "AAPL", "title": "..."}, ...}
+            raw = resp.json()
+            # Format: {"fields": [...], "data": [[cik, name, ticker, exchange], ...]}
+            fields = raw.get("fields", [])
+            data = raw.get("data", [])
+            if "ticker" not in fields or "cik_str" not in fields:
+                return {}
+            ticker_idx = fields.index("ticker")
+            cik_idx = fields.index("cik_str")
             return {
-                str(v["ticker"]).upper(): str(v["cik_str"])
-                for v in raw.values()
+                str(row[ticker_idx]).upper(): str(row[cik_idx])
+                for row in data
+                if row[ticker_idx]
             }
         except Exception as exc:
-            logger.warning("sec_ticker_fetch_failed", error=str(exc))
+            logger.warning("sec_exchange_ticker_fetch_failed", error=str(exc))
             return {}
 
     def build(self, force: bool = False) -> None:
         """Build and cache the CUSIP→ticker mapping.
 
-        Uses static overrides as the primary source (high confidence) and
-        stores the result. In Phase 4 the coverage is intentionally partial —
-        unmapped CUSIPs are tracked by the provenance layer, not filled
-        with synthetic data.
+        Static overrides are the high-confidence anchor. SEC company_tickers_exchange.json
+        is fetched to populate a ticker→CIK table for future EDGAR cross-referencing.
+        Unmapped CUSIPs are tracked by the provenance layer — never filled with synthetic data.
 
         Args:
             force: Rebuild even if a cached file exists.
@@ -120,21 +133,25 @@ class CUSIPMapper:
         logger.info("building_cusip_ticker_map")
         mapping: dict[str, str | None] = {}
 
-        # 1. Apply static overrides (high-confidence, human-curated)
+        # High-confidence static overrides always applied first
         mapping.update(self._STATIC_OVERRIDES)
 
-        # 2. Attempt SEC ticker fetch to extend coverage
-        # In Phase 4 we use static overrides as the primary source.
-        sec_tickers = self._fetch_sec_tickers()
+        # Attempt SEC exchange tickers fetch (expands coverage for future EDGAR cross-ref)
+        sec_tickers = self._fetch_sec_exchange_tickers()
         if sec_tickers:
-            logger.info("sec_tickers_available", n_tickers=len(sec_tickers))
+            logger.info(
+                "sec_exchange_tickers_fetched",
+                n_tickers=len(sec_tickers),
+                note="CIK→ticker table available for future CUSIP cross-referencing",
+            )
 
         self._map = mapping
         self._save_cache()
         logger.info(
             "cusip_map_built",
             n_mapped=sum(1 for v in mapping.values() if v is not None),
-            n_total=len(mapping),
+            n_static_overrides=len(self._STATIC_OVERRIDES),
+            coverage_note="Extend by calling build(force=True) after populating EDGAR CUSIP index",
         )
 
     def resolve(self, cusips: list[str]) -> dict[str, str | None]:
