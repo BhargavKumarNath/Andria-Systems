@@ -1,0 +1,42 @@
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.chart-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary, #ffffff);
+  margin: 0 0 1rem 0;
+}
+
+.chart-wrapper {
+  width: 100%;
+  position: relative;
+}
+
+/* Base recharts styling overrides to fit the Apple dark mode aesthetic */
+.recharts-default-tooltip {
+  background-color: rgba(10, 10, 12, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+  color: #fff !important;
+}
+
+.recharts-tooltip-item {
+  color: #fff !important;
+}
+
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: rgba(255, 255, 255, 0.05);
+}
+
+.recharts-text {
+  fill: var(--text-secondary, #a1a1aa) !important;
+  font-size: 0.75rem;
+}

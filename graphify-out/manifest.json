@@ -8,64 +8,64 @@
     "hash": "49264d670c0ae923e6e255680cbc3dc5"
   },
   "C:\\Project\\hedge funds\\andria\\api\\cache.py": {
-    "mtime": 1779302267.211181,
-    "hash": "9da730c3275b83283326e7da0c2a5d24"
+    "mtime": 1779305665.073517,
+    "hash": "b9682df5d9235377e8559cdab20b3493"
   },
   "C:\\Project\\hedge funds\\andria\\api\\main.py": {
-    "mtime": 1779301478.8603182,
-    "hash": "d3920f86513170b725b994f88180c92b"
+    "mtime": 1779445470.5498874,
+    "hash": "40643468908be39351f08fec1757a22e"
   },
   "C:\\Project\\hedge funds\\andria\\api\\schemas.py": {
-    "mtime": 1779302311.6362607,
-    "hash": "ab234b5bdf97ce790d1a02d54d9e7197"
+    "mtime": 1779305665.0772576,
+    "hash": "3e9da6ba9aac7d0ff8c0bd2dedf9c48b"
   },
   "C:\\Project\\hedge funds\\andria\\backtest\\capacity.py": {
     "mtime": 1779189070.8947015,
     "hash": "2db1d8353c3e799c56f2c45807d36197"
   },
   "C:\\Project\\hedge funds\\andria\\backtest\\costs.py": {
-    "mtime": 1778669436.2953255,
-    "hash": "f182176fbb9af78dc5a9ba3602cc2966"
+    "mtime": 1779305665.0689297,
+    "hash": "729eeaaba2652701feab0f922dc00239"
   },
   "C:\\Project\\hedge funds\\andria\\backtest\\diagnostics.py": {
-    "mtime": 1779189148.4891129,
-    "hash": "3c13a6e47cbd800b6ab53a2b90fab9f8"
+    "mtime": 1779305665.0812614,
+    "hash": "950ae03aed1a220d22f78caf51245f8e"
   },
   "C:\\Project\\hedge funds\\andria\\backtest\\engine.py": {
-    "mtime": 1779189125.7696357,
-    "hash": "6faf6e98937be1de7db2a29cf4a2d802"
+    "mtime": 1779305665.0772576,
+    "hash": "e06f7ae3cbbf308d10b542d7ba162724"
   },
   "C:\\Project\\hedge funds\\andria\\backtest\\execution.py": {
     "mtime": 1779188813.814705,
     "hash": "3182778d9e9f9aa64d63daca252e082f"
   },
   "C:\\Project\\hedge funds\\andria\\backtest\\factors.py": {
-    "mtime": 1778686001.5601888,
-    "hash": "56ee661d0729f9d557a2dc30921f7f87"
+    "mtime": 1779305892.4096005,
+    "hash": "389be8dfdbfe43432e4d0eed87488fa7"
   },
   "C:\\Project\\hedge funds\\andria\\backtest\\leakage_audit.py": {
-    "mtime": 1779276721.535277,
-    "hash": "309d3a4af9d4f1f2a6837f687d4900e8"
+    "mtime": 1779305665.069929,
+    "hash": "4453c11f31cb55203048a114ea177cb9"
   },
   "C:\\Project\\hedge funds\\andria\\backtest\\monte_carlo.py": {
     "mtime": 1779188916.7821975,
     "hash": "2c342ca30bfec9a7906b424737e159d8"
   },
   "C:\\Project\\hedge funds\\andria\\backtest\\overfitting.py": {
-    "mtime": 1779277634.5172575,
-    "hash": "a7ada050f9c342a4ca19ed7ee49bdd94"
+    "mtime": 1779305665.069929,
+    "hash": "008c0ab6f88a82cfa8d1ea808ee0b128"
   },
   "C:\\Project\\hedge funds\\andria\\backtest\\portfolio.py": {
-    "mtime": 1779277755.772461,
-    "hash": "ce138055d25c1bbaf5535ed0b4ec5aa2"
+    "mtime": 1779305665.069929,
+    "hash": "a2755ff375cbfe9ddcb15f518b27c051"
   },
   "C:\\Project\\hedge funds\\andria\\backtest\\signal_decay.py": {
-    "mtime": 1779277651.6919894,
-    "hash": "0ed948b1a69681c805011770d2182236"
+    "mtime": 1779306126.838749,
+    "hash": "2f02cbb8d5a5506a0fd5e2e91f0b8254"
   },
   "C:\\Project\\hedge funds\\andria\\backtest\\walk_forward.py": {
-    "mtime": 1779274341.7766366,
-    "hash": "eb330465bc0a801fd68689842938ef95"
+    "mtime": 1779305665.069929,
+    "hash": "b9b0ad4de091aee38daedbdf726f00f1"
   },
   "C:\\Project\\hedge funds\\andria\\cli\\main.py": {
     "mtime": 1778597493.2951646,
@@ -76,136 +76,136 @@
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "C:\\Project\\hedge funds\\andria\\core\\artifact_registry.py": {
-    "mtime": 1779302318.5304108,
-    "hash": "42e7ca07060eee719f16012c431946e7"
+    "mtime": 1779305665.0852575,
+    "hash": "aed1cf1a13addb89ecc1c4baa92ea142"
   },
   "C:\\Project\\hedge funds\\andria\\core\\config.py": {
-    "mtime": 1779274467.6804123,
-    "hash": "39f4834a12ab5d3b49a6e8360503e699"
+    "mtime": 1779305665.069929,
+    "hash": "1208647663e29bd4fd213b64f8f03b56"
   },
   "C:\\Project\\hedge funds\\andria\\core\\db.py": {
-    "mtime": 1779274494.0360034,
-    "hash": "05c782c9019e8dd60c2e87b31713fd0a"
+    "mtime": 1779305665.0725212,
+    "hash": "cab639809488e204289ea5fe8c2a5ba3"
   },
   "C:\\Project\\hedge funds\\andria\\core\\evaluation_gate.py": {
-    "mtime": 1779302331.8580096,
-    "hash": "056567a273e062d4a6c140f08ba2115c"
+    "mtime": 1779305665.0812614,
+    "hash": "1b3280fa655f9173cc755d585d826db6"
   },
   "C:\\Project\\hedge funds\\andria\\core\\exceptions.py": {
     "mtime": 1778667430.4697378,
     "hash": "dffdb4acb9e24de450f4bf40b75ea625"
   },
   "C:\\Project\\hedge funds\\andria\\core\\logging.py": {
-    "mtime": 1778597761.9929376,
-    "hash": "3eab9ec49ff0e3d56d34abb51f2fabc1"
+    "mtime": 1779305665.0842564,
+    "hash": "380bf373a4e7b480dc2232f5785edfc8"
   },
   "C:\\Project\\hedge funds\\andria\\core\\schemas.py": {
-    "mtime": 1778598049.4265301,
-    "hash": "8d15230e063af7dc408c0db657a724b8"
+    "mtime": 1779305665.0725212,
+    "hash": "38624b407700cc2fa607f1b1e5d36e5f"
   },
   "C:\\Project\\hedge funds\\andria\\core\\telemetry.py": {
-    "mtime": 1779302342.8357828,
-    "hash": "028e8d2642b20a918653e9e89284c202"
+    "mtime": 1779305665.0750248,
+    "hash": "e2a01bc773f7018a91673997270febec"
   },
   "C:\\Project\\hedge funds\\andria\\core\\__init__.py": {
     "mtime": 1778595809.1386406,
     "hash": "578cda3bdf7f137f834d7b835b33873d"
   },
   "C:\\Project\\hedge funds\\andria\\dashboard\\app.py": {
-    "mtime": 1778599365.017735,
-    "hash": "3d9f0585afd0f3c03ab8b99553790851"
+    "mtime": 1779305665.0802548,
+    "hash": "0e3ca380b8328192549e35251c514cbc"
   },
   "C:\\Project\\hedge funds\\andria\\dashboard\\data_service.py": {
-    "mtime": 1778662073.705177,
-    "hash": "e5dca2206fe589abecb048c96a30a197"
+    "mtime": 1779305665.0689297,
+    "hash": "d7f94d704965946c93e6983a8ec1212f"
   },
   "C:\\Project\\hedge funds\\andria\\dashboard\\__init__.py": {
     "mtime": 1778593880.0983279,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "C:\\Project\\hedge funds\\andria\\dashboard\\callbacks\\__init__.py": {
-    "mtime": 1778595809.1386406,
-    "hash": "e0a897db0ba213c6a90dcc94ab5fc7a9"
+    "mtime": 1779305665.0832548,
+    "hash": "1272c8379d9be5bbcd84894ce10ece9c"
   },
   "C:\\Project\\hedge funds\\andria\\dashboard\\figures\\__init__.py": {
     "mtime": 1778593880.1022286,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "C:\\Project\\hedge funds\\andria\\dashboard\\layout\\header.py": {
-    "mtime": 1779274616.6966078,
-    "hash": "16a06714590d721169c5085588bd4d02"
+    "mtime": 1779305665.070927,
+    "hash": "07a9cd2fc0c8d5260fc691ea07354615"
   },
   "C:\\Project\\hedge funds\\andria\\dashboard\\layout\\sidebar.py": {
-    "mtime": 1779274625.4658525,
-    "hash": "752bcf4f3cd447a8b14755ce2d6977d8"
+    "mtime": 1779305665.087576,
+    "hash": "d0f898deaba07ee6b001818f9d6b8055"
   },
   "C:\\Project\\hedge funds\\andria\\dashboard\\layout\\__init__.py": {
     "mtime": 1778593880.0983279,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "C:\\Project\\hedge funds\\andria\\dashboard\\layout\\pages\\archetypes.py": {
-    "mtime": 1778661346.9848,
-    "hash": "62569b52cd9589644c5fca396b97f6b2"
+    "mtime": 1779305665.0930977,
+    "hash": "8093e427892dfd372fb2ab09c6ee515e"
   },
   "C:\\Project\\hedge funds\\andria\\dashboard\\layout\\pages\\intelligence.py": {
-    "mtime": 1779274576.5775764,
-    "hash": "a872b07e887a7063dd0074fde88dbaef"
+    "mtime": 1779305665.0930977,
+    "hash": "9ca8156911ae22f5e30f997b9ec1608a"
   },
   "C:\\Project\\hedge funds\\andria\\dashboard\\layout\\pages\\overview.py": {
-    "mtime": 1778662762.9364555,
-    "hash": "6d307f93b7fee32900ffc772c8353fdc"
+    "mtime": 1779305665.0930977,
+    "hash": "bbcc355179dde8abd54056cff4b172a3"
   },
   "C:\\Project\\hedge funds\\andria\\dashboard\\layout\\pages\\regime.py": {
-    "mtime": 1779274601.8937721,
-    "hash": "5b8557eb6213271789640307bfaad79a"
+    "mtime": 1779305665.0852575,
+    "hash": "f05088f5d8e8b09762178d239a10869f"
   },
   "C:\\Project\\hedge funds\\andria\\dashboard\\layout\\pages\\signals.py": {
-    "mtime": 1778661925.5099254,
-    "hash": "49c03a5b2036502fc9c9f5da9e869e54"
+    "mtime": 1779305665.0900908,
+    "hash": "2903f8310276daefb94912478fdce9f9"
   },
   "C:\\Project\\hedge funds\\andria\\dashboard\\layout\\pages\\__init__.py": {
     "mtime": 1778593880.1011682,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "C:\\Project\\hedge funds\\andria\\data\\cusip_mapper.py": {
-    "mtime": 1779274695.5069563,
-    "hash": "322bbb5672136a27bc5c2631fc638eba"
+    "mtime": 1779305665.0832548,
+    "hash": "7d78466726d81aed55b354ac05bec7de"
   },
   "C:\\Project\\hedge funds\\andria\\data\\market_loader.py": {
-    "mtime": 1779274798.6101167,
-    "hash": "41f5366660276f5cf60338b46d562215"
+    "mtime": 1779305665.0910933,
+    "hash": "6f0445acb3c47da7ba469e69a1e84428"
   },
   "C:\\Project\\hedge funds\\andria\\data\\provenance.py": {
-    "mtime": 1779274826.6300752,
-    "hash": "0ea58184cecfb8937409edd327018dfa"
+    "mtime": 1779305665.0870228,
+    "hash": "91397c888caf3f052a82e41048a8c812"
   },
   "C:\\Project\\hedge funds\\andria\\data\\__init__.py": {
     "mtime": 1779188513.2556672,
     "hash": "4ca1885a9010ea0f8e4826c6081936ae"
   },
   "C:\\Project\\hedge funds\\andria\\features\\manager_dna.py": {
-    "mtime": 1779274886.7494428,
-    "hash": "a396d6e9ef14fb0f79c9c209fabb6939"
+    "mtime": 1779305665.0689297,
+    "hash": "ab07275e3fded7455f6c6491024647e6"
   },
   "C:\\Project\\hedge funds\\andria\\features\\__init__.py": {
     "mtime": 1778593880.0927823,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "C:\\Project\\hedge funds\\andria\\ingestion\\edgar.py": {
-    "mtime": 1778602855.0169754,
-    "hash": "cfadc6409930b4c0749988c60ad39c49"
+    "mtime": 1779305665.0772576,
+    "hash": "acac1e87d4a8390cd4a2cac369234627"
   },
   "C:\\Project\\hedge funds\\andria\\ingestion\\fred.py": {
-    "mtime": 1779274908.188799,
-    "hash": "2eb004259ae25d74939193f06e9a6071"
+    "mtime": 1779305665.0802548,
+    "hash": "1c65ad844ccb95debca2d670e0fafc7f"
   },
   "C:\\Project\\hedge funds\\andria\\ingestion\\ofr.py": {
-    "mtime": 1779274916.362972,
-    "hash": "f91abd274285a0d0bc71ec661a464204"
+    "mtime": 1779305665.082256,
+    "hash": "6c69c6a8c74c0790419e593293a44bef"
   },
   "C:\\Project\\hedge funds\\andria\\ingestion\\registry.py": {
-    "mtime": 1778662186.897083,
-    "hash": "5be156d68e699e1fe7871b0d58d5e46c"
+    "mtime": 1779305665.0689297,
+    "hash": "4b22b5cdafb0b79e6552ca23b81f271c"
   },
   "C:\\Project\\hedge funds\\andria\\ingestion\\__init__.py": {
     "mtime": 1778593880.0927823,
@@ -216,60 +216,60 @@
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "C:\\Project\\hedge funds\\andria\\models\\clustering\\diagnostics.py": {
-    "mtime": 1778598407.0223093,
-    "hash": "d7fb3fd0d5b7217ee573208d69e16c71"
+    "mtime": 1779305665.0715132,
+    "hash": "0c12108569b68d6292e46fe2aa74523b"
   },
   "C:\\Project\\hedge funds\\andria\\models\\clustering\\engine.py": {
-    "mtime": 1779274988.1589932,
-    "hash": "b8dfff7c685f05307cce94178243ef3c"
+    "mtime": 1779305665.0842564,
+    "hash": "40766c57cd8e23c3bd138b07f817583a"
   },
   "C:\\Project\\hedge funds\\andria\\models\\clustering\\__init__.py": {
     "mtime": 1778593880.0967433,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "C:\\Project\\hedge funds\\andria\\models\\regime\\hmm.py": {
-    "mtime": 1779275012.4198732,
-    "hash": "90a7fbe2b87d8ea39c2c79fa84aaa919"
+    "mtime": 1779305665.0802548,
+    "hash": "dae753804b2176600536465d9f3d6550"
   },
   "C:\\Project\\hedge funds\\andria\\models\\regime\\__init__.py": {
     "mtime": 1778593880.0967433,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "C:\\Project\\hedge funds\\andria\\orchestration\\pipeline.py": {
-    "mtime": 1778662321.9100463,
-    "hash": "e1ff8f1126d9bfe3af048cf9c627b07f"
+    "mtime": 1779305665.0900908,
+    "hash": "2a1e72d531b93bb5bac0fce165764fb0"
   },
   "C:\\Project\\hedge funds\\andria\\orchestration\\__init__.py": {
     "mtime": 1778593880.1022286,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "C:\\Project\\hedge funds\\andria\\pipelines\\orchestrator.py": {
-    "mtime": 1779302387.4037826,
-    "hash": "ad3be312d77c71379e9e8aab756b9100"
+    "mtime": 1779442261.4626281,
+    "hash": "0a63220abac46cab4d450f940b7e00d3"
   },
   "C:\\Project\\hedge funds\\andria\\research\\drift_monitor.py": {
     "mtime": 1779275089.4299362,
     "hash": "e338f5e6c18d3c4158bd599962b43919"
   },
   "C:\\Project\\hedge funds\\andria\\research\\experiment_tracker.py": {
-    "mtime": 1779188850.2487874,
-    "hash": "dc0c00738a6b20f48e6ca946d69f6138"
+    "mtime": 1779305665.0725212,
+    "hash": "9d154b3903c8333cb53657f4554a7f29"
   },
   "C:\\Project\\hedge funds\\andria\\research\\governance.py": {
-    "mtime": 1779275259.9033253,
-    "hash": "ee2d064de17133062d0ccb5e7688a6d3"
+    "mtime": 1779305665.082256,
+    "hash": "247ab4fb7b165543c44858f3834519df"
   },
   "C:\\Project\\hedge funds\\andria\\research\\reports.py": {
-    "mtime": 1778595809.1411865,
-    "hash": "264a1a2f63275244228b4233cc8e4a79"
+    "mtime": 1779305665.082256,
+    "hash": "90d53b5365790012837815b739237281"
   },
   "C:\\Project\\hedge funds\\andria\\research\\__init__.py": {
     "mtime": 1778593880.0983279,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "C:\\Project\\hedge funds\\andria\\signals\\racs.py": {
-    "mtime": 1779275323.9553998,
-    "hash": "ae7d607e134d839b2a851e26d4b279e5"
+    "mtime": 1779305665.082256,
+    "hash": "fc29e8927c3ff227ffe09542ca49b4f7"
   },
   "C:\\Project\\hedge funds\\andria\\signals\\__init__.py": {
     "mtime": 1778593880.0951707,
@@ -311,6 +311,38 @@
     "mtime": 1778245822.9027503,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
+  "C:\\Project\\hedge funds\\frontend\\next-env.d.ts": {
+    "mtime": 1779303085.8218699,
+    "hash": "da547da2ebeb322abd0257ae82d0f1bf"
+  },
+  "C:\\Project\\hedge funds\\frontend\\next.config.mjs": {
+    "mtime": 1779302912.6062405,
+    "hash": "21958f5752add43cc47ab0ff5172cd46"
+  },
+  "C:\\Project\\hedge funds\\frontend\\src\\app\\layout.tsx": {
+    "mtime": 1779302927.855688,
+    "hash": "c47329c58285011b165a45e29e1f6c29"
+  },
+  "C:\\Project\\hedge funds\\frontend\\src\\app\\page.tsx": {
+    "mtime": 1779302948.0287085,
+    "hash": "93ecb5f45274447d4bdd404f342b43e0"
+  },
+  "C:\\Project\\hedge funds\\frontend\\src\\app\\portfolio\\page.tsx": {
+    "mtime": 1779302947.928717,
+    "hash": "560e35a234bb147b977770205269dc55"
+  },
+  "C:\\Project\\hedge funds\\frontend\\src\\app\\validation\\page.tsx": {
+    "mtime": 1779302967.8947759,
+    "hash": "7f060996ce11fc268835c6cd1b88fd91"
+  },
+  "C:\\Project\\hedge funds\\frontend\\src\\components\\PortfolioChart.tsx": {
+    "mtime": 1779302947.9255686,
+    "hash": "7efcd9ddb17d5dd5b61a52835247b189"
+  },
+  "C:\\Project\\hedge funds\\frontend\\src\\lib\\api.ts": {
+    "mtime": 1779446868.9821494,
+    "hash": "013734f29009073794c2aeda57aad7fb"
+  },
   "C:\\Project\\hedge funds\\notebooks\\03_signal_backtest.py": {
     "mtime": 1779189295.0354605,
     "hash": "1d3e9a7b439a20b10b22348ab345d053"
@@ -324,48 +356,32 @@
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "C:\\Project\\hedge funds\\tests\\conftest.py": {
-    "mtime": 1779275506.8740368,
-    "hash": "282a64c65fec38dc526979da33d796a5"
+    "mtime": 1779305665.0930977,
+    "hash": "575748209f0a3a8ecc4ccc8a9f1c7388"
   },
   "C:\\Project\\hedge funds\\tests\\__init__.py": {
     "mtime": 1778237574.286068,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
-  },
-  "C:\\Project\\hedge funds\\tests\\integration\\test_advanced_clustering.py": {
-    "mtime": 1778251884.9413884,
-    "hash": "50822caf5cc797d958577d37ba10fd52"
-  },
-  "C:\\Project\\hedge funds\\tests\\integration\\test_dashboard_pipeline.py": {
-    "mtime": 1778588395.6917067,
-    "hash": "0d97f187368d537f4a62c6218cb52779"
-  },
-  "C:\\Project\\hedge funds\\tests\\integration\\test_manager_features.py": {
-    "mtime": 1778249756.7863314,
-    "hash": "72c8d519fe53a03ae54e6e237ee766a7"
-  },
-  "C:\\Project\\hedge funds\\tests\\integration\\test_quality_checks.py": {
-    "mtime": 1778236222.3313522,
-    "hash": "26941226171b90af1cf47e86bba9a58f"
   },
   "C:\\Project\\hedge funds\\tests\\integration\\__init__.py": {
     "mtime": 1778593880.1022286,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "C:\\Project\\hedge funds\\tests\\unit\\test_backtest.py": {
-    "mtime": 1778682082.09445,
-    "hash": "83bde74eadaba56b81eefeaa03b9a5b3"
+    "mtime": 1779305665.0930977,
+    "hash": "48aa97138731b57c4415cdf69d43e5c1"
   },
   "C:\\Project\\hedge funds\\tests\\unit\\test_core.py": {
-    "mtime": 1778594021.2336302,
-    "hash": "80db22b6410cc0c909f927a7e716a97b"
+    "mtime": 1779305665.0885854,
+    "hash": "8e2694709ca659759998163a81a4b008"
   },
   "C:\\Project\\hedge funds\\tests\\unit\\__init__.py": {
     "mtime": 1778593880.1022286,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "C:\\Project\\hedge funds\\tests\\validation\\phase4_validation_suite.py": {
-    "mtime": 1779278280.0935063,
-    "hash": "8c22bc782b6151ee0888af5539445363"
+    "mtime": 1779305665.099815,
+    "hash": "105bd63e73d26d979f52714b67e3f7b9"
   },
   "C:\\Project\\hedge funds\\tests\\validation\\__init__.py": {
     "mtime": 1779276563.845513,
@@ -376,12 +392,12 @@
     "hash": "0b6363140c7a0b297665745e669b200d"
   },
   "C:\\Project\\hedge funds\\README.md": {
-    "mtime": 1778595364.1128178,
-    "hash": "ddca8163a1de4ca03d8dff18e20e9081"
+    "mtime": 1779443107.9896927,
+    "hash": "90c66c33dd458e66aa26bb8565f00b35"
   },
   "C:\\Project\\hedge funds\\configs\\base.yaml": {
-    "mtime": 1779275438.1590939,
-    "hash": "5b7cfe882cf1f592c32ff15002adf0d7"
+    "mtime": 1779304392.5278852,
+    "hash": "9e26adb39622201ab365f16b3a1cdcc2"
   },
   "C:\\Project\\hedge funds\\docs\\event_timing.md": {
     "mtime": 1779302394.6396787,

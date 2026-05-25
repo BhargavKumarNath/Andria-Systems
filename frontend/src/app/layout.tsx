@@ -1,28 +1,38 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import "./globals.css";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Andria Systems | Institutional Dashboard",
-  description: "Quantitative Research Platform",
-};
+import React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { ROUTES } from "@/lib/constants";
+import "./globals.css";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+
   return (
     <html lang="en">
       <body>
-        <nav className="nav-bar">
-          <Link href="/" className="nav-link">Signals & Regimes</Link>
-          <Link href="/portfolio" className="nav-link">Portfolio</Link>
-          <Link href="/validation" className="nav-link">Validation Gate</Link>
-        </nav>
-        <main className="container">
-          {children}
-        </main>
+        <div className="main-layout">
+          <nav className="sidebar">
+            <div className="sidebar-title">Andria Systems</div>
+            {ROUTES.map((route) => (
+              <Link 
+                key={route.path}
+                href={route.path}
+                className={`nav-link ${pathname === route.path ? "active" : ""}`}
+              >
+                {route.label}
+              </Link>
+            ))}
+          </nav>
+          <main className="content-area">
+            {children}
+          </main>
+        </div>
       </body>
     </html>
   );

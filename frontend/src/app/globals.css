@@ -1,104 +1,108 @@
 :root {
-  --bg-color: #0d0d0d;
-  --surface-color: #1a1a1a;
-  --border-color: #333333;
-  --text-primary: #f2f2f2;
-  --text-secondary: #a6a6a6;
-  --accent-color: #007aff;
-  --danger-color: #ff3b30;
-  --success-color: #34c759;
-  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+  --background: #0a0a0c;
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
+  --accent-rgb: 138, 43, 226;
+  --accent-color: #8a2be2;
+  --success-color: #10b981;
+  --danger-color: #ef4444;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --sidebar-width: 280px;
 }
 
 body {
-  background-color: var(--bg-color);
+  background-color: var(--background);
   color: var(--text-primary);
-  font-family: var(--font-family);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Layout Utilities */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
+* {
+  box-sizing: border-box;
 }
 
-.panel {
-  background-color: var(--surface-color);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-.header {
-  margin-bottom: 1rem;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 0.5rem;
-}
-
-.nav-bar {
+.main-layout {
   display: flex;
-  gap: 2rem;
-  padding: 1rem 2rem;
-  background-color: var(--surface-color);
-  border-bottom: 1px solid var(--border-color);
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  background: rgba(10, 10, 12, 0.6);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-right: 1px solid var(--border-color);
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  z-index: 50;
+}
+
+.sidebar-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  padding: 0 1rem;
+  margin-bottom: 2rem;
+  background: linear-gradient(90deg, #fff, #a1a1aa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .nav-link {
-  color: var(--text-secondary);
-  text-decoration: none;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
   font-weight: 500;
-  transition: color 0.2s ease;
+  color: var(--text-secondary);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
 }
 
 .nav-link:hover {
   color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.metric-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
+.nav-link.active {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
 }
 
-.metric-card {
-  padding: 1rem;
-  border: 1px solid var(--border-color);
+.content-area {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  padding: 4rem;
+  max-width: 1400px;
+}
+
+/* Skeleton Loading Animation */
+.skeleton-shimmer {
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0.02) 0%, 
+    rgba(255, 255, 255, 0.06) 50%, 
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
   border-radius: 8px;
-  background: rgba(255,255,255,0.02);
 }
 
-.metric-value {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-top: 0.5rem;
-}
-
-.badge {
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  background-color: var(--border-color);
-}
-
-.badge-success {
-  background-color: rgba(52, 199, 89, 0.2);
-  color: var(--success-color);
-}
-
-.badge-danger {
-  background-color: rgba(255, 59, 48, 0.2);
-  color: var(--danger-color);
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }

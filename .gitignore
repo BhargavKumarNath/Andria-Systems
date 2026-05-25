@@ -1,22 +1,56 @@
-/data/
-/dataset/
-/datasets/
-.idea/
-.venv/
-.env
-.pytest_cache/
+# Python
 __pycache__/
 *.py[cod]
-.agents/
-.tmp/
-.gitignore
-
-graphify-out/
-docs/
-.benchmarks/
+*$py.class
+.venv/
+env/
+venv/
+.pytest_cache/
 .ruff_cache/
-reports/
-artifacts/
+.coverage
+htmlcov/
+.agents/
 
-frontend/.next/
+# Node.js & Next.js
+node_modules/
 frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+npm-debug.log*
+
+# Data & Databases
+data/
+dataset/
+artifacts/
+reports/
+*.parquet
+*.duckdb
+*.csv
+*.json
+*.sqlite
+*.db
+
+# Exceptions for Data
+!frontend/public/data/*.json
+
+# Graphify Output
+graphify-out/
+
+# IDEs & OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Environment Config
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+.tmp/
+tmp/
+docs/

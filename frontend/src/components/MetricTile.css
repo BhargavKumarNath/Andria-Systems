@@ -1,0 +1,52 @@
+.metric-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.standard-tile {
+  padding: 1rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+}
+
+.hero-tile {
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+.metric-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary, #a1a1aa);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.standard-tile .metric-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary, #ffffff);
+}
+
+.hero-tile .metric-value {
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary, #ffffff);
+  background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.metric-delta {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+.delta-positive { color: #10b981; } /* Emerald */
+.delta-negative { color: #ef4444; } /* Red */
+.delta-neutral { color: #a1a1aa; }  /* Gray */

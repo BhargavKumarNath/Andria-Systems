@@ -1,0 +1,21 @@
+.section-header {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.section-header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-primary, #ffffff);
+  margin: 0;
+}
+
+.section-header p {
+  font-size: 1rem;
+  color: var(--text-secondary, #a1a1aa);
+  margin: 0;
+  line-height: 1.5;
+}
