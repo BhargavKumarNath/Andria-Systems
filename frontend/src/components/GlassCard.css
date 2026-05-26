@@ -1,48 +1,85 @@
 .glass-card {
-  border-radius: 16px;
-  padding: 1.5rem;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+  border-radius: 18px;
+  padding: 1.75rem;
+  position: relative;
+  transition:
+    transform        0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow       0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color     0.25s ease;
+  will-change: transform;
 }
 
+/* ─── Primary: visible frosted glass with glow ──────────────────────────────── */
 .hierarchy-primary {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.075) 0%,
+    rgba(255, 255, 255, 0.028) 100%
+  );
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.12),
+    0 8px 24px rgba(0, 0, 0, 0.28),
+    0 20px 48px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09);
 }
 
+/* ─── Secondary: subtle recessed panel ──────────────────────────────────────── */
 .hierarchy-secondary {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.028);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
+/* ─── Tertiary: minimal outline ──────────────────────────────────────────────── */
 .hierarchy-tertiary {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
-.glass-card:hover {
-  transform: scale(1.01);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(138, 43, 226, 0.15); /* Accent glow */
+/* ─── Hover: lift with accent glow ──────────────────────────────────────────── */
+.hierarchy-primary:hover {
+  transform: translateY(-3px) scale(1.002);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.14),
+    0 12px 32px rgba(0, 0, 0, 0.32),
+    0 24px 64px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(138, 43, 226, 0.12),
+    0 0 40px rgba(138, 43, 226, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
-/* Base stagger entry animation */
+.hierarchy-secondary:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(138, 43, 226, 0.08);
+}
+
+/* ─── Staggered entrance animation ──────────────────────────────────────────── */
 .stagger-entry {
   opacity: 0;
-  animation: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: calc(var(--stagger-index) * 50ms);
+  animation: glass-enter 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: calc(var(--stagger-index, 0) * 60ms);
 }
 
-@keyframes fade-in-up {
-  0% {
+@keyframes glass-enter {
+  from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(16px) scale(0.99);
+    filter: blur(4px);
   }
-  100% {
+  to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+    filter: blur(0);
   }
 }

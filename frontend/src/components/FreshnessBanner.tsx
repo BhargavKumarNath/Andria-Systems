@@ -12,13 +12,11 @@ function fmt(iso: string): string {
 }
 
 export default function FreshnessBanner({ metadata }: { metadata: MetadataArtifact | null }) {
-  if (!metadata) return null;
-
-  const runShort = metadata.run_id?.slice(-8) ?? "—";
-  const date = metadata.generated_at ? fmt(metadata.generated_at) : "—";
-  const commit = metadata.git_commit?.slice(0, 7) ?? "—";
-  const vintage = metadata.data_vintage?.edgar_through ?? "—";
-  const filings = metadata.data_vintage?.total_filings_processed
+  const runShort  = metadata?.run_id?.slice(-8) ?? "—";
+  const date      = metadata?.generated_at ? fmt(metadata.generated_at) : "—";
+  const commit    = metadata?.git_commit?.slice(0, 7) ?? "—";
+  const vintage   = metadata?.data_vintage?.edgar_through?.replace("_", " Q") ?? "—";
+  const filings   = metadata?.data_vintage?.total_filings_processed
     ? `${(metadata.data_vintage.total_filings_processed / 1e6).toFixed(0)}M filings`
     : "116M filings";
 
@@ -26,51 +24,99 @@ export default function FreshnessBanner({ metadata }: { metadata: MetadataArtifa
     <div style={{
       display: "flex",
       alignItems: "center",
-      gap: "1.25rem",
-      padding: "0.55rem 1rem",
-      borderRadius: 8,
-      backgroundColor: "rgba(138,43,226,0.06)",
-      border: "1px solid rgba(138,43,226,0.18)",
+      gap: "0",
       marginBottom: "2.5rem",
-      flexWrap: "wrap",
+      borderRadius: 12,
+      overflow: "hidden",
+      border: "1px solid rgba(138,43,226,0.2)",
+      background: "linear-gradient(90deg, rgba(138,43,226,0.08) 0%, rgba(59,130,246,0.04) 60%, transparent 100%)",
+      backdropFilter: "blur(12px)",
     }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-        <div style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "#10b981", flexShrink: 0 }} />
-        <span style={{ fontSize: "0.72rem", fontWeight: 600, color: "#10b981", textTransform: "uppercase", letterSpacing: "0.07em" }}>Live</span>
-      </div>
-      <Pill label="Run" value={runShort} mono />
-      <Pill label="Built" value={date} />
-      <Pill label="Commit" value={commit} mono />
-      <Pill label="Data through" value={vintage.replace("_", " Q")} />
-      <Pill label="Filings" value={filings} />
-      <div style={{ marginLeft: "auto" }}>
-        <span style={{
-          padding: "0.15rem 0.5rem",
-          borderRadius: 4,
-          fontSize: "0.65rem",
-          fontWeight: 700,
-          letterSpacing: "0.06em",
-          backgroundColor: "rgba(16,185,129,0.15)",
-          color: "#10b981",
-          border: "1px solid rgba(16,185,129,0.3)",
-        }}>
-          GATE PASSED
+      {/* Live pulse indicator */}
+      <div style={{
+        padding: "0.55rem 0.9rem",
+        display: "flex",
+        alignItems: "center",
+        gap: "0.45rem",
+        borderRight: "1px solid rgba(138,43,226,0.2)",
+        flexShrink: 0,
+      }}>
+        <div style={{ position: "relative", width: 8, height: 8 }}>
+          <div style={{
+            width: 8, height: 8, borderRadius: "50%",
+            backgroundColor: "#10b981",
+            position: "absolute",
+          }} />
+          <div style={{
+            width: 8, height: 8, borderRadius: "50%",
+            backgroundColor: "#10b981",
+            position: "absolute",
+            animation: "livePulse 2s ease-out infinite",
+            opacity: 0.6,
+          }} />
+        </div>
+        <span style={{ fontSize: "0.65rem", fontWeight: 700, color: "#10b981", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          Live
         </span>
       </div>
-    </div>
-  );
-}
 
-function Pill({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
-  return (
-    <div style={{ display: "flex", gap: "0.3rem", alignItems: "baseline" }}>
-      <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</span>
-      <span style={{
-        fontSize: "0.75rem",
-        fontWeight: 600,
-        fontFamily: mono ? "monospace" : "inherit",
-        color: "var(--text-primary)",
-      }}>{value}</span>
+      {/* Metadata pills */}
+      <div style={{ display: "flex", alignItems: "center", gap: "0", flex: 1, overflowX: "auto", padding: "0.55rem 0" }}>
+        {[
+          { label: "RUN",          value: runShort,  mono: true },
+          { label: "BUILT",        value: date,      mono: false },
+          { label: "COMMIT",       value: commit,    mono: true },
+          { label: "DATA THROUGH", value: vintage,   mono: false },
+          { label: "FILINGS",      value: filings,   mono: false },
+        ].map(({ label, value, mono }) => (
+          <div key={label} style={{
+            display: "flex",
+            alignItems: "baseline",
+            gap: "0.3rem",
+            padding: "0 0.85rem",
+            borderRight: "1px solid rgba(255,255,255,0.05)",
+            flexShrink: 0,
+          }}>
+            <span style={{ fontSize: "0.6rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              {label}
+            </span>
+            <span style={{
+              fontSize: "0.75rem",
+              fontWeight: 600,
+              fontFamily: mono ? "monospace" : "inherit",
+              color: "rgba(255,255,255,0.85)",
+              letterSpacing: mono ? "0.02em" : undefined,
+            }}>
+              {value}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* Gate passed badge */}
+      <div style={{ padding: "0.55rem 0.9rem", flexShrink: 0 }}>
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "0.35rem",
+          padding: "0.25rem 0.65rem",
+          borderRadius: 20,
+          backgroundColor: "rgba(16,185,129,0.12)",
+          border: "1px solid rgba(16,185,129,0.3)",
+        }}>
+          <div style={{ width: 5, height: 5, borderRadius: "50%", backgroundColor: "#10b981" }} />
+          <span style={{ fontSize: "0.65rem", fontWeight: 700, color: "#10b981", letterSpacing: "0.07em", textTransform: "uppercase" }}>
+            Gate Passed
+          </span>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes livePulse {
+          0%   { transform: scale(1);   opacity: 0.6; }
+          100% { transform: scale(2.5); opacity: 0; }
+        }
+      `}</style>
     </div>
   );
 }

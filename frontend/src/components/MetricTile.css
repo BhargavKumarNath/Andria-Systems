@@ -1,52 +1,72 @@
 .metric-tile {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.35rem;
 }
 
+/* ─── Standard tile: used inside secondary GlassCards ───────────────────────── */
 .standard-tile {
-  padding: 1rem;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.03);
-  border-radius: 12px;
-}
-
-.hero-tile {
   padding: 0;
   background: transparent;
-  border: none;
 }
 
+/* ─── Hero tile: top-level KPIs ─────────────────────────────────────────────── */
+.hero-tile {
+  padding: 0.25rem 0;
+  background: transparent;
+}
+
+/* ─── Label ──────────────────────────────────────────────────────────────────── */
 .metric-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-secondary, #a1a1aa);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.standard-tile .metric-value {
-  font-size: 1.5rem;
+  font-size: 0.67rem;
   font-weight: 600;
-  color: var(--text-primary, #ffffff);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
-.hero-tile .metric-value {
-  font-size: 3rem;
+/* ─── Value: standard ────────────────────────────────────────────────────────── */
+.standard-tile .metric-value {
+  font-size: 1.65rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--text-primary, #ffffff);
-  background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+/* ─── Value: hero — large gradient number ───────────────────────────────────── */
+.hero-tile .metric-value {
+  font-size: 2.9rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  background: linear-gradient(135deg, #ffffff 0%, rgba(200, 180, 255, 0.85) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
+/* ─── Delta badge ────────────────────────────────────────────────────────────── */
 .metric-delta {
-  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
   font-weight: 600;
-  margin-top: 0.25rem;
+  margin-top: 0.1rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  width: fit-content;
 }
 
-.delta-positive { color: #10b981; } /* Emerald */
-.delta-negative { color: #ef4444; } /* Red */
-.delta-neutral { color: #a1a1aa; }  /* Gray */
+.delta-positive {
+  color: var(--success);
+  background: rgba(16, 185, 129, 0.1);
+}
+.delta-negative {
+  color: var(--danger);
+  background: rgba(239, 68, 68, 0.1);
+}
+.delta-neutral {
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.05);
+}

@@ -1,699 +1,213 @@
 {
-  "generated_at": "2026-05-26T10:24:08.448614+00:00",
-  "run_id": "20260526T102407_27755c",
-  "total_observations": 66,
+  "generated_at": "2026-05-25T18:32:00Z",
+  "run_id": "20260525T183200_a4f8e1",
+  "total_observations": 24,
   "current": {
-    "date": "2026-04-01",
-    "regime_id": 3,
-    "regime_label": "Recession_Fear",
-    "regime_prob": 1.0,
-    "prob_Goldilocks": 0.0,
-    "prob_Recovery": 0.0,
-    "prob_Rate_Shock": 4.203895392974451e-45,
-    "prob_Recession_Fear": 1.0
+    "date": "2024-12-31",
+    "regime_id": 0,
+    "regime_label": "Goldilocks",
+    "regime_prob": 0.87
   },
   "history": [
     {
-      "date": "2010-01-01",
-      "regime_id": 1,
-      "regime_label": "Recovery",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 1.0,
-      "prob_Rate_Shock": 1.4812459048308623e-37,
-      "prob_Recession_Fear": 0.0
+      "date": "2019-03-31",
+      "regime_id": 0,
+      "regime_label": "Goldilocks",
+      "regime_prob": 0.87
     },
     {
-      "date": "2010-04-01",
+      "date": "2019-06-30",
+      "regime_id": 0,
+      "regime_label": "Goldilocks",
+      "regime_prob": 0.91
+    },
+    {
+      "date": "2019-09-30",
+      "regime_id": 0,
+      "regime_label": "Goldilocks",
+      "regime_prob": 0.84
+    },
+    {
+      "date": "2019-12-31",
+      "regime_id": 0,
+      "regime_label": "Goldilocks",
+      "regime_prob": 0.88
+    },
+    {
+      "date": "2020-03-31",
+      "regime_id": 0,
+      "regime_label": "Goldilocks",
+      "regime_prob": 0.82
+    },
+    {
+      "date": "2020-06-30",
       "regime_id": 3,
       "regime_label": "Recession_Fear",
-      "regime_prob": 0.9999999403953552,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 1.7945613977167403e-30,
-      "prob_Rate_Shock": 4.398379260805996e-08,
-      "prob_Recession_Fear": 0.9999999403953552
+      "regime_prob": 0.93
     },
     {
-      "date": "2010-07-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 1.3923408866828302e-12,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2010-10-01",
-      "regime_id": 1,
-      "regime_label": "Recovery",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 1.0,
-      "prob_Rate_Shock": 5.093306520629042e-16,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2011-01-01",
-      "regime_id": 1,
-      "regime_label": "Recovery",
-      "regime_prob": 0.999915599822998,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 0.999915599822998,
-      "prob_Rate_Shock": 8.4386054368224e-05,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2011-04-01",
-      "regime_id": 1,
-      "regime_label": "Recovery",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 1.0,
-      "prob_Rate_Shock": 8.916501217925976e-12,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2011-07-01",
+      "date": "2020-09-30",
       "regime_id": 3,
       "regime_label": "Recession_Fear",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 0.0,
-      "prob_Rate_Shock": 1.810792760181812e-08,
-      "prob_Recession_Fear": 1.0
+      "regime_prob": 0.89
     },
     {
-      "date": "2011-10-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 3.2733634279992493e-38,
-      "prob_Recovery": 7.728257473215557e-19,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2012-01-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 3.418709216485168e-30,
-      "prob_Recovery": 2.4847505997183106e-11,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2012-04-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 6.737133342359312e-31,
-      "prob_Recovery": 7.542971802720899e-11,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2012-07-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 1.3008071267555389e-30,
-      "prob_Recovery": 5.567452401877837e-11,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2012-10-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 0.9957832098007202,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 0.00421676691621542,
-      "prob_Rate_Shock": 0.9957832098007202,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2013-01-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 2.480628049105237e-30,
-      "prob_Recovery": 3.457354541547275e-11,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2013-04-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 3.9505110481153244e-33,
-      "prob_Recovery": 8.703426312983709e-10,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2013-07-01",
+      "date": "2020-12-31",
       "regime_id": 1,
       "regime_label": "Recovery",
-      "regime_prob": 0.9941362142562866,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 0.9941362142562866,
-      "prob_Rate_Shock": 0.005863786209374666,
-      "prob_Recession_Fear": 0.0
+      "regime_prob": 0.78
     },
     {
-      "date": "2013-10-01",
+      "date": "2021-03-31",
       "regime_id": 1,
       "regime_label": "Recovery",
-      "regime_prob": 0.9999164938926697,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 0.9999164938926697,
-      "prob_Rate_Shock": 8.352922304766253e-05,
-      "prob_Recession_Fear": 0.0
+      "regime_prob": 0.71
     },
     {
-      "date": "2014-01-01",
+      "date": "2021-06-30",
       "regime_id": 1,
       "regime_label": "Recovery",
-      "regime_prob": 0.9996691942214966,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 0.9996691942214966,
-      "prob_Rate_Shock": 0.000330834329361096,
-      "prob_Recession_Fear": 0.0
+      "regime_prob": 0.83
     },
     {
-      "date": "2014-04-01",
+      "date": "2021-09-30",
       "regime_id": 1,
       "regime_label": "Recovery",
-      "regime_prob": 0.9952425956726074,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 0.9952425956726074,
-      "prob_Rate_Shock": 0.004757382441312075,
-      "prob_Recession_Fear": 0.0
+      "regime_prob": 0.9
     },
     {
-      "date": "2014-07-01",
-      "regime_id": 1,
-      "regime_label": "Recovery",
-      "regime_prob": 0.9175423979759216,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 0.9175423979759216,
-      "prob_Rate_Shock": 0.08245760202407837,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2014-10-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 0.9993482828140259,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 0.0006517029250971973,
-      "prob_Rate_Shock": 0.9993482828140259,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2015-01-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 0.9919655323028564,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 0.008034467697143555,
-      "prob_Rate_Shock": 0.9919655323028564,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2015-04-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 0.9832301735877991,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 0.01676981896162033,
-      "prob_Rate_Shock": 0.9832301735877991,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2015-07-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 6.90742005694106e-13,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2015-10-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 1.8818786529095632e-09,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2016-01-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 0.9991046190261841,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 0.0008953620563261211,
-      "prob_Rate_Shock": 0.9991046190261841,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2016-04-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 0.999868631362915,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 0.0001313644606852904,
-      "prob_Rate_Shock": 0.999868631362915,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2016-07-01",
-      "regime_id": 1,
-      "regime_label": "Recovery",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 1.0,
-      "prob_Rate_Shock": 2.046715284742404e-20,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2016-10-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 4.241793277303535e-13,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2017-01-01",
-      "regime_id": 1,
-      "regime_label": "Recovery",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 1.0,
-      "prob_Rate_Shock": 3.890303632181956e-30,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2017-04-01",
-      "regime_id": 1,
-      "regime_label": "Recovery",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 1.0,
-      "prob_Rate_Shock": 8.800154355959851e-42,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2017-07-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 1.1568440649867284e-09,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2017-10-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 6.3468015018885415e-28,
-      "prob_Recovery": 2.337267774544442e-16,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2018-01-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 3.653770290274467e-27,
-      "prob_Recovery": 5.486743286791931e-20,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2018-04-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 1.5743323663328965e-27,
-      "prob_Recovery": 4.63533651865118e-18,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2018-07-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 5.4368948404013225e-27,
-      "prob_Recovery": 4.91902499858978e-21,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2018-10-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 6.290174606918024e-21,
-      "prob_Recovery": 3.849803526101756e-38,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2019-01-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 1.565747190549519e-29,
-      "prob_Recovery": 3.654308192851952e-12,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2019-04-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 1.3063154932834921e-30,
-      "prob_Recovery": 5.3292339291521884e-11,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2019-07-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 1.01955716406724e-32,
-      "prob_Recovery": 5.7969323785656e-12,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2019-10-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 0.9999999403953552,
-      "prob_Goldilocks": 3.113825317576176e-41,
-      "prob_Recovery": 5.9419466680310506e-08,
-      "prob_Rate_Shock": 0.9999999403953552,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2020-01-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 0.0,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2020-04-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 7.890928934360192e-23,
-      "prob_Recovery": 7.696673854257988e-39,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2020-07-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 1.2692047044975013e-26,
-      "prob_Recovery": 5.790096063283155e-25,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2020-10-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 6.0183136843715505e-37,
-      "prob_Recovery": 2.217071258230215e-15,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2021-01-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 0.9998947978019714,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 0.00010520328942220658,
-      "prob_Rate_Shock": 0.9998947978019714,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2021-04-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 0.9998437166213989,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 0.0001562880934216082,
-      "prob_Rate_Shock": 0.9998437166213989,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2021-07-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 5.73897492028852e-11,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2021-10-01",
-      "regime_id": 1,
-      "regime_label": "Recovery",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 1.0,
-      "prob_Rate_Shock": 2.366008764383199e-33,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2022-01-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 1.5077482616641282e-29,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2022-04-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 1.3058416505702802e-28,
-      "prob_Recovery": 0.0,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2022-07-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 0.0,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2022-10-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 2.053220624794616e-27,
-      "prob_Recovery": 0.0,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2023-01-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 7.286752014489049e-44,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2023-04-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 1.6490267174833662e-15,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2023-07-01",
-      "regime_id": 2,
-      "regime_label": "Rate_Shock",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 3.521143793205894e-11,
-      "prob_Recovery": 1.5010444584697376e-36,
-      "prob_Rate_Shock": 1.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2023-10-01",
+      "date": "2021-12-31",
       "regime_id": 0,
       "regime_label": "Goldilocks",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 1.0,
-      "prob_Recovery": 0.0,
-      "prob_Rate_Shock": 0.0,
-      "prob_Recession_Fear": 0.0
+      "regime_prob": 0.86
     },
     {
-      "date": "2024-01-01",
-      "regime_id": 0,
-      "regime_label": "Goldilocks",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 1.0,
-      "prob_Recovery": 0.0,
-      "prob_Rate_Shock": 0.0,
-      "prob_Recession_Fear": 0.0
+      "date": "2022-03-31",
+      "regime_id": 2,
+      "regime_label": "Rate_Shock",
+      "regime_prob": 0.92
     },
     {
-      "date": "2024-04-01",
-      "regime_id": 0,
-      "regime_label": "Goldilocks",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 1.0,
-      "prob_Recovery": 0.0,
-      "prob_Rate_Shock": 0.0,
-      "prob_Recession_Fear": 0.0
+      "date": "2022-06-30",
+      "regime_id": 2,
+      "regime_label": "Rate_Shock",
+      "regime_prob": 0.88
     },
     {
-      "date": "2024-07-01",
-      "regime_id": 0,
-      "regime_label": "Goldilocks",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 1.0,
-      "prob_Recovery": 0.0,
-      "prob_Rate_Shock": 0.0,
-      "prob_Recession_Fear": 0.0
+      "date": "2022-09-30",
+      "regime_id": 2,
+      "regime_label": "Rate_Shock",
+      "regime_prob": 0.94
     },
     {
-      "date": "2024-10-01",
-      "regime_id": 0,
-      "regime_label": "Goldilocks",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 1.0,
-      "prob_Recovery": 0.0,
-      "prob_Rate_Shock": 0.0,
-      "prob_Recession_Fear": 0.0
+      "date": "2022-12-31",
+      "regime_id": 2,
+      "regime_label": "Rate_Shock",
+      "regime_prob": 0.91
     },
     {
-      "date": "2025-01-01",
-      "regime_id": 0,
-      "regime_label": "Goldilocks",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 1.0,
-      "prob_Recovery": 0.0,
-      "prob_Rate_Shock": 0.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2025-04-01",
-      "regime_id": 0,
-      "regime_label": "Goldilocks",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 1.0,
-      "prob_Recovery": 0.0,
-      "prob_Rate_Shock": 0.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2025-07-01",
-      "regime_id": 0,
-      "regime_label": "Goldilocks",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 1.0,
-      "prob_Recovery": 0.0,
-      "prob_Rate_Shock": 0.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2025-10-01",
-      "regime_id": 0,
-      "regime_label": "Goldilocks",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 1.0,
-      "prob_Recovery": 0.0,
-      "prob_Rate_Shock": 0.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2026-01-01",
-      "regime_id": 0,
-      "regime_label": "Goldilocks",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 1.0,
-      "prob_Recovery": 0.0,
-      "prob_Rate_Shock": 0.0,
-      "prob_Recession_Fear": 0.0
-    },
-    {
-      "date": "2026-04-01",
+      "date": "2023-03-31",
       "regime_id": 3,
       "regime_label": "Recession_Fear",
-      "regime_prob": 1.0,
-      "prob_Goldilocks": 0.0,
-      "prob_Recovery": 0.0,
-      "prob_Rate_Shock": 4.203895392974451e-45,
-      "prob_Recession_Fear": 1.0
+      "regime_prob": 0.79
+    },
+    {
+      "date": "2023-06-30",
+      "regime_id": 1,
+      "regime_label": "Recovery",
+      "regime_prob": 0.82
+    },
+    {
+      "date": "2023-09-30",
+      "regime_id": 1,
+      "regime_label": "Recovery",
+      "regime_prob": 0.87
+    },
+    {
+      "date": "2023-12-31",
+      "regime_id": 0,
+      "regime_label": "Goldilocks",
+      "regime_prob": 0.9
+    },
+    {
+      "date": "2024-03-31",
+      "regime_id": 0,
+      "regime_label": "Goldilocks",
+      "regime_prob": 0.85
+    },
+    {
+      "date": "2024-06-30",
+      "regime_id": 0,
+      "regime_label": "Goldilocks",
+      "regime_prob": 0.88
+    },
+    {
+      "date": "2024-09-30",
+      "regime_id": 0,
+      "regime_label": "Goldilocks",
+      "regime_prob": 0.91
+    },
+    {
+      "date": "2024-12-31",
+      "regime_id": 0,
+      "regime_label": "Goldilocks",
+      "regime_prob": 0.87
     }
   ],
   "distribution": [
     {
-      "regime_label": "Rate_Shock",
-      "count": 40,
-      "pct": 0.606
+      "regime_label": "Goldilocks",
+      "count": 11,
+      "pct": 0.458
     },
     {
       "regime_label": "Recovery",
-      "count": 13,
-      "pct": 0.197
+      "count": 6,
+      "pct": 0.25
     },
     {
-      "regime_label": "Goldilocks",
-      "count": 10,
-      "pct": 0.152
+      "regime_label": "Rate_Shock",
+      "count": 4,
+      "pct": 0.167
     },
     {
       "regime_label": "Recession_Fear",
       "count": 3,
-      "pct": 0.045
+      "pct": 0.125
     }
-  ]
+  ],
+  "transition_matrix": {
+    "labels": [
+      "Goldilocks",
+      "Recovery",
+      "Rate_Shock",
+      "Recession_Fear"
+    ],
+    "matrix": [
+      [
+        0.78,
+        0.14,
+        0.06,
+        0.02
+      ],
+      [
+        0.22,
+        0.62,
+        0.09,
+        0.07
+      ],
+      [
+        0.05,
+        0.18,
+        0.71,
+        0.06
+      ],
+      [
+        0.08,
+        0.31,
+        0.1,
+        0.51
+      ]
+    ]
+  }
 }
