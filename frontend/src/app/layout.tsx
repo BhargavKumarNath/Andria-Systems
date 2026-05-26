@@ -1,6 +1,5 @@
 import React from "react";
 import Sidebar from "@/components/Sidebar";
-import FreshnessBanner from "@/components/FreshnessBanner";
 import { getMetadata } from "@/lib/loaders";
 import "./globals.css";
 
@@ -18,9 +17,12 @@ export default async function RootLayout({
     <html lang="en">
       <body>
         <div className="main-layout">
-          <Sidebar />
+          <Sidebar
+            runId={meta?.run_id?.slice(-8)}
+            gitCommit={meta?.git_commit?.slice(0, 7)}
+            builtAt={meta?.generated_at ?? undefined}
+          />
           <main className="content-area">
-            <FreshnessBanner metadata={meta} />
             {children}
           </main>
         </div>
