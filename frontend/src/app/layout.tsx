@@ -1,35 +1,26 @@
-"use client";
-
 import React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { ROUTES } from "@/lib/constants";
+import Sidebar from "@/components/Sidebar";
+import FreshnessBanner from "@/components/FreshnessBanner";
+import { getMetadata } from "@/lib/loaders";
 import "./globals.css";
 
-export default function RootLayout({
+export const metadata = {
+  title: { default: "Andria Systems", template: "%s | Andria Systems" },
+  description: "Quantitative research platform — 116M SEC 13F filings, RACS signal generation, HMM regime detection, and institutional-grade research validation.",
+};
+
+export default async function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const pathname = usePathname();
+}: Readonly<{ children: React.ReactNode }>) {
+  const meta = await getMetadata();
 
   return (
     <html lang="en">
       <body>
         <div className="main-layout">
-          <nav className="sidebar">
-            <div className="sidebar-title">Andria Systems</div>
-            {ROUTES.map((route) => (
-              <Link 
-                key={route.path}
-                href={route.path}
-                className={`nav-link ${pathname === route.path ? "active" : ""}`}
-              >
-                {route.label}
-              </Link>
-            ))}
-          </nav>
+          <Sidebar />
           <main className="content-area">
+            <FreshnessBanner metadata={meta} />
             {children}
           </main>
         </div>

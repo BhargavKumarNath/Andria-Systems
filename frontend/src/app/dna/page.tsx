@@ -29,7 +29,7 @@ async function DnaContent() {
             <MetricTile label="Stable Archetypes" value={data.n_archetypes} />
           </GlassCard>
           <GlassCard hierarchy="secondary">
-            <MetricTile label="Silhouette Score" value={silhouette_score.toFixed(3)} />
+            <MetricTile label="Silhouette Score" value={silhouette_score != null ? silhouette_score.toFixed(3) : "—"} />
           </GlassCard>
           <GlassCard hierarchy="secondary">
             <MetricTile label="Algorithm" value="HDBSCAN" />
@@ -42,7 +42,7 @@ async function DnaContent() {
         <GlassCard hierarchy="primary">
           <SectionHeader
             title="Manager Behavioral Embedding"
-            description={`UMAP 2D projection of 14 behavioural features across ${total_managers.toLocaleString()} institutional managers. Clusters identified by HDBSCAN sweep over min_cluster_size ∈ {${min_cluster_size_sweep?.join(", ")}}; best = ${best_min_cluster_size}.`}
+            description={`UMAP 2D projection of 14 behavioural features across ${total_managers.toLocaleString()} institutional managers. Clusters identified by HDBSCAN${min_cluster_size_sweep?.length ? ` sweep over min_cluster_size ∈ {${min_cluster_size_sweep.join(", ")}}; best = ${best_min_cluster_size}` : ""}.`}
           />
           <UmapScatter points={umap_sample} archetypes={realArchetypes} />
         </GlassCard>

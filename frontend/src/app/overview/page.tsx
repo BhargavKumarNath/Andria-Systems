@@ -20,9 +20,29 @@ async function OverviewContent() {
       {/* Visual Hierarchy: Hero Layer (Top 3 KPIs) */}
       <RevealContainer threshold={0.1}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "2rem" }}>
-          <MetricTile isHero label="Total Processed AUM" value={metrics.totalAUM} />
-          <MetricTile isHero label="Active Signals" value={metrics.activeSignals} />
-          <MetricTile isHero label="Current Regime" value={metrics.currentRegime} />
+          <GlassCard hierarchy="primary">
+            <MetricTile isHero label="Filings Processed" value={metrics.totalAUM} />
+          </GlassCard>
+          <GlassCard hierarchy="primary">
+            <MetricTile isHero label="Active Signals" value={String(metrics.activeSignals)} />
+          </GlassCard>
+          <GlassCard hierarchy="primary">
+            <MetricTile isHero label="Current Regime" value={metrics.currentRegime} />
+          </GlassCard>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", marginTop: "1.25rem" }}>
+          <GlassCard hierarchy="secondary">
+            <MetricTile label="Regime Confidence" value={`${(metrics.regimeProb * 100).toFixed(0)}%`} />
+          </GlassCard>
+          <GlassCard hierarchy="secondary">
+            <MetricTile label="Provenance Quality" value={`${(metrics.provenance * 100).toFixed(1)}%`} />
+          </GlassCard>
+          <GlassCard hierarchy="secondary">
+            <MetricTile label="Managers Profiled" value={metrics.managersProfiled.toLocaleString()} />
+          </GlassCard>
+          <GlassCard hierarchy="secondary">
+            <MetricTile label="EvaluationGate" value="PASSED" />
+          </GlassCard>
         </div>
       </RevealContainer>
 

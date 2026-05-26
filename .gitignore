@@ -33,6 +33,7 @@ npm-debug.log*
 
 # Exceptions for Data
 !frontend/public/data/*.json
+!frontend/vercel.json
 
 # Graphify Output
 graphify-out/
