@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { getSignalsData } from "@/lib/loaders";
+import { getSignalsData, getBacktestData } from "@/lib/loaders";
 import SectionHeader from "@/components/SectionHeader";
 import GlassCard from "@/components/GlassCard";
 import RevealContainer from "@/components/RevealContainer";
@@ -82,6 +82,8 @@ function ColumnKey() {
     { col: "Activists", color: "#3b82f6", note: "Independent Conviction Activist / Nimble Trader buyers" },
     { col: "Strong Buys", color: "#10b981", note: "Buyers who entered with > 50% conviction delta" },
     { col: "Crowding", color: "#f59e0b", note: "Green < 20% (undiscovered) · Red > 40% (fragile)" },
+    { col: "Conv. Raw", color: "#a855f7", note: "Pre-regime conviction score — compare to RACS to see regime multiplier effect" },
+    { col: "AUM Behind", color: "#38bdf8", note: "Total activist capital in this ticker across all buyers" },
   ];
   return (
     <div style={{
@@ -107,9 +109,197 @@ function ColumnKey() {
   );
 }
 
+/* ─── Signal Quality Strip ───────────────────────────────────────────────────── */
+function SignalQualityStrip({
+  halfLifeDays,
+  peakIc,
+  hitRate,
+}: {
+  halfLifeDays: number;
+  peakIc: number;
+  hitRate: number;
+}) {
+  const items = [
+    {
+      label: "IC Half-Life",
+      value: halfLifeDays > 0 ? `${halfLifeDays}d` : "—",
+      sub: "Days until signal predictive power halves",
+      icon: "⌛",
+      color: halfLifeDays >= 60 ? "#10b981" : halfLifeDays >= 30 ? "#f59e0b" : "#ef4444",
+      detail: halfLifeDays >= 60 ? "Long-lived" : halfLifeDays >= 30 ? "Medium decay" : "Fast decay",
+    },
+    {
+      label: "Peak IC",
+      value: peakIc > 0 ? peakIc.toFixed(3) : "—",
+      sub: "Information Coefficient at optimal holding horizon",
+      icon: "◎",
+      color: peakIc >= 0.05 ? "#10b981" : peakIc >= 0.02 ? "#f59e0b" : "#ef4444",
+      detail: peakIc >= 0.05 ? "Strong" : peakIc >= 0.02 ? "Moderate" : "Weak",
+    },
+    {
+      label: "Hit Rate",
+      value: hitRate > 0 ? `${(hitRate * 100).toFixed(1)}%` : "—",
+      sub: "Fraction of trades that were profitable",
+      icon: "✓",
+      color: hitRate >= 0.55 ? "#10b981" : hitRate >= 0.48 ? "#f59e0b" : "#ef4444",
+      detail: hitRate >= 0.55 ? "Above chance" : hitRate >= 0.48 ? "Near 50/50" : "Below chance",
+    },
+  ];
+
+  return (
+    <div style={{
+      borderRadius: 12,
+      border: "1px solid rgba(138,43,226,0.15)",
+      backgroundColor: "rgba(138,43,226,0.04)",
+      overflow: "hidden",
+    }}>
+      {/* Header */}
+      <div style={{
+        padding: "0.6rem 1.2rem",
+        borderBottom: "1px solid rgba(138,43,226,0.12)",
+        backgroundColor: "rgba(138,43,226,0.07)",
+        display: "flex", alignItems: "center", gap: "0.5rem",
+      }}>
+        <div style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "#8a2be2", boxShadow: "0 0 6px #8a2be280" }} />
+        <span style={{ fontSize: "0.62rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#c4b5fd" }}>
+          Signal Quality Indicators · From Backtest
+        </span>
+      </div>
+
+      {/* Cards */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)" }}>
+        {items.map(({ label, value, sub, icon, color, detail }, i) => (
+          <div key={label} style={{
+            padding: "1rem 1.25rem",
+            borderRight: i < 2 ? "1px solid rgba(255,255,255,0.05)" : "none",
+            display: "flex", flexDirection: "column", gap: "0.3rem",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.15rem" }}>
+              <span style={{ fontSize: "0.75rem", color }}>{icon}</span>
+              <span style={{ fontSize: "0.62rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)" }}>
+                {label}
+              </span>
+            </div>
+            <div style={{ display: "flex", alignItems: "baseline", gap: "0.5rem" }}>
+              <span style={{ fontSize: "1.9rem", fontWeight: 800, letterSpacing: "-0.04em", color, lineHeight: 1 }}>
+                {value}
+              </span>
+              <span style={{
+                fontSize: "0.62rem", fontWeight: 700, padding: "0.1rem 0.45rem",
+                borderRadius: 4, backgroundColor: `${color}18`, color,
+              }}>
+                {detail}
+              </span>
+            </div>
+            <p style={{ fontSize: "0.7rem", color: "var(--text-muted)", lineHeight: 1.5, margin: 0 }}>
+              {sub}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ─── RACS Score Distribution ────────────────────────────────────────────────── */
+function ScoreDistribution({ scores }: { scores: number[] }) {
+  if (scores.length === 0) return null;
+
+  const min = Math.min(...scores);
+  const max = Math.max(...scores);
+  const median = [...scores].sort((a, b) => a - b)[Math.floor(scores.length / 2)];
+
+  // 5 quintile bands
+  const range = max - min || 1;
+  const bandSize = range / 5;
+  const bands = [
+    { label: "Q1 (Lowest)", color: "#ef4444", from: min, to: min + bandSize },
+    { label: "Q2", color: "#f59e0b", from: min + bandSize, to: min + bandSize * 2 },
+    { label: "Q3", color: "#a1a1aa", from: min + bandSize * 2, to: min + bandSize * 3 },
+    { label: "Q4", color: "#3b82f6", from: min + bandSize * 3, to: min + bandSize * 4 },
+    { label: "Q5 (Strongest)", color: "#10b981", from: min + bandSize * 4, to: max + 0.0001 },
+  ];
+
+  const counts = bands.map(b => scores.filter(s => s >= b.from && s < b.to).length);
+  const maxCount = Math.max(...counts, 1);
+
+  return (
+    <div style={{
+      borderRadius: 12,
+      border: "1px solid rgba(255,255,255,0.07)",
+      backgroundColor: "rgba(255,255,255,0.02)",
+      overflow: "hidden",
+    }}>
+      {/* Header */}
+      <div style={{
+        padding: "0.6rem 1.2rem",
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.5rem",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <span style={{ fontSize: "0.62rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)" }}>
+            RACS Score Distribution · {scores.length} signals
+          </span>
+        </div>
+        <div style={{ display: "flex", gap: "1rem" }}>
+          {[
+            { label: "Min", value: min.toFixed(4) },
+            { label: "Median", value: median.toFixed(4) },
+            { label: "Max", value: max.toFixed(4) },
+          ].map(({ label, value }) => (
+            <div key={label} style={{ display: "flex", gap: "0.35rem", alignItems: "baseline" }}>
+              <span style={{ fontSize: "0.6rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</span>
+              <span style={{ fontSize: "0.75rem", fontWeight: 700, fontFamily: "monospace", color: "var(--text-secondary)" }}>{value}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Distribution bars */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)" }}>
+        {bands.map(({ label, color }, i) => {
+          const count = counts[i];
+          const pct = (count / maxCount) * 100;
+          const signalPct = ((count / scores.length) * 100).toFixed(0);
+          return (
+            <div key={label} style={{
+              padding: "1rem 0.85rem",
+              borderRight: i < 4 ? "1px solid rgba(255,255,255,0.04)" : "none",
+              display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center",
+            }}>
+              {/* Bar */}
+              <div style={{ width: "100%", height: 72, display: "flex", alignItems: "flex-end" }}>
+                <div style={{
+                  width: "100%",
+                  height: `${Math.max(pct, 4)}%`,
+                  borderRadius: "4px 4px 0 0",
+                  backgroundColor: color,
+                  opacity: 0.75,
+                  transition: "height 0.4s ease",
+                  boxShadow: `0 0 8px ${color}40`,
+                }} />
+              </div>
+              {/* Count */}
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: "1.1rem", fontWeight: 800, color, lineHeight: 1 }}>{count}</div>
+                <div style={{ fontSize: "0.6rem", color: "var(--text-muted)", marginTop: "0.15rem" }}>{signalPct}%</div>
+              </div>
+              {/* Label */}
+              <div style={{ fontSize: "0.6rem", fontWeight: 600, color: "var(--text-muted)", textAlign: "center", letterSpacing: "0.05em" }}>
+                {label}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 async function SignalsContent() {
-  const data = await getSignalsData();
+  const [data, backtest] = await Promise.all([getSignalsData(), getBacktestData()]);
   const { signals, total_signals, provenance_quality, validation_passed } = data;
+  const { signal_decay, summary: bSummary } = backtest;
 
   /* Derived stats */
   const topSignal = signals[0];
@@ -127,6 +317,7 @@ async function SignalsContent() {
   }, {});
 
   const currentRegime = topSignal?.regime_label ?? "Goldilocks";
+  const racsScores = signals.map((s) => s.regime_adjusted_racs);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "2.5rem" }}>
@@ -230,7 +421,16 @@ async function SignalsContent() {
         </div>
       </RevealContainer>
 
-      {/* ── 3. RACS formula visual ─────────────────────────────────────────────── */}
+      {/* ── 3. Signal Quality Strip (NEW) ─────────────────────────────────────── */}
+      <RevealContainer threshold={0.1}>
+        <SignalQualityStrip
+          halfLifeDays={signal_decay.half_life_days}
+          peakIc={signal_decay.peak_ic}
+          hitRate={bSummary.hit_rate}
+        />
+      </RevealContainer>
+
+      {/* ── 4. RACS formula visual ─────────────────────────────────────────────── */}
       <RevealContainer threshold={0.1}>
         <SectionHeader
           title="How Every Score Is Built"
@@ -239,7 +439,18 @@ async function SignalsContent() {
         <RacsFormulaVisual currentRegime={currentRegime} />
       </RevealContainer>
 
-      {/* ── 4. Signal table ───────────────────────────────────────────────────── */}
+      {/* ── 5. Score Distribution (NEW) ───────────────────────────────────────── */}
+      {racsScores.length > 0 && (
+        <RevealContainer threshold={0.1}>
+          <SectionHeader
+            title="Score Landscape"
+            description="Distribution of all displayed RACS scores across five quintile bands. Most signals cluster in lower quintiles — only a handful reach the top tier simultaneously on all four components."
+          />
+          <ScoreDistribution scores={racsScores} />
+        </RevealContainer>
+      )}
+
+      {/* ── 6. Signal table ───────────────────────────────────────────────────── */}
       <RevealContainer threshold={0.1}>
         <SectionHeader
           title={`Top ${signals.length} RACS Rankings · Most Recent Quarter`}
@@ -251,7 +462,7 @@ async function SignalsContent() {
         <ColumnKey />
       </RevealContainer>
 
-      {/* ── 5. Distribution by regime ─────────────────────────────────────────── */}
+      {/* ── 7. Distribution by regime ─────────────────────────────────────────── */}
       {Object.keys(byRegime).length > 0 && (
         <RevealContainer threshold={0.15}>
           <SectionHeader

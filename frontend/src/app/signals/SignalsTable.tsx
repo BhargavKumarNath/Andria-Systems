@@ -11,6 +11,8 @@ const COLUMNS = [
   { key: "activist_buyers",       label: "Activists",    align: "right"  },
   { key: "strong_buys",           label: "Strong Buys",  align: "right"  },
   { key: "crowding_penalty",      label: "Crowding",     align: "right"  },
+  { key: "conviction_raw",        label: "Conv. Raw",    align: "right"  },
+  { key: "total_activist_value",  label: "AUM Behind",   align: "right"  },
   { key: "regime_label",          label: "Regime",       align: "left"   },
 ] as const;
 
@@ -156,6 +158,14 @@ export default function SignalsTable({ signals }: { signals: RacsSignal[] }) {
               <td style={{ ...tdStyle("right"), fontVariantNumeric: "tabular-nums", color: "#10b981" }}>{s.strong_buys}</td>
               <td style={tdStyle("right")}>
                 <CrowdingCell value={s.crowding_penalty} />
+              </td>
+              <td style={{ ...tdStyle("right"), fontVariantNumeric: "tabular-nums", color: "#a855f7" }}>
+                {s.conviction_raw.toFixed(4)}
+              </td>
+              <td style={{ ...tdStyle("right"), fontVariantNumeric: "tabular-nums", color: "#38bdf8", fontSize: "0.8rem" }}>
+                {s.total_activist_value >= 1e9
+                  ? `$${(s.total_activist_value / 1e9).toFixed(1)}B`
+                  : `$${(s.total_activist_value / 1e6).toFixed(0)}M`}
               </td>
               <td style={tdStyle("left")}>
                 <RegimeBadge label={s.regime_label} />
