@@ -1,14 +1,11 @@
 """Tests for the Alpha Factory Engine and Look-Ahead Bias Elimination."""
 
 from __future__ import annotations
-
 import os
 from datetime import date
-
 import polars as pl
 import psutil
 import pytest
-
 from andria.backtest.costs import TransactionCostModel
 from andria.backtest.diagnostics import benjamini_hochberg_fdr
 from andria.backtest.engine import AlphaFactoryEngine
