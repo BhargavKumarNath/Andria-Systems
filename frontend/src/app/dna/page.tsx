@@ -11,7 +11,7 @@ function Skeleton() {
   return <div className="skeleton-shimmer" style={{ width: "100%", height: 500 }} />;
 }
 
-/* ─── UMAP reading guide ─────────────────────────────────────────────────────── */
+/* UMAP reading guide */
 function UmapReadingGuide({ color }: { color?: string }) {
   const accent = color ?? "#8a2be2";
   const guides = [
@@ -91,7 +91,7 @@ async function DnaContent() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "3rem" }}>
 
-      {/* ── 1. Hero intro ─────────────────────────────────────────────────────── */}
+      {/* 1. Hero intro */}
       <RevealContainer threshold={0.05}>
         <GlassCard hierarchy="primary">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "2rem", flexWrap: "wrap" }}>
@@ -148,7 +148,7 @@ async function DnaContent() {
         </GlassCard>
       </RevealContainer>
 
-      {/* ── 2. KPI row ────────────────────────────────────────────────────────── */}
+      {/* 2. KPI row */}
       <RevealContainer threshold={0.1}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1.5rem" }}>
           <GlassCard hierarchy="secondary">
@@ -182,7 +182,7 @@ async function DnaContent() {
         </div>
       </RevealContainer>
 
-      {/* ── 3. UMAP scatter + reading guide ───────────────────────────────────── */}
+      {/* 3. UMAP scatter + reading guide */}
       <RevealContainer threshold={0.1}>
         <SectionHeader
           title="Manager Behavioral Embedding"
@@ -196,7 +196,7 @@ async function DnaContent() {
         </div>
       </RevealContainer>
 
-      {/* ── 4. Archetype cards ────────────────────────────────────────────────── */}
+      {/* 4. Archetype cards */}
       <RevealContainer threshold={0.1}>
         <SectionHeader
           title="Behavioural Archetypes"
@@ -205,7 +205,7 @@ async function DnaContent() {
         <ArchetypeCards archetypes={realArchetypes} />
       </RevealContainer>
 
-      {/* ── 5. Feature space ──────────────────────────────────────────────────── */}
+      {/* 5. Feature space */}
       <RevealContainer threshold={0.15}>
         <GlassCard hierarchy="secondary">
           <SectionHeader

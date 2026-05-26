@@ -2,25 +2,13 @@ import React from "react";
 import SectionHeader from "@/components/SectionHeader";
 import GlassCard from "@/components/GlassCard";
 import RevealContainer from "@/components/RevealContainer";
-
-function FormulaBlock({ children }: { children: React.ReactNode }) {
-  return (
-    <div style={{
-      fontFamily: "monospace",
-      fontSize: "0.9rem",
-      padding: "1rem 1.25rem",
-      borderRadius: 8,
-      backgroundColor: "rgba(138,43,226,0.06)",
-      border: "1px solid rgba(138,43,226,0.2)",
-      color: "#c4b5fd",
-      lineHeight: 1.8,
-      overflowX: "auto",
-      whiteSpace: "pre-wrap",
-    }}>
-      {children}
-    </div>
-  );
-}
+import {
+  InteractiveFormula,
+  UmapScatterSim,
+  HmmVisuals,
+  ValidationCards,
+  CitationsCarousel
+} from "./MethodologyVisuals";
 
 function FeatureChip({ label }: { label: string }) {
   return (
@@ -38,380 +26,181 @@ function FeatureChip({ label }: { label: string }) {
   );
 }
 
-function Cite({ authors, year, title, venue }: { authors: string; year: string; title: string; venue: string }) {
-  return (
-    <div style={{ marginBottom: "0.75rem", paddingLeft: "1rem", borderLeft: "2px solid rgba(138,43,226,0.3)" }}>
-      <div style={{ fontSize: "0.82rem", fontWeight: 600, marginBottom: "0.15rem" }}>{title}</div>
-      <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
-        {authors} ({year}) · <em>{venue}</em>
-      </div>
-    </div>
-  );
-}
-
 export default function MethodologyPage() {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "3rem" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "3.5rem" }}>
 
-      {/* Overview */}
-      <RevealContainer threshold={0.1}>
-        <GlassCard hierarchy="primary">
-          <SectionHeader
-            title="Research Methodology"
-            description="Andria Systems applies peer-reviewed quantitative finance techniques to SEC 13F institutional holdings data. Every modelling decision maps to an academic citation or an institutional standard."
-          />
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", marginTop: "0.5rem" }}>
-            {[
-              { label: "Raw Filings", value: "116M" },
-              { label: "Quarters", value: "81" },
-              { label: "Unique Managers", value: "8,934" },
-              { label: "CUSIP Mappings", value: "3.4M" },
-            ].map(({ label, value }) => (
-              <div key={label} style={{ textAlign: "center", padding: "0.75rem", borderRadius: 8, backgroundColor: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                <div style={{ fontSize: "1.8rem", fontWeight: 800, color: "#8a2be2" }}>{value}</div>
-                <div style={{ fontSize: "0.7rem", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</div>
-              </div>
-            ))}
-          </div>
-        </GlassCard>
-      </RevealContainer>
-
-      {/* RACS */}
-      <RevealContainer threshold={0.1}>
-        <GlassCard hierarchy="primary">
-          <SectionHeader
-            title="RACS: Regime-Adjusted Conviction Score"
-            description="A composite signal that combines institutional consensus, activist conviction, crowding risk, and macro regime sensitivity into a single ranked score."
-          />
-
-          <div style={{ marginBottom: "1.25rem" }}>
-            <div style={{ fontSize: "0.7rem", fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--text-secondary)", marginBottom: "0.6rem" }}>Core Formula</div>
-            <FormulaBlock>
-{`RACS = consensus_weight
-     × log(activist_buyers + 1.1)
-     × (1 − crowding_penalty)
-     × (1 ± regime_weight × regime_prob)
-
-regime_adjusted_racs = RACS × regime_multiplier(current_state)`}
-            </FormulaBlock>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
-            {[
-              {
-                term: "consensus_weight",
-                def: "Fraction of reporting managers holding the security in the quarter, weighted by AUM. Captures breadth of institutional conviction.",
-              },
-              {
-                term: "log(activist_buyers + 1.1)",
-                def: "Log-scaled count of activist-identified buyers (13D/13G filers). Logarithm dampens outlier activist clusters; +1.1 prevents log(0).",
-              },
-              {
-                term: "crowding_penalty",
-                def: "1 − (holdings_concentration / max_concentration). High crowding reduces RACS; crowded trades face forced liquidation risk during redemptions.",
-              },
-              {
-                term: "regime_weight × regime_prob",
-                def: "HMM state probability modulates RACS. Goldilocks/Recovery amplify (+); Rate_Shock/Recession_Fear dampen (−) the score.",
-              },
-            ].map(({ term, def }) => (
-              <div key={term} style={{ padding: "0.875rem", borderRadius: 8, backgroundColor: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                <div style={{ fontFamily: "monospace", fontSize: "0.78rem", color: "#c4b5fd", fontWeight: 600, marginBottom: "0.4rem" }}>{term}</div>
-                <p style={{ fontSize: "0.78rem", color: "var(--text-secondary)", lineHeight: 1.55, margin: 0 }}>{def}</p>
-              </div>
-            ))}
-          </div>
-
-          <div style={{ padding: "0.875rem 1rem", borderRadius: 8, backgroundColor: "rgba(16,185,129,0.05)", border: "1px solid rgba(16,185,129,0.15)" }}>
-            <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "#10b981", textTransform: "uppercase", letterSpacing: "0.06em" }}>Regime Multipliers · </span>
-            <span style={{ fontSize: "0.78rem", color: "var(--text-secondary)" }}>
-              Goldilocks: +15% &nbsp;·&nbsp; Recovery: +8% &nbsp;·&nbsp; Rate Shock: −12% &nbsp;·&nbsp; Recession Fear: −20%
+      {/* ── 0. Hero Overview ─────────────────────────────────────────────────── */}
+      <RevealContainer threshold={0.05}>
+        <div style={{
+          borderRadius: 18,
+          border: "1px solid rgba(138,43,226,0.25)",
+          background: "linear-gradient(135deg, rgba(138,43,226,0.08) 0%, rgba(59,130,246,0.05) 50%, rgba(16,185,129,0.04) 100%)",
+          padding: "2.5rem 3rem",
+          position: "relative", overflow: "hidden",
+        }}>
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: "0.4rem",
+            padding: "0.2rem 0.7rem", borderRadius: 20, marginBottom: "1rem",
+            backgroundColor: "rgba(138,43,226,0.1)", border: "1px solid rgba(138,43,226,0.3)",
+          }}>
+            <span style={{ fontSize: "0.65rem", fontWeight: 700, color: "#c4b5fd", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+              Andria Systems · Research Methodology
             </span>
           </div>
-        </GlassCard>
-      </RevealContainer>
 
-      {/* HDBSCAN + UMAP */}
-      <RevealContainer threshold={0.1}>
-        <GlassCard hierarchy="primary">
-          <SectionHeader
-            title="Manager DNA: HDBSCAN + UMAP Clustering"
-            description="Unsupervised segmentation of 8,934 institutional managers into behavioural archetypes using a 14-dimensional feature space."
-          />
+          <h1 style={{
+            fontSize: "clamp(1.8rem, 3vw, 2.8rem)", fontWeight: 900,
+            letterSpacing: "-0.04em", lineHeight: 1.1, margin: "0 0 1rem",
+            background: "linear-gradient(135deg, #ffffff 0%, rgba(196,181,253,0.9) 40%, rgba(59,130,246,0.8) 100%)",
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+          }}>
+            Data Science Applied to<br />Institutional Capital Flows
+          </h1>
 
-          <div style={{ marginBottom: "1.25rem" }}>
-            <div style={{ fontSize: "0.7rem", fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--text-secondary)", marginBottom: "0.6rem" }}>14-Feature Space</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
-              {[
-                "portfolio_hhi", "mean_holding_duration", "turnover_rate",
-                "activist_frequency", "aum_log", "n_holdings",
-                "momentum_tilt", "value_tilt", "sector_concentration",
-                "filing_lag_days", "small_cap_pct", "new_position_rate",
-                "avg_conviction", "regime_sensitivity",
-              ].map((f) => <FeatureChip key={f} label={f} />)}
-            </div>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
-            <div style={{ padding: "0.875rem", borderRadius: 8, backgroundColor: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
-              <div style={{ fontSize: "0.8rem", fontWeight: 700, marginBottom: "0.6rem" }}>UMAP Projection</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                {[
-                  ["n_neighbors", "15"],
-                  ["min_dist", "0.1"],
-                  ["n_components", "2"],
-                  ["metric", "cosine"],
-                  ["random_state", "42"],
-                ].map(([k, v]) => (
-                  <div key={k} style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ fontSize: "0.76rem", fontFamily: "monospace", color: "var(--text-secondary)" }}>{k}</span>
-                    <span style={{ fontSize: "0.76rem", fontFamily: "monospace", color: "#c4b5fd" }}>{v}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div style={{ padding: "0.875rem", borderRadius: 8, backgroundColor: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
-              <div style={{ fontSize: "0.8rem", fontWeight: 700, marginBottom: "0.6rem" }}>HDBSCAN Parameters</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                {[
-                  ["min_cluster_size", "50"],
-                  ["min_samples", "10"],
-                  ["metric", "euclidean"],
-                  ["cluster_selection", "eom"],
-                  ["prediction_data", "True"],
-                ].map(([k, v]) => (
-                  <div key={k} style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ fontSize: "0.76rem", fontFamily: "monospace", color: "var(--text-secondary)" }}>{k}</span>
-                    <span style={{ fontSize: "0.76rem", fontFamily: "monospace", color: "#c4b5fd" }}>{v}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", lineHeight: 1.65, margin: 0 }}>
-            UMAP (McInnes et al., 2018) preserves local and global manifold structure better than t-SNE for downstream clustering.
-            HDBSCAN (Campello et al., 2013) identifies variable-density clusters without requiring a fixed k, and explicitly models noise. Managers that do not fit any archetype are labelled Noise rather than force-assigned.
-            Archetype labels (Conviction Activists, Index Huggers, Macro Tourists, Nimble Traders) are assigned by cosine similarity between cluster centroid feature vectors and hand-crafted prototype vectors.
+          <p style={{ fontSize: "0.95rem", color: "var(--text-secondary)", lineHeight: 1.6, maxWidth: "60ch", margin: "0 0 2rem" }}>
+            Every modelling decision maps to a peer-reviewed academic standard.
+            We replace traditional discretionary analysis with unsupervised machine learning to extract
+            behavioural alpha from 20 years of SEC filings.
           </p>
-        </GlassCard>
-      </RevealContainer>
 
-      {/* HMM */}
-      <RevealContainer threshold={0.1}>
-        <GlassCard hierarchy="primary">
-          <SectionHeader
-            title="Macro Regime Detection: Gaussian HMM"
-            description="A 4-state Gaussian Hidden Markov Model trained on macroeconomic indicators to classify each quarter into a named economic regime."
-          />
-
-          <div style={{ marginBottom: "1.25rem" }}>
-            <div style={{ fontSize: "0.7rem", fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--text-secondary)", marginBottom: "0.6rem" }}>Observation Vector (per quarter)</div>
-            <FormulaBlock>
-{`o_t = [VIX_level, yield_curve_slope, credit_spreads,
-        fed_funds_delta, ofr_stress_index]
-
-P(s_t | o_1..t) via Viterbi decoding
-State label = argmax cosine_similarity(mu_k, prototype_k)`}
-            </FormulaBlock>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.85rem", marginBottom: "1rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem" }}>
             {[
-              { label: "Goldilocks", color: "#10b981", desc: "Low VIX, steep yield curve, tight spreads. Risk-on. RACS amplified +15%." },
-              { label: "Recovery", color: "#3b82f6", desc: "VIX normalising, curve re-steepening post-inversion. Selective risk-on. RACS amplified +8%." },
-              { label: "Rate Shock", color: "#f59e0b", desc: "Fed hiking aggressively, curve flattening/inverting. Duration risk elevated. RACS dampened −12%." },
-              { label: "Recession Fear", color: "#ef4444", desc: "Elevated VIX, credit spreads blowing out, OFR stress > 1.5σ. Defensive. RACS dampened −20%." },
-            ].map((r) => (
-              <div key={r.label} style={{ padding: "0.875rem", borderRadius: 8, backgroundColor: `${r.color}08`, border: `1px solid ${r.color}30` }}>
-                <div style={{ fontSize: "0.82rem", fontWeight: 700, color: r.color, marginBottom: "0.35rem" }}>{r.label}</div>
-                <p style={{ fontSize: "0.78rem", color: "var(--text-secondary)", lineHeight: 1.55, margin: 0 }}>{r.desc}</p>
+              { label: "Raw Filings", value: "116M", color: "#3b82f6" },
+              { label: "Quarters", value: "81", color: "#8a2be2" },
+              { label: "Unique Managers", value: "8,934", color: "#f59e0b" },
+              { label: "CUSIP Mappings", value: "3.4M", color: "#10b981" },
+            ].map(({ label, value, color }) => (
+              <div key={label} style={{ padding: "1rem", borderRadius: 12, backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                <div style={{ fontSize: "2.2rem", fontWeight: 800, color, lineHeight: 1, marginBottom: "0.4rem", letterSpacing: "-0.03em" }}>{value}</div>
+                <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 600 }}>{label}</div>
               </div>
             ))}
           </div>
+        </div>
+      </RevealContainer>
 
-          <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", lineHeight: 1.65, margin: 0 }}>
-            Model trained with hmmlearn using full Baum-Welch EM on 24 quarters (2019–2024) of macro data.
-            State transition matrix is estimated jointly with emission Gaussians. Viterbi decoding returns the most probable state sequence; forward algorithm gives per-quarter state probabilities reported in the dashboard.
-          </p>
+      {/* ── 1. RACS Signal Engine ────────────────────────────────────────────── */}
+      <RevealContainer threshold={0.1}>
+        <SectionHeader
+          title="1. Signal Engine: RACS Formula"
+          description="A composite score synthesising institutional consensus, activist conviction, crowding risk, and macro sensitivity."
+        />
+        <GlassCard hierarchy="primary">
+          <InteractiveFormula />
         </GlassCard>
       </RevealContainer>
 
-      {/* Research Validation */}
+      {/* ── 2. Manager DNA (Unsupervised Learning) ───────────────────────────── */}
       <RevealContainer threshold={0.1}>
+        <SectionHeader
+          title="2. Unsupervised Learning: Manager DNA"
+          description="Segmentation of 8,934 institutional managers into behavioural archetypes using dimensionality reduction and density clustering."
+        />
         <GlassCard hierarchy="primary">
-          <SectionHeader
-            title="Research Validation: EvaluationGate"
-            description="Four institutional publication criteria must all pass before a signal can be deployed. Based on Bailey et al. (2016)."
-          />
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "2rem", alignItems: "center" }}>
+            <div>
+              <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.75rem" }}>
+                The 14-Feature Space
+              </div>
+              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: 1.6, marginBottom: "1rem" }}>
+                Each manager is mapped to a 14-dimensional behavioural vector per quarter. No fundamental or price data is used — only trading behaviour.
+              </p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "1.5rem" }}>
+                {[
+                  "portfolio_hhi", "mean_holding_duration", "turnover_rate",
+                  "activist_frequency", "aum_log", "n_holdings",
+                  "momentum_tilt", "value_tilt", "sector_concentration",
+                  "filing_lag_days", "small_cap_pct", "new_position_rate",
+                  "avg_conviction", "regime_sensitivity",
+                ].map((f) => <FeatureChip key={f} label={f} />)}
+              </div>
 
-          {/* DSR */}
-          <div style={{ marginBottom: "1.75rem" }}>
-            <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#10b981", marginBottom: "0.75rem" }}>1. Deflated Sharpe Ratio (DSR)</div>
-            <FormulaBlock>
-{`DSR = SR_observed / sqrt(1 + (skew/6)SR - (kurtosis-3)/24 × SR²)
-      × sqrt(T) / sqrt(1 + (1-rho)/(2T))
-
-Threshold: DSR > 1.0 (two-tailed, alpha=0.05)
-Adjustment: n_trials = number of strategy configurations tested`}
-            </FormulaBlock>
-            <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: 1.65, marginTop: "0.75rem" }}>
-              The DSR penalises the observed Sharpe Ratio for the number of independent trials tested (multiple testing bias), non-normal return distribution (skewness and excess kurtosis), and serial autocorrelation. A DSR &gt; 1.0 at the 5% significance level is required for publication.
-            </p>
-          </div>
-
-          {/* PBO */}
-          <div style={{ marginBottom: "1.75rem" }}>
-            <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#10b981", marginBottom: "0.75rem" }}>2. Probability of Backtest Overfitting (PBO)</div>
-            <FormulaBlock>
-{`CSCV: T periods → n_partitions = 16 sub-periods
-Combinations: C(16, 8) = 12,870 train/test splits
-
-For each split: select IS-optimal config, evaluate OOS
-PBO = P(rank(OOS_optimal) < 0.5 | IS selection)
-
-Threshold: PBO ≤ 0.40`}
-            </FormulaBlock>
-            <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: 1.65, marginTop: "0.75rem" }}>
-              CSCV (Combinatorially Symmetric Cross-Validation) exhaustively tests all possible train/test splits of n_partitions=16 sub-periods. For each split, the in-sample optimal configuration is selected and its out-of-sample rank recorded. PBO is the fraction of splits where the IS-optimal strategy underperforms the median OOS strategy, a direct measure of selection bias. PBO &gt; 0.40 blocks deployment.
-            </p>
-          </div>
-
-          {/* Monte Carlo */}
-          <div>
-            <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#10b981", marginBottom: "0.75rem" }}>3. Monte Carlo Null Hypothesis Tests (N=1,000 each)</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              {[
-                {
-                  name: "Bootstrap Resampling",
-                  detail: "Resample returns with replacement 1,000 times. If observed Sharpe falls in the top 5% of the null distribution (p < 0.05), the signal is not attributable to lucky draws.",
-                },
-                {
-                  name: "Randomised Entry Timing",
-                  detail: "Hold the portfolio constant but randomise entry dates uniformly across the sample. Tests whether timing specifically (rather than stock selection) drives performance.",
-                },
-                {
-                  name: "Regime Permutation",
-                  detail: "Randomly permute HMM regime labels while keeping return series fixed. Tests whether regime-conditioning adds genuine alpha or is a post-hoc rationalisation.",
-                },
-              ].map((t) => (
-                <div key={t.name} style={{ padding: "0.875rem", borderRadius: 8, backgroundColor: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                  <div style={{ fontSize: "0.82rem", fontWeight: 700, marginBottom: "0.35rem" }}>{t.name}</div>
-                  <p style={{ fontSize: "0.78rem", color: "var(--text-secondary)", lineHeight: 1.55, margin: 0 }}>{t.detail}</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <div style={{ borderLeft: "2px solid #3b82f6", paddingLeft: "1rem" }}>
+                  <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-primary)" }}>UMAP Projection</div>
+                  <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>Preserves local and global manifold structure better than t-SNE.</div>
                 </div>
-              ))}
+                <div style={{ borderLeft: "2px solid #8a2be2", paddingLeft: "1rem" }}>
+                  <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-primary)" }}>HDBSCAN Clustering</div>
+                  <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>Identifies variable-density clusters without requiring a fixed <i>k</i>. Unclustered points are explicitly labelled as Noise.</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Visualisation Component */}
+            <div style={{ padding: "1.5rem", borderRadius: 12, backgroundColor: "rgba(0,0,0,0.2)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <UmapScatterSim />
             </div>
           </div>
         </GlassCard>
       </RevealContainer>
 
-      {/* Walk-forward */}
+      {/* ── 3. Macro Regimes (HMM) ───────────────────────────────────────────── */}
       <RevealContainer threshold={0.1}>
-        <GlassCard hierarchy="secondary">
-          <SectionHeader
-            title="Walk-Forward Validation"
-            description="Expanding-window out-of-sample evaluation across 10 folds spanning 2010–2024."
-          />
-          <FormulaBlock>
-{`Fold k:
-  train = [2004_Q1, ... , T_k]        # expanding window
-  test  = [T_k + 1Q, ... , T_k + 4Q]  # 1-year OOS holdout
-
-  No look-ahead: regime model retrained each fold
-  Transaction costs applied: 5 bps large-cap, 12 bps small-cap
-  Filing lag: 45 days (realistic disclosure delay)
-  Hold period: 63 trading days`}
-          </FormulaBlock>
-          <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", lineHeight: 1.65, margin: "1rem 0 0" }}>
-            A stable Sharpe Ratio across folds confirms temporal robustness. The signal generalises beyond the in-sample period. Folds with fewer than 30 trades are flagged; metrics weighted by trade count when aggregating fold-level statistics into the portfolio-level summary.
-          </p>
+        <SectionHeader
+          title="3. Macro Intelligence: Gaussian HMM"
+          description="A 4-state Hidden Markov Model trained on macroeconomic indicators (VIX, yield curve, credit spreads, Fed funds, OFR stress)."
+        />
+        <GlassCard hierarchy="primary">
+          <HmmVisuals />
         </GlassCard>
       </RevealContainer>
 
-      {/* Factor attribution */}
+      {/* ── 4. Robustness (Evaluation Gate) ──────────────────────────────────── */}
+      <RevealContainer threshold={0.1}>
+        <SectionHeader
+          title="4. Statistical Robustness"
+          description="Based on Bailey et al. (2016). A signal must pass all gates simultaneously to be deployed."
+        />
+        <ValidationCards />
+      </RevealContainer>
+
+      {/* ── 5. Backtest Details ──────────────────────────────────────────────── */}
+      <RevealContainer threshold={0.1}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+          <GlassCard hierarchy="secondary">
+            <div style={{ fontSize: "0.95rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "1rem" }}>Walk-Forward Validation</div>
+            <div style={{ padding: "1rem", borderRadius: 8, backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", marginBottom: "1rem" }}>
+              <div style={{ fontSize: "0.75rem", fontFamily: "monospace", color: "#c4b5fd", whiteSpace: "pre-wrap" }}>
+                {`Fold k:
+train = [2004_Q1, ... , T_k] 
+test  = [T_k + 1Q, ... , T_k + 4Q]`}
+              </div>
+            </div>
+            <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: 1.6 }}>
+              Expanding-window out-of-sample evaluation across 10 folds (2010–2024).
+              No look-ahead bias: the regime model is retrained entirely from scratch in every fold.
+              Transaction costs (5-12 bps) and a realistic 45-day filing lag are strictly enforced.
+            </p>
+          </GlassCard>
+
+          <GlassCard hierarchy="secondary">
+            <div style={{ fontSize: "0.95rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "1rem" }}>Factor Attribution</div>
+            <div style={{ padding: "1rem", borderRadius: 8, backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", marginBottom: "1rem" }}>
+              <div style={{ fontSize: "0.75rem", fontFamily: "monospace", color: "#c4b5fd", whiteSpace: "pre-wrap" }}>
+                {`R_p - R_f = α + β_MKT(MKT) + β_SMB(SMB) 
+          + β_HML(HML) + β_RMW(RMW) 
+          + β_CMA(CMA) + β_MOM(MOM)`}
+              </div>
+            </div>
+            <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: 1.6 }}>
+              OLS regression of RACS portfolio returns against the Fama-French 5-Factor + Momentum model.
+              A statistically significant alpha (t-stat &gt; 2.0) confirms the strategy captures idiosyncratic edge rather than disguised beta.
+            </p>
+          </GlassCard>
+        </div>
+      </RevealContainer>
+
+      {/* ── 6. Academic References ───────────────────────────────────────────── */}
       <RevealContainer threshold={0.15}>
-        <GlassCard hierarchy="secondary">
-          <SectionHeader
-            title="Fama-French 5-Factor + Momentum Attribution"
-            description="OLS regression of RACS portfolio excess returns on the FF5 + Momentum factor model to isolate unexplained alpha."
-          />
-          <FormulaBlock>
-{`R_p,t - R_f,t = alpha
-               + beta_MKT  × (R_m,t - R_f,t)
-               + beta_SMB  × SMB_t
-               + beta_HML  × HML_t
-               + beta_RMW  × RMW_t
-               + beta_CMA  × CMA_t
-               + beta_MOM  × MOM_t
-               + epsilon_t
-
-H0: alpha = 0 (t-stat threshold: |t| > 2.0)`}
-          </FormulaBlock>
-          <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", lineHeight: 1.65, margin: "1rem 0 0" }}>
-            A statistically significant alpha (t-stat &gt; 2.0) with low R² confirms that portfolio returns are not fully explained by common factor exposures The RACS signal captures genuine idiosyncratic alpha rather than disguised factor loading. Factor data sourced from the Kenneth French data library.
-          </p>
-        </GlassCard>
+        <SectionHeader
+          title="Academic Foundation"
+          description="Peer-reviewed papers underpinning the pipeline."
+        />
+        <CitationsCarousel />
       </RevealContainer>
 
-      {/* References */}
-      <RevealContainer threshold={0.15}>
-        <GlassCard hierarchy="secondary">
-          <SectionHeader
-            title="Academic References"
-            description="Peer-reviewed papers underpinning every modelling decision in the Andria Systems pipeline."
-          />
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.1rem" }}>
-            <Cite
-              authors="Bailey, D. H., Borwein, J., Lopez de Prado, M., & Zhu, Q. J."
-              year="2016"
-              title="The Probability of Backtest Overfitting"
-              venue="Journal of Computational Finance, 20(4)"
-            />
-            <Cite
-              authors="Bailey, D. H., & Lopez de Prado, M."
-              year="2014"
-              title="The Deflated Sharpe Ratio: Correcting for Selection Bias, Backtest Overfitting and Non-Normality"
-              venue="Journal of Portfolio Management, 40(5)"
-            />
-            <Cite
-              authors="Fama, E. F., & French, K. R."
-              year="2015"
-              title="A Five-Factor Asset Pricing Model"
-              venue="Journal of Financial Economics, 116(1)"
-            />
-            <Cite
-              authors="Carhart, M. M."
-              year="1997"
-              title="On Persistence in Mutual Fund Performance"
-              venue="Journal of Finance, 52(1)"
-            />
-            <Cite
-              authors="McInnes, L., Healy, J., & Melville, J."
-              year="2018"
-              title="UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction"
-              venue="arXiv:1802.03426"
-            />
-            <Cite
-              authors="Campello, R. J. G. B., Moulavi, D., & Sander, J."
-              year="2013"
-              title="Density-Based Clustering Based on Hierarchical Density Estimates"
-              venue="PAKDD 2013, Lecture Notes in Computer Science, 7819"
-            />
-            <Cite
-              authors="Baum, L. E., Petrie, T., Soules, G., & Weiss, N."
-              year="1970"
-              title="A Maximization Technique Occurring in the Statistical Analysis of Probabilistic Functions of Markov Chains"
-              venue="Annals of Mathematical Statistics, 41(1)"
-            />
-            <Cite
-              authors="Lopez de Prado, M."
-              year="2018"
-              title="Advances in Financial Machine Learning"
-              venue="Wiley Finance"
-            />
-          </div>
-        </GlassCard>
-      </RevealContainer>
     </div>
   );
 }
