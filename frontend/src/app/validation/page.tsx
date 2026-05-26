@@ -104,7 +104,7 @@ async function ValidationContent() {
         }}>
           <div>
             <div style={{ fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>
-              Evaluation Gate — Bailey et al. (2016)
+              Evaluation Gate: Bailey et al. (2016)
             </div>
             <div style={{ fontSize: "3.5rem", fontWeight: 800, letterSpacing: "-0.04em", color: gateColor }}>
               {gate_passed ? "PASSED" : "FAILED"}

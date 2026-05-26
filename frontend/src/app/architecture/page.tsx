@@ -40,7 +40,7 @@ const STAGES: PipelineStage[] = [
   {
     n: 4,
     layer: "Macro Intelligence",
-    title: "Gaussian HMM — 4 States",
+    title: "Gaussian HMM: 4 States",
     tech: ["hmmlearn", "VIX + yield curve", "OFR stress index", "24-quarter history"],
     detail: "Gaussian HMM on macro features (VIX, yield-curve slope, credit spreads, Fed funds delta, OFR FSI). Cosine similarity assigns each state to: Goldilocks, Recovery, Rate Shock, or Recession Fear.",
     color: "#10b981",
@@ -56,7 +56,7 @@ const STAGES: PipelineStage[] = [
   {
     n: 6,
     layer: "Research Validation",
-    title: "EvaluationGate — Bailey et al.",
+    title: "EvaluationGate (Bailey et al.)",
     tech: ["Walk-forward (10 folds)", "DSR > 1.0", "PBO ≤ 0.40", "3× Monte Carlo"],
     detail: "Expanding-window walk-forward across 10 folds (2010–2024). Deflated Sharpe Ratio adjusts for multiple testing. CSCV with C(16,8)=12,870 path combinations computes PBO. Three Monte Carlo null tests at N=1000 each.",
     color: "#10b981",
@@ -90,7 +90,7 @@ const PLATFORM_TIERS = [
   },
   {
     name: "Hugging Face Spaces",
-    desc: "CPU Basic — 2 vCPU / 16 GB",
+    desc: "CPU Basic · 2 vCPU / 16 GB",
     role: "Hosts the Python research API (FastAPI). Answers methodology + metadata queries. Cold-starts acceptable since frontend is static-first.",
     cost: "$0",
     items: ["FastAPI + Uvicorn", "Governance endpoint", "Pipeline status API", "CORS for Vercel"],
@@ -98,7 +98,7 @@ const PLATFORM_TIERS = [
   },
   {
     name: "Vercel Edge CDN",
-    desc: "Free tier — 100 GB bandwidth",
+    desc: "Free tier · 100 GB bandwidth",
     role: "Serves the Next.js static export globally. All artifact data is pre-rendered at build time. Zero server-side compute per visitor request.",
     cost: "$0",
     items: ["Next.js 14 static export", "Global edge CDN", "GitHub Actions CI/CD", "Automatic HTTPS"],
@@ -109,7 +109,7 @@ const PLATFORM_TIERS = [
 const FLEX_POINTS = [
   {
     label: "Zero-Copy Column Scan",
-    detail: "DuckDB scans 116M Parquet rows in <2s on a laptop using SIMD-vectorised columnar execution — no Spark cluster needed.",
+    detail: "DuckDB scans 116M Parquet rows in <2s on a laptop using SIMD-vectorised columnar execution. No Spark cluster needed.",
   },
   {
     label: "Intelligence Tier Pattern",
@@ -198,7 +198,7 @@ export default function ArchitecturePage() {
       {/* Pipeline flow */}
       <RevealContainer threshold={0.1}>
         <SectionHeader
-          title="Data Pipeline — 8 Stages"
+          title="Data Pipeline: 8 Stages"
           description="End-to-end flow from SEC EDGAR raw XML to interactive dashboard. All ML compute happens locally; the CDN serves only pre-rendered intelligence."
         />
         <div style={{ display: "flex", flexDirection: "column" }}>

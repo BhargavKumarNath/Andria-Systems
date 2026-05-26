@@ -12,10 +12,10 @@ function fmt(iso: string): string {
 }
 
 export default function FreshnessBanner({ metadata }: { metadata: MetadataArtifact | null }) {
-  const runShort  = metadata?.run_id?.slice(-8) ?? "—";
-  const date      = metadata?.generated_at ? fmt(metadata.generated_at) : "—";
-  const commit    = metadata?.git_commit?.slice(0, 7) ?? "—";
-  const vintage   = metadata?.data_vintage?.edgar_through?.replace("_", " Q") ?? "—";
+  const runShort  = metadata?.run_id?.slice(-8) ?? "-";
+  const date      = metadata?.generated_at ? fmt(metadata.generated_at) : "-";
+  const commit    = metadata?.git_commit?.slice(0, 7) ?? "-";
+  const vintage   = metadata?.data_vintage?.edgar_through?.replace("_", " Q") ?? "-";
   const filings   = metadata?.data_vintage?.total_filings_processed
     ? `${(metadata.data_vintage.total_filings_processed / 1e6).toFixed(0)}M filings`
     : "116M filings";

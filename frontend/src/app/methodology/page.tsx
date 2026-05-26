@@ -80,7 +80,7 @@ export default function MethodologyPage() {
       <RevealContainer threshold={0.1}>
         <GlassCard hierarchy="primary">
           <SectionHeader
-            title="RACS — Regime-Adjusted Conviction Score"
+            title="RACS: Regime-Adjusted Conviction Score"
             description="A composite signal that combines institutional consensus, activist conviction, crowding risk, and macro regime sensitivity into a single ranked score."
           />
 
@@ -135,7 +135,7 @@ regime_adjusted_racs = RACS × regime_multiplier(current_state)`}
       <RevealContainer threshold={0.1}>
         <GlassCard hierarchy="primary">
           <SectionHeader
-            title="Manager DNA — HDBSCAN + UMAP Clustering"
+            title="Manager DNA: HDBSCAN + UMAP Clustering"
             description="Unsupervised segmentation of 8,934 institutional managers into behavioural archetypes using a 14-dimensional feature space."
           />
 
@@ -191,7 +191,7 @@ regime_adjusted_racs = RACS × regime_multiplier(current_state)`}
 
           <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", lineHeight: 1.65, margin: 0 }}>
             UMAP (McInnes et al., 2018) preserves local and global manifold structure better than t-SNE for downstream clustering.
-            HDBSCAN (Campello et al., 2013) identifies variable-density clusters without requiring a fixed k, and explicitly models noise — managers that do not fit any archetype are labelled Noise rather than force-assigned.
+            HDBSCAN (Campello et al., 2013) identifies variable-density clusters without requiring a fixed k, and explicitly models noise. Managers that do not fit any archetype are labelled Noise rather than force-assigned.
             Archetype labels (Conviction Activists, Index Huggers, Macro Tourists, Nimble Traders) are assigned by cosine similarity between cluster centroid feature vectors and hand-crafted prototype vectors.
           </p>
         </GlassCard>
@@ -201,7 +201,7 @@ regime_adjusted_racs = RACS × regime_multiplier(current_state)`}
       <RevealContainer threshold={0.1}>
         <GlassCard hierarchy="primary">
           <SectionHeader
-            title="Macro Regime Detection — Gaussian HMM"
+            title="Macro Regime Detection: Gaussian HMM"
             description="A 4-state Gaussian Hidden Markov Model trained on macroeconomic indicators to classify each quarter into a named economic regime."
           />
 
@@ -241,7 +241,7 @@ State label = argmax cosine_similarity(mu_k, prototype_k)`}
       <RevealContainer threshold={0.1}>
         <GlassCard hierarchy="primary">
           <SectionHeader
-            title="Research Validation — EvaluationGate"
+            title="Research Validation: EvaluationGate"
             description="Four institutional publication criteria must all pass before a signal can be deployed. Based on Bailey et al. (2016)."
           />
 
@@ -273,7 +273,7 @@ PBO = P(rank(OOS_optimal) < 0.5 | IS selection)
 Threshold: PBO ≤ 0.40`}
             </FormulaBlock>
             <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: 1.65, marginTop: "0.75rem" }}>
-              CSCV (Combinatorially Symmetric Cross-Validation) exhaustively tests all possible train/test splits of n_partitions=16 sub-periods. For each split, the in-sample optimal configuration is selected and its out-of-sample rank recorded. PBO is the fraction of splits where the IS-optimal strategy underperforms the median OOS strategy — a direct measure of selection bias. PBO &gt; 0.40 blocks deployment.
+              CSCV (Combinatorially Symmetric Cross-Validation) exhaustively tests all possible train/test splits of n_partitions=16 sub-periods. For each split, the in-sample optimal configuration is selected and its out-of-sample rank recorded. PBO is the fraction of splits where the IS-optimal strategy underperforms the median OOS strategy, a direct measure of selection bias. PBO &gt; 0.40 blocks deployment.
             </p>
           </div>
 
@@ -323,7 +323,7 @@ Threshold: PBO ≤ 0.40`}
   Hold period: 63 trading days`}
           </FormulaBlock>
           <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", lineHeight: 1.65, margin: "1rem 0 0" }}>
-            A stable Sharpe Ratio across folds confirms temporal robustness — the signal generalises beyond the in-sample period. Folds with fewer than 30 trades are flagged; metrics weighted by trade count when aggregating fold-level statistics into the portfolio-level summary.
+            A stable Sharpe Ratio across folds confirms temporal robustness. The signal generalises beyond the in-sample period. Folds with fewer than 30 trades are flagged; metrics weighted by trade count when aggregating fold-level statistics into the portfolio-level summary.
           </p>
         </GlassCard>
       </RevealContainer>
@@ -348,7 +348,7 @@ Threshold: PBO ≤ 0.40`}
 H0: alpha = 0 (t-stat threshold: |t| > 2.0)`}
           </FormulaBlock>
           <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", lineHeight: 1.65, margin: "1rem 0 0" }}>
-            A statistically significant alpha (t-stat &gt; 2.0) with low R² confirms that portfolio returns are not fully explained by common factor exposures — the RACS signal captures genuine idiosyncratic alpha rather than disguised factor loading. Factor data sourced from the Kenneth French data library.
+            A statistically significant alpha (t-stat &gt; 2.0) with low R² confirms that portfolio returns are not fully explained by common factor exposures The RACS signal captures genuine idiosyncratic alpha rather than disguised factor loading. Factor data sourced from the Kenneth French data library.
           </p>
         </GlassCard>
       </RevealContainer>

@@ -50,7 +50,7 @@ async function SignalsContent() {
         <GlassCard hierarchy="primary">
           <SectionHeader
             title="RACS Signal Rankings"
-            description="Regime-Conditioned Activist Conviction Score — consensus_weight × log(activist_buyers + 1.1) × (1 − crowding) × (1 ± regime_weight × regime_prob). Click any column to sort."
+            description="Regime-Conditioned Activist Conviction Score: consensus_weight × log(activist_buyers + 1.1) × (1 − crowding) × (1 ± regime_weight × regime_prob). Click any column to sort."
           />
           <SignalsTable signals={signals} />
         </GlassCard>

@@ -14,7 +14,7 @@ export default function ArchitectureNotice() {
       <p style={{ color: "var(--text-secondary)", lineHeight: 1.6, marginBottom: "0.75rem", fontSize: "0.9rem" }}>
         This dashboard serves synthesised artifacts computed from 116M SEC 13F filings.
         Raw data processing, clustering, HMM fitting, and backtesting run locally via the
-        full pipeline engine — the same architecture separation used by institutional platforms.
+        full pipeline engine, following the same architecture separation used by institutional platforms.
       </p>
       <div style={{
         backgroundColor: "rgba(0,0,0,0.4)",
