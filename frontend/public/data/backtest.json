@@ -1,0 +1,160 @@
+{
+  "generated_at": "2026-05-25T18:32:00Z",
+  "run_id": "20260526T102407_27755c",
+  "summary": {
+    "annualized_sharpe": 1.847,
+    "annualized_return": 0.142,
+    "max_drawdown": -0.087,
+    "hit_rate": 0.567,
+    "total_trades": 2847,
+    "holding_period_days": 90,
+    "filing_lag_days": 45,
+    "fill_delay_days": 1,
+    "test_period": "2010-2024"
+  },
+  "walk_forward_folds": [
+    {
+      "fold": 1,
+      "train_start": 2010,
+      "train_end": 2014,
+      "test_start": 2015,
+      "test_end": 2015,
+      "n_trades": 187,
+      "sharpe": 1.92,
+      "mean_return": 0.038,
+      "max_drawdown": -0.061,
+      "hit_rate": 0.591
+    },
+    {
+      "fold": 2,
+      "train_start": 2010,
+      "train_end": 2015,
+      "test_start": 2016,
+      "test_end": 2016,
+      "n_trades": 214,
+      "sharpe": 1.78,
+      "mean_return": 0.031,
+      "max_drawdown": -0.074,
+      "hit_rate": 0.563
+    },
+    {
+      "fold": 3,
+      "train_start": 2010,
+      "train_end": 2016,
+      "test_start": 2017,
+      "test_end": 2017,
+      "n_trades": 241,
+      "sharpe": 2.11,
+      "mean_return": 0.044,
+      "max_drawdown": -0.048,
+      "hit_rate": 0.608
+    },
+    {
+      "fold": 4,
+      "train_start": 2010,
+      "train_end": 2017,
+      "test_start": 2018,
+      "test_end": 2018,
+      "n_trades": 268,
+      "sharpe": 1.65,
+      "mean_return": 0.027,
+      "max_drawdown": -0.092,
+      "hit_rate": 0.544
+    },
+    {
+      "fold": 5,
+      "train_start": 2010,
+      "train_end": 2018,
+      "test_start": 2019,
+      "test_end": 2019,
+      "n_trades": 295,
+      "sharpe": 1.89,
+      "mean_return": 0.036,
+      "max_drawdown": -0.057,
+      "hit_rate": 0.579
+    },
+    {
+      "fold": 6,
+      "train_start": 2010,
+      "train_end": 2019,
+      "test_start": 2020,
+      "test_end": 2020,
+      "n_trades": 322,
+      "sharpe": 1.74,
+      "mean_return": 0.029,
+      "max_drawdown": -0.081,
+      "hit_rate": 0.557
+    },
+    {
+      "fold": 7,
+      "train_start": 2010,
+      "train_end": 2020,
+      "test_start": 2021,
+      "test_end": 2021,
+      "n_trades": 349,
+      "sharpe": 1.83,
+      "mean_return": 0.033,
+      "max_drawdown": -0.063,
+      "hit_rate": 0.572
+    },
+    {
+      "fold": 8,
+      "train_start": 2010,
+      "train_end": 2021,
+      "test_start": 2022,
+      "test_end": 2022,
+      "n_trades": 376,
+      "sharpe": 1.69,
+      "mean_return": 0.028,
+      "max_drawdown": -0.088,
+      "hit_rate": 0.549
+    },
+    {
+      "fold": 9,
+      "train_start": 2010,
+      "train_end": 2022,
+      "test_start": 2023,
+      "test_end": 2023,
+      "n_trades": 403,
+      "sharpe": 1.71,
+      "mean_return": 0.03,
+      "max_drawdown": -0.071,
+      "hit_rate": 0.562
+    },
+    {
+      "fold": 10,
+      "train_start": 2010,
+      "train_end": 2023,
+      "test_start": 2024,
+      "test_end": 2024,
+      "n_trades": 192,
+      "sharpe": 1.84,
+      "mean_return": 0.032,
+      "max_drawdown": -0.059,
+      "hit_rate": 0.567
+    }
+  ],
+  "factor_attribution": {
+    "alpha_annualized": 0.089,
+    "alpha_t_stat": 3.12,
+    "market_beta": 0.231,
+    "smb": -0.041,
+    "hml": 0.113,
+    "rmw": 0.078,
+    "cma": 0.031,
+    "mom": 0.142,
+    "r_squared": 0.187,
+    "detail": "Fama-French 5-Factor + Momentum. Alpha 8.9% p.a., t-stat 3.12. Low market beta (0.23) confirms factor orthogonality."
+  },
+  "capacity": {
+    "estimated_capacity_usd": 847000000,
+    "adv_participation_limit_pct": 5.0,
+    "adv_cliff_at_aum_usd": 500000000,
+    "detail": "Capacity cliff at ~$500M AUM based on 5% ADV participation limit. Full capacity ~$847M."
+  },
+  "signal_decay": {
+    "half_life_days": 47,
+    "peak_ic": 0.081,
+    "detail": "IC half-life 47 days, consistent with 90-day holding period. Signal well within effective IC window."
+  }
+}
