@@ -32,6 +32,13 @@ function CustomTooltip({ active, payload }: any) {
   );
 }
 
+const EVENTS = [
+  { x: "2020-06", label: "COVID crash", color: "#ef4444" },
+  { x: "2022-03", label: "Fed hike cycle", color: "#f59e0b" },
+  { x: "2023-03", label: "SVB collapse", color: "#ef4444" },
+  { x: "2024-01", label: "Goldilocks restored", color: "#10b981" },
+];
+
 export default function RegimeChart({ history }: { history: RegimePoint[] }) {
   const data = history.map((h) => ({
     ...h,
@@ -58,6 +65,22 @@ export default function RegimeChart({ history }: { history: RegimePoint[] }) {
         />
         <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255,255,255,0.04)" }} />
         <ReferenceLine y={80} stroke="rgba(255,255,255,0.08)" strokeDasharray="4 4" />
+        {EVENTS.map((ev) => (
+          <ReferenceLine
+            key={ev.x}
+            x={ev.x}
+            stroke={ev.color}
+            strokeWidth={1.5}
+            strokeDasharray="3 3"
+            label={{
+              value: ev.label,
+              position: "top",
+              fill: ev.color,
+              fontSize: 9,
+              fontWeight: 600,
+            }}
+          />
+        ))}
         <Bar dataKey="prob_pct" radius={[3, 3, 0, 0]}>
           {data.map((d, i) => (
             <Cell key={i} fill={REGIME_COLORS[d.regime_label] ?? "#a1a1aa"} />
