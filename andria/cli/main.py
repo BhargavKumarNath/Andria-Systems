@@ -163,6 +163,7 @@ def validate(
 @app.command("serve")
 def serve(
     port: Annotated[int, typer.Option("--port", "-p")] = 0,
+    host: Annotated[str, typer.Option("--host")] = "127.0.0.1",
     debug: Annotated[bool, typer.Option("--debug")] = False,
     log_level: LogLevel = "INFO",
     json_logs: JsonLogs = False,
@@ -175,8 +176,8 @@ def serve(
     dash_port = port or cfg.dashboard.port
     dash_debug = debug or cfg.dashboard.debug
     dash_app = create_app(cfg)
-    console.print(f"[bold green]Andria Dashboard launching on http://localhost:{dash_port}[/]")
-    dash_app.run(debug=dash_debug, port=dash_port)
+    console.print(f"[bold green]Andria Dashboard launching on http://{host}:{dash_port}[/]")
+    dash_app.run(host=host, debug=dash_debug, port=dash_port)
 
 
 # andria report

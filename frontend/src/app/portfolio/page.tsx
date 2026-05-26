@@ -61,13 +61,13 @@ function PortfolioHero() {
           </h1>
 
           <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: 1.65, maxWidth: "48ch", margin: 0 }}>
-            This is a <strong style={{ color: "var(--text-primary)" }}>simulated portfolio</strong> — not a live traded book.
+            This is a <strong style={{ color: "var(--text-primary)" }}>simulated portfolio</strong>, not a live traded book.
             It shows how a strategy that mechanically follows the top RACS signals would have performed,
             after realistic transaction costs and execution constraints.
           </p>
         </div>
 
-        {/* Step list — matches DNA page pattern */}
+        {/* Step list: matches DNA page pattern */}
         <div style={{
           padding: "1.1rem 1.4rem", borderRadius: 14, flexShrink: 0,
           backgroundColor: "rgba(138,43,226,0.07)", border: "1px solid rgba(138,43,226,0.2)",
@@ -159,7 +159,7 @@ function VarianceDecomposition({
       </div>
 
       <p style={{ fontSize: "0.68rem", color: "var(--text-muted)", lineHeight: 1.5, margin: "0.55rem 0 0" }}>
-        High idiosyncratic variance (green) means the strategy&apos;s returns are not explained by market or factor exposure — evidence of stock-selection skill rather than a beta bet.
+        High idiosyncratic variance (green) means the strategy&apos;s returns are not explained by market or factor exposure; evidence of stock-selection skill rather than a beta bet.
       </p>
     </div>
   );

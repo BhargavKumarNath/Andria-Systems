@@ -54,3 +54,6 @@ Thumbs.db
 # Temporary files
 .tmp/
 tmp/
+
+# Research notebooks (output-heavy, not versioned)
+notebooks/

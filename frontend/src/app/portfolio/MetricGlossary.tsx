@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 
-/* ─── Metric Glossary (client — needs hover state) ───────────────────────────── */
+/* ─── Metric Glossary (client: needs hover state) ───────────────────────────── */
 const GLOSSARY_ITEMS = [
   {
     icon: "◎",
@@ -16,7 +16,7 @@ const GLOSSARY_ITEMS = [
     icon: "▽",
     term: "Max Drawdown",
     short: "Worst peak-to-trough loss",
-    detail: "The largest loss from any peak to the subsequent trough, expressed as a percentage. Negative numbers — a drawdown of −8% means the book fell 8% from its prior high before recovering.",
+    detail: "The largest loss from any peak to the subsequent trough, expressed as a percentage. Negative numbers: a drawdown of -8% means the book fell 8% from its prior high before recovering.",
     good: "< −15%",
     color: "#ef4444",
   },
@@ -32,7 +32,7 @@ const GLOSSARY_ITEMS = [
     icon: "α",
     term: "Alpha (α)",
     short: "Return beyond factor models",
-    detail: "The intercept from a Fama-French 5-factor + Momentum regression. Positive alpha means the strategy earned returns that cannot be explained by known systematic risk premia — evidence of genuine informational edge.",
+    detail: "The intercept from a Fama-French 5-factor + Momentum regression. Positive alpha means the strategy earned returns that cannot be explained by known systematic risk premia; evidence of genuine informational edge.",
     good: "> 0%",
     color: "#f59e0b",
   },

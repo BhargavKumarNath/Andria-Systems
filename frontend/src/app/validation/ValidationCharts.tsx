@@ -442,7 +442,7 @@ export function WalkForwardHeatmap({ folds }: { folds: WalkFold[] }) {
       {/* Sharpe sparkline */}
       <div>
         <div style={{ fontSize: "0.62rem", fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "0.5rem" }}>
-          Sharpe across folds — temporal stability
+          Sharpe across folds · temporal stability
         </div>
         <div style={{ display: "flex", alignItems: "flex-end", gap: "0.4rem", height: 56 }}>
           {folds.map((f, i) => {

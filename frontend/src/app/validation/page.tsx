@@ -129,12 +129,12 @@ async function ValidationContent() {
                 background: "linear-gradient(135deg, #ffffff 0%, rgba(196,181,253,0.85) 100%)",
                 WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
               }}>
-                Does This Strategy Have<br />a Real Edge — or Just Luck?
+                Does This Strategy Have<br />a Real Edge, or Just Luck?
               </h1>
 
               <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: 1.65, maxWidth: "50ch", margin: "0 0 1rem" }}>
                 Before any signal reaches deployment, it must pass four independent statistical gates.
-                Each test addresses a different type of <strong style={{ color: "var(--text-primary)" }}>false discovery risk</strong> —
+                Each test addresses a different type of <strong style={{ color: "var(--text-primary)" }}>false discovery risk</strong>:
                 from data leakage and overfitting to pure randomness.
                 All four must pass simultaneously.
               </p>
@@ -207,10 +207,10 @@ async function ValidationContent() {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)" }}>
             {[
-              { icon: "🔍", title: "Leakage Audit", risk: "Data contamination", what: "Checks that no signal uses future information — 45-day 13F lag + T+1 fill delay enforced throughout" },
+              { icon: "🔍", title: "Leakage Audit", risk: "Data contamination", what: "Checks that no signal uses future information; 45-day 13F lag + T+1 fill delay enforced throughout" },
               { icon: "🧬", title: "Provenance", risk: "Missing data bias", what: "Checks CUSIP→ticker resolution rate. Below 90% means too many signals have no real price data" },
               { icon: "🔁", title: "Reproducibility", risk: "Randomness masquerading as skill", what: "SHA-256 checksums across 3 independent runs confirm the output is deterministic, not stochastic luck" },
-              { icon: "📊", title: "PBO", risk: "Backtest overfitting", what: "CSCV measures what fraction of in-sample winners lose out-of-sample — directly quantifies overfitting risk" },
+              { icon: "📊", title: "PBO", risk: "Backtest overfitting", what: "CSCV measures what fraction of in-sample winners lose out-of-sample; directly quantifies overfitting risk" },
             ].map(({ icon, title, risk, what }, i) => (
               <div key={title} style={{ padding: "1rem 1.1rem", borderRight: i < 3 ? "1px solid rgba(138,43,226,0.1)" : "none" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginBottom: "0.5rem" }}>
@@ -286,8 +286,8 @@ async function ValidationContent() {
               </div>
               <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", lineHeight: 1.6, margin: 0 }}>
                 The observed Sharpe is a biased statistic when you&apos;ve tested multiple configs.
-                DSR applies four simultaneous penalties — multiple testing, skewness, fat tails,
-                and serial correlation — to produce a conservative, publication-grade estimate.
+                DSR applies four simultaneous penalties (multiple testing, skewness, fat tails,
+                and serial correlation) to produce a conservative, publication-grade estimate.
                 A DSR above 1.0 means the edge survives all adjustments.
               </p>
             </div>
@@ -365,7 +365,7 @@ async function ValidationContent() {
           {[
             { test: "Bootstrap", icon: "🔄", question: "Is the Sharpe stable across trade samples?", how: "Resamples trades with replacement 1,000 times. If the observed Sharpe is in the right tail of the null distribution, timing is not the explanation." },
             { test: "Random Entry", icon: "🎲", question: "Does signal timing actually matter?", how: "Randomises entry dates across 1,000 runs. If the real strategy significantly outperforms, signal timing has genuine predictive value." },
-            { test: "Regime Permutation", icon: "🌀", question: "Is the regime multiplier real?", how: "Shuffles regime labels across 1,000 runs. If the real RACS significantly outperforms, the HMM macro signal adds genuine value — not just label noise." },
+            { test: "Regime Permutation", icon: "🌀", question: "Is the regime multiplier real?", how: "Shuffles regime labels across 1,000 runs. If the real RACS significantly outperforms, the HMM macro signal adds genuine value, not just label noise." },
           ].map(({ test, icon, question, how }, i) => (
             <div key={test} style={{
               padding: "0.9rem 1rem",
@@ -410,7 +410,7 @@ async function ValidationContent() {
                 What is walk-forward validation?
               </div>
               <p style={{ fontSize: "0.72rem", color: "var(--text-secondary)", lineHeight: 1.6, margin: 0 }}>
-                Unlike a single backtest, walk-forward validation tests whether the strategy generalises across time. Each fold uses only data that would have been available on the day — it is a simulation of actually trading year-by-year. Stable Sharpe across all folds is strong evidence against regime-specific overfitting.
+                Unlike a single backtest, walk-forward validation tests whether the strategy generalises across time. Each fold uses only data that would have been available on the day; it is a simulation of actually trading year-by-year. Stable Sharpe across all folds is strong evidence against regime-specific overfitting.
               </p>
             </div>
             <div style={{ display: "flex", gap: "1.5rem", flexShrink: 0 }}>

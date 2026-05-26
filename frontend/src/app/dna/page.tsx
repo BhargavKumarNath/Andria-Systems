@@ -18,27 +18,27 @@ function UmapReadingGuide({ color }: { color?: string }) {
     {
       icon: "⟷",
       label: "X-axis (UMAP 1)",
-      text: "The horizontal dimension captures the primary axis of behavioural variation — primarily trading frequency. Managers on the left tend to hold positions for years; managers on the right churn portfolios within a quarter.",
+      text: "Left = long-horizon holders · Right = high-turnover traders",
     },
     {
       icon: "↕",
       label: "Y-axis (UMAP 2)",
-      text: "The vertical dimension captures portfolio concentration and conviction. Managers near the top run highly concentrated books (few large bets); managers near the bottom hold hundreds of positions at low individual weight.",
+      text: "Top = concentrated books · Bottom = diversified 100+ positions",
     },
     {
       icon: "◉",
       label: "Proximity = similarity",
-      text: "Two dots close together behave similarly across all 14 features. Tight clusters represent coherent strategies; a manager appearing between two clusters exhibits mixed behavioural traits from both groups.",
+      text: "Closer dots = more behaviorally similar across all 14 features",
     },
     {
       icon: "◈",
       label: "Cluster colours",
-      text: "Each colour corresponds to one of the four HDBSCAN archetypes. The algorithm assigns colours by cosine similarity of cluster centroids to prototype vectors -- not by manual labelling.",
+      text: "Color = HDBSCAN archetype · assigned by cosine similarity",
     },
     {
       icon: "◌",
       label: "Grey dots (Noise)",
-      text: "Grey points are HDBSCAN \"noise\" -- managers with no statistically dense neighbourhood. They are not assigned to any archetype. Typically 5-15% of the universe; they often represent multi-strategy funds or short-lived filers.",
+      text: "No dense neighborhood · typically 5-15% of universe",
     },
   ];
 
@@ -63,18 +63,18 @@ function UmapReadingGuide({ color }: { color?: string }) {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", borderBottom: "none" }}>
         {guides.map(({ icon, label, text }, i) => (
           <div key={label} style={{
-            padding: "0.9rem 1rem",
+            padding: "0.75rem 0.9rem",
             borderRight: i < 4 ? `1px solid ${accent}10` : "none",
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", marginBottom: "0.4rem" }}>
-              <span style={{ fontSize: "0.75rem", color: accent }}>{icon}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", marginBottom: "0.35rem" }}>
+              <span style={{ fontSize: "0.8rem", color: accent }}>{icon}</span>
               <span style={{ fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: accent }}>
                 {label}
               </span>
             </div>
-            <p style={{ fontSize: "0.73rem", color: "var(--text-secondary)", lineHeight: 1.65, margin: 0 }}>
+            <div style={{ fontSize: "0.68rem", color: "var(--text-secondary)", lineHeight: 1.4 }}>
               {text}
-            </p>
+            </div>
           </div>
         ))}
       </div>

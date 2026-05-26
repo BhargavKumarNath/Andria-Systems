@@ -82,7 +82,7 @@ function ColumnKey() {
     { col: "Activists", color: "#3b82f6", note: "Independent Conviction Activist / Nimble Trader buyers" },
     { col: "Strong Buys", color: "#10b981", note: "Buyers who entered with > 50% conviction delta" },
     { col: "Crowding", color: "#f59e0b", note: "Green < 20% (undiscovered) · Red > 40% (fragile)" },
-    { col: "Conv. Raw", color: "#a855f7", note: "Pre-regime conviction score — compare to RACS to see regime multiplier effect" },
+    { col: "Conv. Raw", color: "#a855f7", note: "Pre-regime conviction score · compare to RACS to see regime multiplier effect" },
     { col: "AUM Behind", color: "#38bdf8", note: "Total activist capital in this ticker across all buyers" },
   ];
   return (
@@ -102,7 +102,7 @@ function ColumnKey() {
           }}>
             {col}
           </span>
-          <span style={{ fontSize: "0.62rem", color: "var(--text-muted)" }}>— {note}</span>
+          <span style={{ fontSize: "0.62rem", color: "var(--text-muted)" }}>· {note}</span>
         </div>
       ))}
     </div>
@@ -122,7 +122,7 @@ function SignalQualityStrip({
   const items = [
     {
       label: "IC Half-Life",
-      value: halfLifeDays > 0 ? `${halfLifeDays}d` : "—",
+      value: halfLifeDays > 0 ? `${halfLifeDays}d` : "--",
       sub: "Days until signal predictive power halves",
       icon: "⌛",
       color: halfLifeDays >= 60 ? "#10b981" : halfLifeDays >= 30 ? "#f59e0b" : "#ef4444",
@@ -130,7 +130,7 @@ function SignalQualityStrip({
     },
     {
       label: "Peak IC",
-      value: peakIc > 0 ? peakIc.toFixed(3) : "—",
+      value: peakIc > 0 ? peakIc.toFixed(3) : "--",
       sub: "Information Coefficient at optimal holding horizon",
       icon: "◎",
       color: peakIc >= 0.05 ? "#10b981" : peakIc >= 0.02 ? "#f59e0b" : "#ef4444",
@@ -138,7 +138,7 @@ function SignalQualityStrip({
     },
     {
       label: "Hit Rate",
-      value: hitRate > 0 ? `${(hitRate * 100).toFixed(1)}%` : "—",
+      value: hitRate > 0 ? `${(hitRate * 100).toFixed(1)}%` : "--",
       sub: "Fraction of trades that were profitable",
       icon: "✓",
       color: hitRate >= 0.55 ? "#10b981" : hitRate >= 0.48 ? "#f59e0b" : "#ef4444",
@@ -347,7 +347,7 @@ async function SignalsContent() {
               </h1>
               <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: 1.65, maxWidth: "46ch", margin: "0 0 1rem" }}>
                 Stocks where multiple independent activist hedge funds are simultaneously building
-                new positions — filtered for low crowding and amplified by the current macro regime.
+                new positions, filtered for low crowding and amplified by the current macro regime.
               </p>
               {/* Status badges */}
               <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
@@ -434,7 +434,7 @@ async function SignalsContent() {
       <RevealContainer threshold={0.1}>
         <SectionHeader
           title="How Every Score Is Built"
-          description="Four evidence sources multiplied together. A stock must score well on ALL four simultaneously — no single factor can compensate for weakness in another."
+          description="Four evidence sources multiplied together. A stock must score well on ALL four simultaneously; no single factor can compensate for weakness in another."
         />
         <RacsFormulaVisual currentRegime={currentRegime} />
       </RevealContainer>
@@ -444,7 +444,7 @@ async function SignalsContent() {
         <RevealContainer threshold={0.1}>
           <SectionHeader
             title="Score Landscape"
-            description="Distribution of all displayed RACS scores across five quintile bands. Most signals cluster in lower quintiles — only a handful reach the top tier simultaneously on all four components."
+            description="Distribution of all displayed RACS scores across five quintile bands. Most signals cluster in lower quintiles; only a handful reach the top tier simultaneously on all four components."
           />
           <ScoreDistribution scores={racsScores} />
         </RevealContainer>
@@ -467,7 +467,7 @@ async function SignalsContent() {
         <RevealContainer threshold={0.15}>
           <SectionHeader
             title="Signals by Macro Regime"
-            description="Regime label at the time each signal was generated — baked into the RACS score."
+            description="Regime label at the time each signal was generated; baked into the RACS score."
           />
           <div style={{
             display: "grid",

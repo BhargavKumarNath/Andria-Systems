@@ -104,7 +104,7 @@ export default function MethodologyPage() {
                 The 14-Feature Space
               </div>
               <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: 1.6, marginBottom: "1rem" }}>
-                Each manager is mapped to a 14-dimensional behavioural vector per quarter. No fundamental or price data is used — only trading behaviour.
+                Each manager is mapped to a 14-dimensional behavioural vector per quarter. No fundamental or price data is used; only trading behaviour.
               </p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "1.5rem" }}>
                 {[

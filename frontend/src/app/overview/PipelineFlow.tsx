@@ -25,7 +25,7 @@ const PIPELINE: Stage[] = [
     desc: "Bulk-download all Form 13F XML filings via EDGAR Full-Text Search. 81 quarters, 2004–2024.",
     detail: {
       what: "The U.S. SEC requires every institution managing over $100M to publicly disclose all stock holdings each quarter via Form 13F. This creates a complete, auditable record of where the world's largest investors are putting their money.",
-      how: "We download all 13F filings through the EDGAR Full-Text Search (EFTS) bulk API, parse the XML, deduplicate amended filings, and store 116 million normalised records in a DuckDB columnar database on local NVMe — completing the full ingest in under 20 minutes.",
+      how: "We download all 13F filings through the EDGAR Full-Text Search (EFTS) bulk API, parse the XML, deduplicate amended filings, and store 116 million normalised records in a DuckDB columnar database on local NVMe, completing the full ingest in under 20 minutes.",
       why: "This is the raw signal source. Every downstream model depends on the completeness and accuracy of this data. Without reliable coverage across all 8,934 institutional managers and 81 quarters, no conviction signal would be meaningful.",
       tags: ["EDGAR EFTS API", "Form 13F", "XML parsing", "DuckDB", "Parquet"],
     },
@@ -37,9 +37,9 @@ const PIPELINE: Stage[] = [
     metric: "3.4M mappings",
     desc: "OpenFIGI batch API resolves CUSIP identifiers to live exchange tickers with an LRU cache.",
     detail: {
-      what: "Every 13F filing identifies securities by CUSIP — a 9-character alphanumeric code, not a familiar ticker like AAPL or MSFT. CUSIPs can become invalid when companies merge, spin off, or get delisted, creating silent data quality failures.",
+      what: "Every 13F filing identifies securities by CUSIP, a 9-character alphanumeric code, not a familiar ticker like AAPL or MSFT. CUSIPs can become invalid when companies merge, spin off, or get delisted, creating silent data quality failures.",
       how: "The OpenFIGI API maps each unique CUSIP to a live exchange ticker via batch requests. Results are cached in an LRU store so that only expired or novel CUSIPs require a fresh API call. The provenance score (98.5%) measures how many holdings resolved successfully.",
-      why: "Signals built on unresolvable or delisted securities are worthless — they cannot be acted on in the market. High provenance is a precondition for the EvaluationGate to pass, ensuring every ranked signal points to something you can actually buy.",
+      why: "Signals built on unresolvable or delisted securities are worthless; they cannot be acted on in the market. High provenance is a precondition for the EvaluationGate to pass, ensuring every ranked signal points to something you can actually buy.",
       tags: ["OpenFIGI API", "CUSIP", "LRU cache", "3.4M mappings", "98.5% provenance"],
     },
   },
@@ -50,7 +50,7 @@ const PIPELINE: Stage[] = [
     metric: "14 dimensions",
     desc: "Polars computes 14 per-manager features (turnover, conviction delta, sector HHI, filing lag) in a single lazy scan.",
     detail: {
-      what: "Raw 13F data tells us who owns what, but not how they trade. We compute 14 behavioral features per manager per quarter that compress an institution's entire investment personality into a numeric vector — their trading style, risk tolerance, and conviction patterns.",
+      what: "Raw 13F data tells us who owns what, but not how they trade. We compute 14 behavioral features per manager per quarter that compress an institution's entire investment personality into a numeric vector: their trading style, risk tolerance, and conviction patterns.",
       how: "Polars lazy evaluation chains all 14 computations in a single pass: portfolio HHI (concentration), quarter-over-quarter turnover, conviction delta (how much position sizes change), filing lag (how quickly they report after quarter-end), small-cap exposure, activist frequency, and 8 more. Runs in under 3 minutes on 116M rows.",
       why: "These 14 numbers are the input to HDBSCAN clustering. Without behavioural features, you cannot distinguish a conviction activist from an index hugger, even if they hold the same stocks. The feature space is what separates signal from noise in the downstream ranking.",
       tags: ["Polars", "14 features", "Portfolio HHI", "Conviction delta", "Filing lag"],
@@ -64,7 +64,7 @@ const PIPELINE: Stage[] = [
     desc: "UMAP reduces to 2D, HDBSCAN labels manager archetypes. Gaussian HMM classifies macro states from VIX, yield curve and credit spreads.",
     detail: {
       what: "Two separate unsupervised models run in parallel. HDBSCAN segments 8,934 managers into behavioral archetypes. A Gaussian Hidden Markov Model classifies each quarter into one of four macro regimes: Goldilocks, Recovery, Rate Shock, or Recession Fear.",
-      how: "UMAP first reduces the 14-dimensional feature space to 2D, preserving local and global manifold structure. HDBSCAN then finds density-connected clusters without requiring a fixed k — managers who do not fit any cluster are labelled Noise. Separately, the HMM trains on five macro indicators (VIX, yield-curve slope, credit spreads, Fed funds delta, OFR stress index) using Baum-Welch EM, then classifies each quarter via Viterbi decoding.",
+      how: "UMAP first reduces the 14-dimensional feature space to 2D, preserving local and global manifold structure. HDBSCAN then finds density-connected clusters without requiring a fixed k; managers who do not fit any cluster are labelled Noise. Separately, the HMM trains on five macro indicators (VIX, yield-curve slope, credit spreads, Fed funds delta, OFR stress index) using Baum-Welch EM, then classifies each quarter via Viterbi decoding.",
       why: "The regime state directly multiplies every RACS score. A signal scoring 0.25 in a Goldilocks regime becomes 0.29 (+15%). This is the same risk-on / risk-off logic that institutional quant desks apply when adjusting factor tilts across the business cycle.",
       tags: ["UMAP", "HDBSCAN", "Gaussian HMM", "hmmlearn", "Baum-Welch EM", "Viterbi"],
     },
@@ -77,8 +77,8 @@ const PIPELINE: Stage[] = [
     desc: "RACS = consensus_weight × log(activist_buyers + 1.1) × (1 − crowding) × regime_multiplier. Top 500 ranked per quarter.",
     detail: {
       what: "RACS (Regime-Adjusted Conviction Score) is a composite formula that answers one question: which stocks have the strongest combination of broad institutional consensus, deep activist conviction, manageable crowding risk, and macro tailwind right now?",
-      how: "The formula multiplies four components: (1) consensus_weight — fraction of institutions holding the stock, AUM-weighted; (2) log(activist_buyers + 1.1) — log-scaled activist buyer count, damping outliers; (3) (1 - crowding) — penalises overcrowded trades that face forced-selling risk; (4) regime_multiplier — amplifies by +15% in Goldilocks, dampens by -20% in Recession Fear. Top 500 signals per quarter are exported.",
-      why: "No single factor predicts returns reliably. RACS only scores high when all four signals align simultaneously — breadth, depth, safety, and timing. This multi-factor gate reduces false positives that plague simpler momentum or consensus screens.",
+      how: "The formula multiplies four components: (1) consensus_weight: fraction of institutions holding the stock, AUM-weighted; (2) log(activist_buyers + 1.1): log-scaled activist buyer count, damping outliers; (3) (1 - crowding): penalises overcrowded trades that face forced-selling risk; (4) regime_multiplier: amplifies by +15% in Goldilocks, dampens by -20% in Recession Fear. Top 500 signals per quarter are exported.",
+      why: "No single factor predicts returns reliably. RACS only scores high when all four signals align simultaneously: breadth, depth, safety, and timing. This multi-factor gate reduces false positives that plague simpler momentum or consensus screens.",
       tags: ["RACS formula", "Regime multiplier", "Crowding penalty", "Activist conviction", "500 signals"],
     },
   },
@@ -90,8 +90,8 @@ const PIPELINE: Stage[] = [
     desc: "DSR > 1.0, PBO <= 40%, three Monte Carlo null tests. Bailey & Lopez de Prado (2016) criteria. Blocks deployment on failure.",
     detail: {
       what: "The EvaluationGate is a four-condition publication gate that must pass before any signal can be deployed. It is designed to catch the two most common failure modes in quantitative finance: overfitting to historical noise, and fooling yourself with a lucky backtest.",
-      how: "Condition 1: Deflated Sharpe Ratio (DSR) must exceed 1.0 — this adjusts the observed Sharpe for the number of strategy configurations tested, non-normal returns, and serial autocorrelation. Condition 2: Probability of Backtest Overfitting (PBO) must stay below 40% — computed via CSCV across 12,870 train/test combinations. Conditions 3-4: Three Monte Carlo null tests at N=1,000 each (bootstrap resampling, randomised entry timing, regime permutation) must all produce p < 0.05.",
-      why: "A strategy that only looks good because of data mining or lucky timing will fail at least one of these four gates. This is the same validation framework described in Bailey & Lopez de Prado (2016) Journal of Portfolio Management — the same standard institutional quant teams use before deploying capital.",
+      how: "Condition 1: Deflated Sharpe Ratio (DSR) must exceed 1.0; this adjusts the observed Sharpe for the number of strategy configurations tested, non-normal returns, and serial autocorrelation. Condition 2: Probability of Backtest Overfitting (PBO) must stay below 40%; computed via CSCV across 12,870 train/test combinations. Conditions 3-4: Three Monte Carlo null tests at N=1,000 each (bootstrap resampling, randomised entry timing, regime permutation) must all produce p < 0.05.",
+      why: "A strategy that only looks good because of data mining or lucky timing will fail at least one of these four gates. This is the same validation framework described in Bailey & Lopez de Prado (2016) Journal of Portfolio Management; the same standard institutional quant teams use before deploying capital.",
       tags: ["DSR", "PBO", "CSCV", "Monte Carlo", "Bailey et al. 2016", "12,870 splits"],
     },
   },

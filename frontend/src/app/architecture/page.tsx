@@ -46,7 +46,7 @@ const OVERVIEW_NODES: Node[] = [
     color: "#8a2be2", x: 38, y: 30, icon: "⚡",
     detail: {
       title: "DuckDB In-Process OLAP",
-      desc: "DuckDB handles all 116M-row analytical queries in <2s on a laptop using SIMD-vectorised columnar execution. Parquet files are scanned directly via memory-mapped I/O — no server, no ETL, no Spark cluster.",
+      desc: "DuckDB handles all 116M-row analytical queries in <2s on a laptop using SIMD-vectorised columnar execution. Parquet files are scanned directly via memory-mapped I/O; no server, no ETL, no Spark cluster.",
       tech: ["DuckDB 0.10", "Parquet columnar", "8-core parallel", "SIMD vectorisation", "Polars 0.20"],
       metrics: [{ k: "Query time", v: "<2s full scan" }, { k: "Peak RAM", v: "<4 GB" }, { k: "Cost", v: "$0" }],
     },
@@ -76,7 +76,7 @@ const OVERVIEW_NODES: Node[] = [
     color: "#a855f7", x: 82, y: 30, icon: "◎",
     detail: {
       title: "Regime-Adjusted Conviction Score",
-      desc: "RACS = consensus_weight × log(activist_buyers + 1.1) × (1 − crowding) × (1 ± regime_weight × prob). All four components must simultaneously score well — no single factor dominates. Top decile per quarter passes to the portfolio constructor.",
+      desc: "RACS = consensus_weight × log(activist_buyers + 1.1) × (1 − crowding) × (1 ± regime_weight × prob). All four components must simultaneously score well; no single factor dominates. Top decile per quarter passes to the portfolio constructor.",
       tech: ["DuckDB SQL vectorised", "Regime weight 0.35", "Crowding penalty", "Activist filter"],
       metrics: [{ k: "Signals/qtr", v: "~500" }, { k: "Top decile", v: "~50 signals" }, { k: "Formula", v: "4-factor product" }],
     },
@@ -115,7 +115,7 @@ const OVERVIEW_NODES: Node[] = [
     id: "frontend", label: "Next.js 14", sublabel: "Static export",
     color: "#3b82f6", x: 50, y: 92, icon: "🌐",
     detail: {
-      title: "Next.js 14 App Router — Static Export",
+      title: "Next.js 14 App Router: Static Export",
       desc: "Server components read artifacts via fs.readFileSync at build time. Output is a fully static site with zero server-side compute per request. Recharts renders charts client-side. Deployed to Vercel Edge CDN in <30s via GitHub Actions.",
       tech: ["Next.js 14 App Router", "TypeScript strict", "Recharts", "Vercel Edge CDN"],
       metrics: [{ k: "TTFB", v: "<50ms global" }, { k: "Cost", v: "$0/month" }, { k: "Build", v: "<30s" }],
@@ -518,7 +518,7 @@ const ML_COMPONENTS = [
       { name: "conviction_delta", role: "Average QoQ position size change on entry" },
       { name: "top5_concentration", role: "% AUM in the manager's five largest holdings" },
     ],
-    insight: "All 14 features are Z-score normalised before passing to UMAP. No label information is used at any stage — archetypes are fully unsupervised.",
+    insight: "All 14 features are Z-score normalised before passing to UMAP. No label information is used at any stage; archetypes are fully unsupervised.",
   },
   {
     group: "Dimensionality Reduction",
@@ -538,7 +538,7 @@ const ML_COMPONENTS = [
     items: [
       { name: "HDBSCAN (min_cluster_size sweep)", role: "Hyperparameter sweep across [20, 30, 40, 50, 75, 100] to maximise silhouette" },
       { name: "Silhouette score optimisation", role: "Best min_cluster_size selected by internal validation" },
-      { name: "Noise class (id=−1)", role: "Managers with no dense neighbourhood — typically 5–15% of universe" },
+      { name: "Noise class (id=−1)", role: "Managers with no dense neighbourhood; typically 5-15% of universe" },
       { name: "Cosine labeling", role: "Cluster centroids matched to archetype prototypes via cosine similarity" },
     ],
     insight: "HDBSCAN was preferred over KMeans because the number of archetypes is unknown a priori, and the dataset has variable-density regions. DBSCAN was ruled out because it requires a fixed epsilon.",
@@ -565,7 +565,7 @@ const ML_COMPONENTS = [
       { name: "Top decile selection", role: "~500 signals per quarter enter the portfolio" },
       { name: "SignalDecayAnalyzer", role: "Measures IC half-life to determine optimal holding horizon" },
     ],
-    insight: "The multiplicative structure means all four components must score well simultaneously. This prevents any single factor from gaming the ranking — exactly the failure mode of linear factor models.",
+    insight: "The multiplicative structure means all four components must score well simultaneously. This prevents any single factor from gaming the ranking; exactly the failure mode of linear factor models.",
   },
   {
     group: "Validation Suite",
@@ -774,7 +774,7 @@ function DeploymentView() {
                       <div style={{ width: 5, height: 5, borderRadius: "50%", backgroundColor: t.color, flexShrink: 0, marginTop: 5 }} />
                       <div>
                         <span style={{ fontSize: "0.72rem", fontFamily: "monospace", fontWeight: 600, color: t.color }}>{c.name}</span>
-                        <span style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginLeft: "0.4rem" }}>— {c.desc}</span>
+                        <span style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginLeft: "0.4rem" }}>· {c.desc}</span>
                       </div>
                     </div>
                   ))}
@@ -832,8 +832,8 @@ function DeploymentView() {
                 ["FastAPI", "0.111", "#38bdf8", "Research API on HF Spaces"],
                 ["Next.js", "14.2", "#3b82f6", "App Router + static export"],
                 ["Recharts", "2.12", "#3b82f6", "SSR-safe client-side visualisation"],
-                ["GitHub Actions", "—", "#a855f7", "CI/CD · build → artifact → deploy"],
-                ["Vercel Edge CDN", "—", "#10b981", "Global static delivery · free tier"],
+                ["GitHub Actions", "--", "#a855f7", "CI/CD · build → artifact → deploy"],
+                ["Vercel Edge CDN", "--", "#10b981", "Global static delivery · free tier"],
               ].map(([lib, ver, color, role]) => (
                 <tr key={lib} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
                   <td style={{ padding: "0.55rem 1.25rem", width: "22%" }}>
@@ -903,8 +903,8 @@ export default function ArchitecturePage() {
           </h1>
 
           <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: 1.7, maxWidth: "60ch", margin: "0 0 1.5rem" }}>
-            A full-stack quantitative research platform processing 116M SEC 13F filings through a multi-stage ML pipeline —
-            HDBSCAN clustering, Gaussian HMM regime detection, RACS signal generation — validated by the Bailey et al. (2016)
+            A full-stack quantitative research platform processing 116M SEC 13F filings through a multi-stage ML pipeline:
+            HDBSCAN clustering, Gaussian HMM regime detection, RACS signal generation; validated by the Bailey et al. (2016)
             publication framework, and delivered globally via a static edge CDN at $0/month.
           </p>
 
