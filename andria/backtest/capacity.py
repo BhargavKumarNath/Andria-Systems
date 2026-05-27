@@ -21,11 +21,10 @@ import polars as pl
 from rich.console import Console
 from rich.table import Table
 
-_console = Console()
-
 from andria.backtest.diagnostics import calculate_sharpe
 from andria.core.logging import get_logger
 
+_console = Console()
 logger = get_logger(__name__)
 
 # AUM scaling ladder in USD: $10M to $5B in 10 log-spaced steps

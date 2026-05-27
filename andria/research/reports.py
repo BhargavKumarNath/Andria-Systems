@@ -108,8 +108,8 @@ class ReportGenerator:
             return ""
 
         lines = ["## Run Manifest", ""]
-        lines.append(f"| Key | Value |")
-        lines.append(f"|-----|-------|")
+        lines.append("| Key | Value |")
+        lines.append("|-----|-------|")
         for k, v in manifest.items():
             if k in ("params", "input_hashes"):
                 continue
@@ -192,7 +192,6 @@ class ReportGenerator:
                 lines.append("")
                 lines.append(f"- **RACS signals generated:** {df.height:,}")
                 if "racs_final" in df.columns:
-                    stats = df["racs_final"].describe()
                     lines.append(
                         f"- **RACS score range:** "
                         f"{df['racs_final'].min():.3f} – {df['racs_final'].max():.3f}"
@@ -235,12 +234,12 @@ class ReportGenerator:
             return ""
 
         lines = ["## Data Provenance", ""]
-        lines.append(f"| Metric | Value |")
-        lines.append(f"|--------|-------|")
+        lines.append("| Metric | Value |")
+        lines.append("|--------|-------|")
         lines.append(f"| Total CUSIPs | {latest.get('total_cusips', 'N/A')} |")
         lines.append(f"| Mapped | {latest.get('mapped_count', 'N/A')} |")
         lines.append(f"| Unmapped | {latest.get('unmapped_count', 'N/A')} |")
-        lines.append(f"| Coverage % | {latest.get('coverage_pct', 'N/A'):.1f}% |" if isinstance(latest.get('coverage_pct'), float) else f"| Coverage % | N/A |")
+        lines.append(f"| Coverage % | {latest.get('coverage_pct', 'N/A'):.1f}% |" if isinstance(latest.get('coverage_pct'), float) else "| Coverage % | N/A |")
         lines.append(f"| Stale | {latest.get('stale_count', 'N/A')} |")
 
         return "\n".join(lines)

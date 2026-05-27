@@ -30,11 +30,10 @@ from rich.console import Console
 from rich.table import Table
 from scipy.stats import spearmanr
 
-_console = Console()
-
 from andria.core.logging import get_logger
 from andria.utils.market_calendar import MarketCalendar
 
+_console = Console()
 logger = get_logger(__name__)
 
 _DEFAULT_HORIZONS = [1, 5, 20, 60]  # trading days

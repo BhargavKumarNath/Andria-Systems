@@ -26,7 +26,8 @@ Usage::
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import date, datetime as _datetime, timedelta
+from datetime import date, timedelta
+from datetime import datetime as _datetime
 
 import polars as pl
 
