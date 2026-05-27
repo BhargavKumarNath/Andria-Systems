@@ -74,6 +74,8 @@ jobs:
         # Create a completely fresh git history (orphan branch) to drop binary commits
         git checkout --orphan hf-deploy
         git add .
+        # Strip compiled Python bytecode before committing
+        git rm -r --cached --ignore-unmatch "**/__pycache__" "*.pyc" "*.pyo" "*.pyd" 2>/dev/null || true
         git commit -m "Deploy from $SOURCE_SHA"
         git push --force https://user:$HF_TOKEN@huggingface.co/spaces/Bhargav12321/andria-backend hf-deploy:main
 
