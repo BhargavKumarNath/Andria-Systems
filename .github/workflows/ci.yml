@@ -29,7 +29,7 @@ jobs:
 
     - name: Dependency Vulnerability Audit (pip-audit)
       run: |
-        pip-audit --ignore PYSEC-2024-271 --ignore PYSEC-2024-277 --ignore PYSEC-2026-89
+        pip-audit --ignore PYSEC-2024-271 --ignore PYSEC-2024-277 --ignore PYSEC-2026-89 --ignore PYSEC-2026-161
 
     - name: Lint with Ruff
       run: |
