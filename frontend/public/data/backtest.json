@@ -1,160 +1,297 @@
 {
-  "generated_at": "2026-05-25T18:32:00Z",
-  "run_id": "20260525T183200_a4f8e1",
   "summary": {
-    "annualized_sharpe": 1.847,
-    "annualized_return": 0.142,
-    "max_drawdown": -0.087,
-    "hit_rate": 0.567,
-    "total_trades": 2847,
+    "annualized_sharpe": -0.5936857389617709,
+    "total_trades": 9,
     "holding_period_days": 90,
     "filing_lag_days": 45,
     "fill_delay_days": 1,
-    "test_period": "2010-2024"
+    "survivorship_flags": 0,
+    "portfolio_turnover_annualized": 0.4
   },
-  "walk_forward_folds": [
+  "metrics_by_regime": {
+    "Goldilocks": {
+      "n_obs": 3,
+      "mean_return": 0.08558651453678202,
+      "sharpe": 0.882714004088486,
+      "max_dd": -0.11259427232848088,
+      "raw_p_value": 0.26223835658928746,
+      "fdr_significant": false
+    },
+    "Recovery": {
+      "n_obs": 6,
+      "mean_return": -0.19845751857964866,
+      "sharpe": -1.0309028777532223,
+      "max_dd": -0.6649088463503786,
+      "raw_p_value": 0.8687910152751991,
+      "fdr_significant": false
+    }
+  },
+  "walk_forward_folds": [],
+  "factor_attribution": {
+    "status": "skipped",
+    "reason": "not_enough_data",
+    "trades_survived": 8,
+    "total_ledger": 9,
+    "r_squared": null,
+    "annualized_alpha_bps": null
+  },
+  "capacity": [
     {
-      "fold": 1,
-      "train_start": 2010,
-      "train_end": 2014,
-      "test_start": 2015,
-      "test_end": 2015,
-      "n_trades": 187,
-      "sharpe": 1.92,
-      "mean_return": 0.038,
-      "max_drawdown": -0.061,
-      "hit_rate": 0.591
+      "aum_usd": 10000000.0,
+      "aum_label": "$10M",
+      "n_positions": 6,
+      "n_excluded": 3,
+      "exclusion_pct": 33.3,
+      "sharpe": -0.6782,
+      "mean_return": -0.126245
     },
     {
-      "fold": 2,
-      "train_start": 2010,
-      "train_end": 2015,
-      "test_start": 2016,
-      "test_end": 2016,
-      "n_trades": 214,
-      "sharpe": 1.78,
-      "mean_return": 0.031,
-      "max_drawdown": -0.074,
-      "hit_rate": 0.563
+      "aum_usd": 19952623.149688788,
+      "aum_label": "$20M",
+      "n_positions": 5,
+      "n_excluded": 4,
+      "exclusion_pct": 44.4,
+      "sharpe": -0.6198,
+      "mean_return": -0.128976
     },
     {
-      "fold": 3,
-      "train_start": 2010,
-      "train_end": 2016,
-      "test_start": 2017,
-      "test_end": 2017,
-      "n_trades": 241,
-      "sharpe": 2.11,
-      "mean_return": 0.044,
-      "max_drawdown": -0.048,
-      "hit_rate": 0.608
+      "aum_usd": 39810717.05534969,
+      "aum_label": "$40M",
+      "n_positions": 3,
+      "n_excluded": 6,
+      "exclusion_pct": 66.7,
+      "sharpe": null,
+      "mean_return": null
     },
     {
-      "fold": 4,
-      "train_start": 2010,
-      "train_end": 2017,
-      "test_start": 2018,
-      "test_end": 2018,
-      "n_trades": 268,
-      "sharpe": 1.65,
-      "mean_return": 0.027,
-      "max_drawdown": -0.092,
-      "hit_rate": 0.544
+      "aum_usd": 79432823.47242805,
+      "aum_label": "$79M",
+      "n_positions": 2,
+      "n_excluded": 7,
+      "exclusion_pct": 77.8,
+      "sharpe": null,
+      "mean_return": null
     },
     {
-      "fold": 5,
-      "train_start": 2010,
-      "train_end": 2018,
-      "test_start": 2019,
-      "test_end": 2019,
-      "n_trades": 295,
-      "sharpe": 1.89,
-      "mean_return": 0.036,
-      "max_drawdown": -0.057,
-      "hit_rate": 0.579
+      "aum_usd": 158489319.2461111,
+      "aum_label": "$158M",
+      "n_positions": 2,
+      "n_excluded": 7,
+      "exclusion_pct": 77.8,
+      "sharpe": null,
+      "mean_return": null
     },
     {
-      "fold": 6,
-      "train_start": 2010,
-      "train_end": 2019,
-      "test_start": 2020,
-      "test_end": 2020,
-      "n_trades": 322,
-      "sharpe": 1.74,
-      "mean_return": 0.029,
-      "max_drawdown": -0.081,
-      "hit_rate": 0.557
+      "aum_usd": 316227766.01683795,
+      "aum_label": "$316M",
+      "n_positions": 2,
+      "n_excluded": 7,
+      "exclusion_pct": 77.8,
+      "sharpe": null,
+      "mean_return": null
     },
     {
-      "fold": 7,
-      "train_start": 2010,
-      "train_end": 2020,
-      "test_start": 2021,
-      "test_end": 2021,
-      "n_trades": 349,
-      "sharpe": 1.83,
-      "mean_return": 0.033,
-      "max_drawdown": -0.063,
-      "hit_rate": 0.572
+      "aum_usd": 630957344.4801917,
+      "aum_label": "$631M",
+      "n_positions": 0,
+      "n_excluded": 9,
+      "exclusion_pct": 100.0,
+      "sharpe": null,
+      "mean_return": null
     },
     {
-      "fold": 8,
-      "train_start": 2010,
-      "train_end": 2021,
-      "test_start": 2022,
-      "test_end": 2022,
-      "n_trades": 376,
-      "sharpe": 1.69,
-      "mean_return": 0.028,
-      "max_drawdown": -0.088,
-      "hit_rate": 0.549
+      "aum_usd": 1258925411.794166,
+      "aum_label": "$1259M",
+      "n_positions": 0,
+      "n_excluded": 9,
+      "exclusion_pct": 100.0,
+      "sharpe": null,
+      "mean_return": null
     },
     {
-      "fold": 9,
-      "train_start": 2010,
-      "train_end": 2022,
-      "test_start": 2023,
-      "test_end": 2023,
-      "n_trades": 403,
-      "sharpe": 1.71,
-      "mean_return": 0.03,
-      "max_drawdown": -0.071,
-      "hit_rate": 0.562
+      "aum_usd": 2511886431.509572,
+      "aum_label": "$2512M",
+      "n_positions": 0,
+      "n_excluded": 9,
+      "exclusion_pct": 100.0,
+      "sharpe": null,
+      "mean_return": null
     },
     {
-      "fold": 10,
-      "train_start": 2010,
-      "train_end": 2023,
-      "test_start": 2024,
-      "test_end": 2024,
-      "n_trades": 192,
-      "sharpe": 1.84,
-      "mean_return": 0.032,
-      "max_drawdown": -0.059,
-      "hit_rate": 0.567
+      "aum_usd": 5011872336.272715,
+      "aum_label": "$5012M",
+      "n_positions": 0,
+      "n_excluded": 9,
+      "exclusion_pct": 100.0,
+      "sharpe": null,
+      "mean_return": null
     }
   ],
-  "factor_attribution": {
-    "alpha_annualized": 0.089,
-    "alpha_t_stat": 3.12,
-    "market_beta": 0.231,
-    "smb": -0.041,
-    "hml": 0.113,
-    "rmw": 0.078,
-    "cma": 0.031,
-    "mom": 0.142,
-    "r_squared": 0.187,
-    "detail": "Fama-French 5-Factor + Momentum. Alpha 8.9% p.a., t-stat 3.12. Low market beta (0.23) confirms factor orthogonality."
-  },
-  "capacity": {
-    "estimated_capacity_usd": 847000000,
-    "adv_participation_limit_pct": 5.0,
-    "adv_cliff_at_aum_usd": 500000000,
-    "detail": "Capacity cliff at ~$500M AUM based on 5% ADV participation limit. Full capacity ~$847M."
-  },
   "signal_decay": {
-    "half_life_days": 47,
-    "peak_ic": 0.081,
-    "detail": "IC half-life 47 days, consistent with 90-day holding period. Signal well within effective IC window."
-  }
+    "half_life_days": 5,
+    "curve": [
+      {
+        "horizon_days": 1,
+        "regime": "All",
+        "ic": 0.10292,
+        "ic_tstat": 0.948,
+        "ic_pvalue": 0.3457,
+        "n_obs": 86
+      },
+      {
+        "horizon_days": 1,
+        "regime": "Recovery",
+        "ic": 0.42857,
+        "ic_tstat": 1.71,
+        "ic_pvalue": 0.111,
+        "n_obs": 15
+      },
+      {
+        "horizon_days": 1,
+        "regime": "Rate_Shock",
+        "ic": 0.24848,
+        "ic_tstat": 0.726,
+        "ic_pvalue": 0.4888,
+        "n_obs": 10
+      },
+      {
+        "horizon_days": 1,
+        "regime": "Goldilocks",
+        "ic": 0.17922,
+        "ic_tstat": 0.794,
+        "ic_pvalue": 0.437,
+        "n_obs": 21
+      },
+      {
+        "horizon_days": 1,
+        "regime": "Recession_Fear",
+        "ic": 0.06773,
+        "ic_tstat": 0.418,
+        "ic_pvalue": 0.678,
+        "n_obs": 40
+      },
+      {
+        "horizon_days": 5,
+        "regime": "All",
+        "ic": -0.01067,
+        "ic_tstat": -0.098,
+        "ic_pvalue": 0.9223,
+        "n_obs": 86
+      },
+      {
+        "horizon_days": 5,
+        "regime": "Recovery",
+        "ic": -0.25714,
+        "ic_tstat": -0.959,
+        "ic_pvalue": 0.3549,
+        "n_obs": 15
+      },
+      {
+        "horizon_days": 5,
+        "regime": "Rate_Shock",
+        "ic": 0.51515,
+        "ic_tstat": 1.7,
+        "ic_pvalue": 0.1276,
+        "n_obs": 10
+      },
+      {
+        "horizon_days": 5,
+        "regime": "Goldilocks",
+        "ic": -0.09351,
+        "ic_tstat": -0.409,
+        "ic_pvalue": 0.6868,
+        "n_obs": 21
+      },
+      {
+        "horizon_days": 5,
+        "regime": "Recession_Fear",
+        "ic": 0.04484,
+        "ic_tstat": 0.277,
+        "ic_pvalue": 0.7835,
+        "n_obs": 40
+      },
+      {
+        "horizon_days": 20,
+        "regime": "All",
+        "ic": -0.01703,
+        "ic_tstat": -0.156,
+        "ic_pvalue": 0.8763,
+        "n_obs": 86
+      },
+      {
+        "horizon_days": 20,
+        "regime": "Recovery",
+        "ic": -0.11429,
+        "ic_tstat": -0.415,
+        "ic_pvalue": 0.6851,
+        "n_obs": 15
+      },
+      {
+        "horizon_days": 20,
+        "regime": "Rate_Shock",
+        "ic": 0.15152,
+        "ic_tstat": 0.434,
+        "ic_pvalue": 0.6761,
+        "n_obs": 10
+      },
+      {
+        "horizon_days": 20,
+        "regime": "Goldilocks",
+        "ic": 0.37792,
+        "ic_tstat": 1.779,
+        "ic_pvalue": 0.0912,
+        "n_obs": 21
+      },
+      {
+        "horizon_days": 20,
+        "regime": "Recession_Fear",
+        "ic": -0.11801,
+        "ic_tstat": -0.733,
+        "ic_pvalue": 0.4683,
+        "n_obs": 40
+      },
+      {
+        "horizon_days": 60,
+        "regime": "All",
+        "ic": 0.03645,
+        "ic_tstat": 0.334,
+        "ic_pvalue": 0.739,
+        "n_obs": 86
+      },
+      {
+        "horizon_days": 60,
+        "regime": "Recovery",
+        "ic": -0.26786,
+        "ic_tstat": -1.002,
+        "ic_pvalue": 0.3344,
+        "n_obs": 15
+      },
+      {
+        "horizon_days": 60,
+        "regime": "Rate_Shock",
+        "ic": -0.10303,
+        "ic_tstat": -0.293,
+        "ic_pvalue": 0.777,
+        "n_obs": 10
+      },
+      {
+        "horizon_days": 60,
+        "regime": "Goldilocks",
+        "ic": 0.26364,
+        "ic_tstat": 1.191,
+        "ic_pvalue": 0.2482,
+        "n_obs": 21
+      },
+      {
+        "horizon_days": 60,
+        "regime": "Recession_Fear",
+        "ic": -0.01557,
+        "ic_tstat": -0.096,
+        "ic_pvalue": 0.924,
+        "n_obs": 40
+      }
+    ]
+  },
+  "generated_at": "2026-08-25T23:03:03.966369+00:00",
+  "run_id": "20260825T230303_753ad8"
 }

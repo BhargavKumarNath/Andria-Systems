@@ -1,12 +1,18 @@
-"""CUSIP → Ticker mapping via SEC EDGAR open data (Phase 4.1).
+"""CUSIP → Ticker mapping via OpenFIGI (Phase 4.1).
 
-SEC EDGAR publishes a free ``company.json`` index and ``ticker.txt`` file
-that together provide a reasonably complete CUSIP→ticker crosswalk for the
-US large-cap equity universe.
+SEC's own open data (``company_tickers_exchange.json``) maps CIK → ticker for
+*filers*, not CUSIP → ticker for the *securities being held* — it cannot resolve
+the CUSIPs appearing in 13F INFOTABLE rows. OpenFIGI's public mapping API
+(https://api.openfigi.com/v3/mapping) is Bloomberg's free, keyless CUSIP → FIGI/
+ticker crosswalk and is the correct tool for this job; it is rate-limited without
+an API key (verified live: the unauthenticated endpoint rejects with HTTP 413
+"Request may only contain 10 mapping jobs" above that count, not the 100 some
+documentation implies),
+which this mapper respects with batching and inter-request delay.
 
-Coverage is approximately 85% of 13F filings by market value. Unmapped
-CUSIPs are returned as ``None`` and forwarded to the provenance tracker —
-they are **never** silently filled with synthetic data.
+A small hand-curated override table remains as a fast, zero-latency path for the
+handful of CUSIPs that dominate 13F dollar-weighted holdings (mega-cap tech), so
+a full OpenFIGI round trip isn't needed for the most common lookups.
 
 Cache:
     The resolved mapping is persisted to ``dataset/processed/cusip_ticker_map.parquet``
@@ -22,6 +28,8 @@ Usage::
 
 from __future__ import annotations
 
+import time
+
 import polars as pl
 import requests
 
@@ -30,21 +38,26 @@ from andria.core.logging import get_logger
 
 logger = get_logger(__name__)
 
-_EDGAR_COMPANY_JSON = "https://data.sec.gov/submissions/CIK{cik:010d}.json"
-_HEADERS = {"User-Agent": "andria-systems research@andria.local"}
+_OPENFIGI_URL = "https://api.openfigi.com/v3/mapping"
+_OPENFIGI_BATCH_SIZE = 10  # keyless OpenFIGI hard limit; larger batches return HTTP 413
+_OPENFIGI_REQUEST_DELAY_SECONDS = 2.5  # keyless OpenFIGI is rate-limited to ~25 req/min
+_HEADERS = {"User-Agent": "andria-systems research@andria.local", "Content-Type": "application/json"}
+
+# Preferred exchange codes for picking a single US-listed ticker out of OpenFIGI's
+# per-exchange result set for a CUSIP (composite US listing first, then primary venues).
+_PREFERRED_EXCH_CODES = ("US", "UN", "UW", "UQ", "UA")
 
 
 class CUSIPMapper:
-    """Resolves CUSIPs to Yahoo Finance ticker symbols via SEC EDGAR crosswalk.
+    """Resolves CUSIPs to ticker symbols via a static fast-path plus OpenFIGI.
 
-    The SEC ``company_tickers.json`` endpoint maps CIK → ticker + title.
-    For CUSIP→CIK we rely on the 13F header metadata embedded in the EDGAR
-    filings index, supplemented by a manually curated static override table
-    for high-frequency CUSIPs not captured by the automated lookup.
+    Unmapped CUSIPs are **never** filled with synthetic data — they are returned
+    as ``None`` and left for the caller (``MarketDataLoader`` / ``ProvenanceTracker``)
+    to exclude and track explicitly.
     """
 
-    # Static override table for CUSIPs not found via EDGAR
-    # Format: {cusip_9_digit: ticker}
+    # High-confidence static overrides always applied first (avoids an OpenFIGI
+    # round trip for the CUSIPs that dominate 13F dollar-weighted holdings).
     _STATIC_OVERRIDES: dict[str, str] = {
         "037833100": "AAPL",
         "594918104": "MSFT",
@@ -55,7 +68,7 @@ class CUSIPMapper:
         "882508104": "TSM",
         "70450Y103": "PYPL",
         "30231G102": "XOM",
-        "57636Q104": "META",
+        "30303M102": "META",
         "912797LA1": "SPY",
     }
 
@@ -86,43 +99,62 @@ class CUSIPMapper:
         df.write_parquet(path, compression="zstd")
         logger.info("cusip_map_cache_saved", path=str(path), n_entries=len(self._map))
 
-    def _fetch_sec_exchange_tickers(self) -> dict[str, str]:
-        """Download SEC company_tickers_exchange.json → {ticker: cik} mapping.
+    def _pick_ticker(self, matches: list[dict[str, object]]) -> str | None:
+        """Pick one ticker from OpenFIGI's per-exchange result set for a single CUSIP."""
+        equity = [m for m in matches if m.get("marketSector") == "Equity" and m.get("ticker")]
+        if not equity:
+            return None
+        for code in _PREFERRED_EXCH_CODES:
+            for m in equity:
+                if m.get("exchCode") == code:
+                    return str(m["ticker"])
+        return str(equity[0]["ticker"])
 
-        The exchange endpoint provides more comprehensive coverage than the base
-        company_tickers.json endpoint.
+    def _resolve_via_openfigi(self, cusips: list[str]) -> dict[str, str | None]:
+        """Batch-resolve CUSIPs against OpenFIGI's public mapping endpoint.
+
+        Keyless OpenFIGI accepts at most 10 identifiers per request and is rate-limited;
+        batches are separated by ``_OPENFIGI_REQUEST_DELAY_SECONDS`` to stay under it.
         """
-        logger.info("fetching_sec_exchange_tickers")
-        try:
-            resp = requests.get(
-                "https://www.sec.gov/files/company_tickers_exchange.json",
-                headers=_HEADERS,
-                timeout=30,
+        result: dict[str, str | None] = dict.fromkeys(cusips)
+        batches = [
+            cusips[i : i + _OPENFIGI_BATCH_SIZE]
+            for i in range(0, len(cusips), _OPENFIGI_BATCH_SIZE)
+        ]
+        for batch_idx, batch in enumerate(batches):
+            payload = [{"idType": "ID_CUSIP", "idValue": c} for c in batch]
+            try:
+                resp = requests.post(_OPENFIGI_URL, json=payload, headers=_HEADERS, timeout=30)
+                resp.raise_for_status()
+                jobs = resp.json()
+            except Exception as exc:
+                logger.warning(
+                    "openfigi_batch_failed", batch=batch_idx, size=len(batch), error=str(exc)
+                )
+                jobs = [{} for _ in batch]
+
+            for cusip, job in zip(batch, jobs, strict=False):
+                matches = job.get("data") if isinstance(job, dict) else None
+                result[cusip] = self._pick_ticker(matches) if matches else None
+
+            logger.info(
+                "openfigi_batch_resolved",
+                batch=f"{batch_idx + 1}/{len(batches)}",
+                resolved=sum(1 for v in result.values() if v),
             )
-            resp.raise_for_status()
-            raw = resp.json()
-            # Format: {"fields": [...], "data": [[cik, name, ticker, exchange], ...]}
-            fields = raw.get("fields", [])
-            data = raw.get("data", [])
-            if "ticker" not in fields or "cik_str" not in fields:
-                return {}
-            ticker_idx = fields.index("ticker")
-            cik_idx = fields.index("cik_str")
-            return {
-                str(row[ticker_idx]).upper(): str(row[cik_idx])
-                for row in data
-                if row[ticker_idx]
-            }
-        except Exception as exc:
-            logger.warning("sec_exchange_ticker_fetch_failed", error=str(exc))
-            return {}
+            if batch_idx < len(batches) - 1:
+                time.sleep(_OPENFIGI_REQUEST_DELAY_SECONDS)
+
+        return result
 
     def build(self, force: bool = False) -> None:
-        """Build and cache the CUSIP→ticker mapping.
+        """Build and cache the CUSIP→ticker mapping from the static overrides alone.
 
-        Static overrides are the high-confidence anchor. SEC company_tickers_exchange.json
-        is fetched to populate a ticker→CIK table for future EDGAR cross-referencing.
-        Unmapped CUSIPs are tracked by the provenance layer — never filled with synthetic data.
+        OpenFIGI resolution happens lazily and incrementally in ``resolve()`` — the
+        actual CUSIP universe is only known at call time (it depends on which
+        managers/positions the pipeline is currently processing), so eagerly
+        resolving "everything" here isn't meaningful. ``build()`` seeds the cache
+        with the static overrides so ``resolve()`` never round-trips for them.
 
         Args:
             force: Rebuild even if a cached file exists.
@@ -131,52 +163,43 @@ class CUSIPMapper:
             return
 
         logger.info("building_cusip_ticker_map")
-        mapping: dict[str, str | None] = {}
-
-        # High-confidence static overrides always applied first
-        mapping.update(self._STATIC_OVERRIDES)
-
-        # Attempt SEC exchange tickers fetch (expands coverage for future EDGAR cross-ref)
-        sec_tickers = self._fetch_sec_exchange_tickers()
-        if sec_tickers:
-            logger.info(
-                "sec_exchange_tickers_fetched",
-                n_tickers=len(sec_tickers),
-                note="CIK→ticker table available for future CUSIP cross-referencing",
-            )
-
-        self._map = mapping
+        self._map = dict(self._STATIC_OVERRIDES)
         self._save_cache()
-        logger.info(
-            "cusip_map_built",
-            n_mapped=sum(1 for v in mapping.values() if v is not None),
-            n_static_overrides=len(self._STATIC_OVERRIDES),
-            coverage_note="Extend by calling build(force=True) after populating EDGAR CUSIP index",
-        )
+        logger.info("cusip_map_seeded", n_static_overrides=len(self._STATIC_OVERRIDES))
 
     def resolve(self, cusips: list[str]) -> dict[str, str | None]:
         """Return a {cusip: ticker_or_None} mapping for the given CUSIPs.
+
+        CUSIPs already in the static overrides or the on-disk cache are returned
+        immediately. Anything new is resolved via OpenFIGI, and the result — hit
+        or miss — is written back to the cache so a CUSIP is never re-queried.
 
         Args:
             cusips: List of 9-character CUSIP strings (case-insensitive).
 
         Returns:
-            Dict mapping each input CUSIP to a Yahoo Finance ticker symbol,
-            or ``None`` if unmapped. Unmapped CUSIPs are logged as warnings.
+            Dict mapping each input CUSIP to a ticker symbol, or ``None`` if unmapped.
         """
         if self._map is None and not self._load_cache():
             self.build()
-
         assert self._map is not None
+
+        cleaned = [c.strip().upper() for c in cusips]
+        to_resolve = sorted({c for c in cleaned if c not in self._map})
+
+        if to_resolve:
+            logger.info("cusip_openfigi_resolution_start", n_cusips=len(to_resolve))
+            resolved = self._resolve_via_openfigi(to_resolve)
+            self._map.update(resolved)
+            self._save_cache()
+
         result: dict[str, str | None] = {}
         unmapped: list[str] = []
-
-        for cusip in cusips:
-            clean = cusip.strip().upper()
+        for original, clean in zip(cusips, cleaned, strict=False):
             ticker = self._map.get(clean)
-            result[cusip] = ticker
+            result[original] = ticker
             if ticker is None:
-                unmapped.append(cusip)
+                unmapped.append(original)
 
         if unmapped:
             logger.warning(

@@ -1,109 +1,39 @@
 {
-  "generated_at": "2026-05-25T18:32:00Z",
-  "run_id": "20260525T183200_a4f8e1",
+  "generated_at": "2026-08-25T23:03:03.965490+00:00",
+  "run_id": "20260825T230303_753ad8",
   "summary": {
-    "gross_exposure": 1.94,
-    "net_exposure": 0.06,
-    "estimated_turnover": 0.83,
-    "cash_drag": 0.017,
-    "n_positions": 50,
-    "n_long": 34,
-    "n_short": 16,
-    "top_n_decile": 0.1
+    "n_positions": 6
   },
   "top_holdings": [
     {
       "rank": 1,
-      "ticker": "JPM",
-      "cusip": "46625H100",
-      "weight": 0.0631,
-      "racs_score": 0.256105,
-      "regime_label": "Goldilocks"
+      "cusip": "82846H405",
+      "mean_return": 0.2749
     },
     {
       "rank": 2,
-      "ticker": "QCOM",
-      "cusip": "747525103",
-      "weight": 0.0628,
-      "racs_score": 0.24883,
-      "regime_label": "Goldilocks"
+      "cusip": "94419L101",
+      "mean_return": 0.1836
     },
     {
       "rank": 3,
-      "ticker": "ITW",
-      "cusip": "464287655",
-      "weight": 0.0631,
-      "racs_score": 0.242187,
-      "regime_label": "Goldilocks"
+      "cusip": "361008105",
+      "mean_return": -0.0588
     },
     {
       "rank": 4,
-      "ticker": "ORCL",
-      "cusip": "68389X105",
-      "weight": 0.0609,
-      "racs_score": 0.241644,
-      "regime_label": "Goldilocks"
+      "cusip": "86384P109",
+      "mean_return": -0.1126
     },
     {
       "rank": 5,
-      "ticker": "MSCI",
-      "cusip": "595112103",
-      "weight": 0.055,
-      "racs_score": 0.22798,
-      "regime_label": "Goldilocks"
+      "cusip": "19260Q107",
+      "mean_return": -0.3188
     },
     {
       "rank": 6,
-      "ticker": "V",
-      "cusip": "92826C839",
-      "weight": 0.0534,
-      "racs_score": 0.222782,
-      "regime_label": "Goldilocks"
-    },
-    {
-      "rank": 7,
-      "ticker": "AXP",
-      "cusip": "023608102",
-      "weight": 0.0547,
-      "racs_score": 0.221774,
-      "regime_label": "Goldilocks"
-    },
-    {
-      "rank": 8,
-      "ticker": "META",
-      "cusip": "30303M102",
-      "weight": 0.0644,
-      "racs_score": 0.219912,
-      "regime_label": "Goldilocks"
-    },
-    {
-      "rank": 9,
-      "ticker": "ACN",
-      "cusip": "003260106",
-      "weight": 0.0445,
-      "racs_score": 0.187274,
-      "regime_label": "Goldilocks"
-    },
-    {
-      "rank": 10,
-      "ticker": "CI",
-      "cusip": "166764100",
-      "weight": 0.0471,
-      "racs_score": 0.173312,
-      "regime_label": "Goldilocks"
+      "cusip": "81730H109",
+      "mean_return": -0.4657
     }
-  ],
-  "costs": {
-    "large_cap_bps": 20,
-    "small_cap_bps": 50,
-    "filing_lag_days": 45,
-    "holding_period_days": 90,
-    "fill_delay_days": 1
-  },
-  "factor_risk": {
-    "market_var": 0.0341,
-    "factor_var": 0.0218,
-    "idiosyncratic_var": 0.0123,
-    "factor_pct": 0.639
-  }
+  ]
 }

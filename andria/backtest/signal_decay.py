@@ -166,6 +166,15 @@ class SignalDecayAnalyzer:
                     n=n,
                 )
 
+        if not rows:
+            # No (horizon, regime) combination had >= 10 observations after the asof
+            # join -- realistic on a small real-data run, not just a theoretical case.
+            # An empty pl.DataFrame([]) has no schema at all, which breaks every
+            # downstream .filter(pl.col("regime")...) call; construct one explicitly.
+            return pl.DataFrame(schema={
+                "horizon_days": pl.Int64, "regime": pl.Utf8, "ic": pl.Float64,
+                "ic_tstat": pl.Float64, "ic_pvalue": pl.Float64, "n_obs": pl.Int64,
+            })
         return pl.DataFrame(rows)
 
     def estimate_halflife(self, decay_df: pl.DataFrame) -> int | None:

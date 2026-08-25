@@ -832,6 +832,27 @@ class TestSignalDecay:
         for col in ["horizon_days", "regime", "ic", "ic_tstat", "n_obs"]:
             assert col in decay_df.columns, f"Missing column: {col}"
 
+    def test_estimate_halflife_does_not_crash_on_too_few_observations(self):
+        """Real bug found on a live small-universe run: when every (horizon, regime)
+        combination has fewer than 10 observations, compute() used to return a
+        DataFrame with NO schema at all (pl.DataFrame([]) has zero columns), and
+        estimate_halflife()'s .filter(pl.col('regime')...) crashed with
+        ColumnNotFoundError instead of returning None."""
+        pricing = _make_synthetic_pricing(n_tickers=3, n_days=500)
+        rng = np.random.default_rng(0)
+        dates = pricing["date"].to_list()
+        cusips = pricing["cusip"].unique().to_list()
+        tiny_signals = pl.DataFrame({
+            "cusip": [rng.choice(cusips) for _ in range(3)],
+            "exec_date": pl.Series(sorted(rng.choice(dates[:len(dates) // 2], size=3, replace=False).tolist()), dtype=pl.Date),
+            "regime_adjusted_racs": rng.uniform(-1, 1, 3).tolist(),
+        })
+        analyzer = SignalDecayAnalyzer(horizons=[5])
+        decay_df = analyzer.compute(tiny_signals, pricing, regime_conditioned=False)
+        assert decay_df.height == 0
+        assert set(decay_df.columns) == {"horizon_days", "regime", "ic", "ic_tstat", "ic_pvalue", "n_obs"}
+        assert analyzer.estimate_halflife(decay_df) is None
+
     def test_halflife_returns_none_for_persistent_signal(self):
         """estimate_halflife returns None when IC stays above threshold."""
         decay_df = pl.DataFrame({

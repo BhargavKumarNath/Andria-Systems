@@ -26,7 +26,7 @@ ARTIFACTS = PROJECT_ROOT / "artifacts"
 OUT_DIR = PROJECT_ROOT / "frontend" / "public" / "data"
 
 
-# ── helpers ────────────────────────────────────────────────────────────────────
+# helpers
 
 def _read_parquet(path: Path):
     """Return a Polars DataFrame or None."""
@@ -268,22 +268,69 @@ def export_backtest(run_id: str) -> None:
         _write("backtest.json", _demo_fallback("backtest.json", "backtest", run_id))
 
 
+def _real_data_vintage() -> dict:
+    """Derive data_vintage from the actual ingested datasets rather than
+    hardcoding it -- the previous hardcoded "2024_Q4" / 116,000,000 values
+    silently went stale (and were simply wrong) the moment a real ingestion
+    covered a different date range or row count."""
+    edgar_dir = PROJECT_ROOT / "dataset" / "processed" / "edgar"
+    fred_path = PROJECT_ROOT / "dataset" / "processed" / "FRED_preprocess.parquet"
+    vintage = {
+        "edgar_through": None,
+        "fred_through": None,
+        "total_filings_processed": None,
+        "total_managers": None,
+        "total_cusips": None,
+        "source": "SEC EDGAR 13F",
+    }
+    try:
+        import duckdb
+        if edgar_dir.exists() and any(edgar_dir.rglob("*.parquet")):
+            con = duckdb.connect()
+            con.execute("SET memory_limit='2GB'")
+            row = con.execute(f"""
+                SELECT MAX(source_quarter), COUNT(*),
+                       COUNT(DISTINCT FILINGMANAGER_NAME), COUNT(DISTINCT CUSIP)
+                FROM read_parquet('{edgar_dir}/**/*.parquet', hive_partitioning=true)
+            """).fetchone()
+            if row:
+                vintage["edgar_through"] = row[0]
+                vintage["total_filings_processed"] = row[1]
+                vintage["total_managers"] = row[2]
+                vintage["total_cusips"] = row[3]
+            con.close()
+        if fred_path.exists():
+            con = duckdb.connect()
+            fred_max = con.execute(
+                f"SELECT MAX(observation_date) FROM read_parquet('{fred_path}')"
+            ).fetchone()
+            if fred_max:
+                vintage["fred_through"] = str(fred_max[0])
+            con.close()
+    except Exception as exc:
+        print(f"  [WARN] could not derive real data_vintage: {exc}")
+    return vintage
+
+
 def export_metadata(run_id: str) -> None:
     artifact_names = [
         "signals.json", "regimes.json", "clusters.json",
         "portfolio.json", "validation.json", "backtest.json",
     ]
+    vintage = _real_data_vintage()
+    if vintage["edgar_through"] is None:
+        vintage = {
+            "edgar_through": "2024_Q4",
+            "fred_through": "2024-12-31",
+            "total_filings_processed": 116_000_000,
+            "source": "SEC EDGAR 13F (2000-2024) [placeholder -- no real ingestion found]",
+        }
     _write("metadata.json", {
         "generated_at": datetime.now(UTC).isoformat(),
         "run_id": run_id,
         "git_commit": _git_commit(),
         "pipeline_version": "4.16",
-        "data_vintage": {
-            "edgar_through": "2024_Q4",
-            "fred_through": "2024-12-31",
-            "total_filings_processed": 116_000_000,
-            "source": "SEC EDGAR 13F (2000-2024)",
-        },
+        "data_vintage": vintage,
         "artifact_hashes": {n: _file_sha16(n) for n in artifact_names},
     })
 

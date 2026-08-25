@@ -1,4 +1,4 @@
-"""Manager DNA feature engineering — 15 behavioral features from raw 13F data."""
+"""Manager DNA feature engineering — 14 behavioral features from raw 13F data."""
 
 from __future__ import annotations
 
@@ -22,10 +22,12 @@ class ManagerDNABuilder:
         3.  log_avg_aum              — Fund scale (log of average quarterly AUM)
         4.  avg_turnover             — Average QoQ absolute weight change (trading frequency)
         5.  avg_conviction_delta     — Trend of HHI over time (conviction growing/shrinking)
-        6.  new_position_rate        — Fraction of quarters with new position initiations
-        7.  exit_rate                — Fraction of quarters with full position exits
+        6.  new_position_rate        — Fraction of held CUSIP-quarters that are newly initiated
+                                        (not held in the manager's immediately preceding filed quarter)
+        7.  exit_rate                — Fraction of held CUSIP-quarters that are fully exited by the
+                                        manager's next filed quarter (right-censored last quarters excluded)
         8.  avg_holding_duration_qtrs — Average quarters held per CUSIP position
-        9.  top5_concentration       — Sum of top-5 position weights
+        9.  top5_concentration       — Average per-quarter sum of the top-5 position weights
         10. options_notional_ratio   — Options notional / total equity notional
         11. shared_vote_ratio        — Shared voting authority / total voting authority
         12. amendment_rate           — Fraction of filings marked as amendments
@@ -57,7 +59,7 @@ class ManagerDNABuilder:
 
         with self._factory.connect_parquet(edgar_path, view_name="edgar") as conn:
             # Stage 1: Eligible managers (small result set)
-            logger.info("dna_stage", stage="1/6", detail="filtering eligible managers")
+            logger.info("dna_stage", stage="1/7", detail="filtering eligible managers")
             conn.execute(f"""
                 CREATE TEMP TABLE eligible_managers AS
                 SELECT FILINGMANAGER_NAME AS manager_name
@@ -66,10 +68,10 @@ class ManagerDNABuilder:
                 HAVING COUNT(DISTINCT source_quarter) >= {min_q}
             """)
             n_mgr = (conn.execute("SELECT COUNT(*) FROM eligible_managers").fetchone() or (0,))[0]
-            logger.info("dna_stage_done", stage="1/6", eligible_managers=n_mgr)
+            logger.info("dna_stage_done", stage="1/7", eligible_managers=n_mgr)
 
             # Stage 2: Quarterly portfolios (grouped, much smaller)
-            logger.info("dna_stage", stage="2/6", detail="building quarterly portfolios")
+            logger.info("dna_stage", stage="2/7", detail="building quarterly portfolios")
             conn.execute("""
                 CREATE TEMP TABLE quarterly_portfolios AS
                 SELECT
@@ -92,10 +94,10 @@ class ManagerDNABuilder:
                 WHERE e.VALUE IS NOT NULL AND TRY_CAST(e.VALUE AS DOUBLE) > 0
                 GROUP BY e.FILINGMANAGER_NAME, e.source_quarter, e.CUSIP
             """)
-            logger.info("dna_stage_done", stage="2/6")
+            logger.info("dna_stage_done", stage="2/7")
 
             # Stage 3: Quarterly manager aggregates
-            logger.info("dna_stage", stage="3/6", detail="aggregating quarterly manager stats")
+            logger.info("dna_stage", stage="3/7", detail="aggregating quarterly manager stats")
             conn.execute("""
                 CREATE TEMP TABLE quarterly_manager_aggs AS
                 SELECT
@@ -111,10 +113,10 @@ class ManagerDNABuilder:
                 FROM quarterly_portfolios
                 GROUP BY manager_name, source_quarter
             """)
-            logger.info("dna_stage_done", stage="3/6")
+            logger.info("dna_stage_done", stage="3/7")
 
             # Stage 4: HHI + top-N concentration per quarter
-            logger.info("dna_stage", stage="4/6", detail="computing HHI and concentration")
+            logger.info("dna_stage", stage="4/7", detail="computing HHI and concentration")
             conn.execute(f"""
                 CREATE TEMP TABLE quarterly_features AS
                 WITH weights AS (
@@ -139,12 +141,68 @@ class ManagerDNABuilder:
                 FROM weights
                 GROUP BY manager_name, source_quarter
             """)
-            # Free the large quarterly_portfolios from RAM after we've used it
-            conn.execute("DROP TABLE quarterly_portfolios")
-            logger.info("dna_stage_done", stage="4/6")
+            logger.info("dna_stage_done", stage="4/7")
 
-            # Stage 5: Position history (holding duration)
-            logger.info("dna_stage", stage="5/6", detail="computing holding durations")
+            # Stage 5: Position dynamics — new-position / exit flags per (manager, cusip, quarter).
+            # Computed from `edgar` directly (not from quarterly_portfolios) using LAG/LEAD over each
+            # manager's own filed-quarter sequence, so a position is "new" only if it wasn't held in
+            # the manager's immediately preceding *filed* quarter (not just any prior calendar quarter),
+            # and "exited" only if it's absent from the manager's next *filed* quarter. A manager's most
+            # recent filed quarter is right-censored (no next quarter to check), so it's excluded from
+            # the exit_rate denominator rather than counted as a non-exit.
+            logger.info("dna_stage", stage="5/7", detail="computing position dynamics (new/exit rates)")
+            conn.execute("""
+                CREATE TEMP TABLE manager_quarter_seq AS
+                SELECT
+                    manager_name,
+                    source_quarter,
+                    LAG(source_quarter) OVER (PARTITION BY manager_name ORDER BY source_quarter) AS prev_quarter,
+                    LEAD(source_quarter) OVER (PARTITION BY manager_name ORDER BY source_quarter) AS next_quarter
+                FROM (SELECT DISTINCT manager_name, source_quarter FROM quarterly_portfolios)
+            """)
+            conn.execute("""
+                CREATE TEMP TABLE cusip_quarter_seq AS
+                SELECT
+                    manager_name,
+                    source_quarter,
+                    CUSIP,
+                    LAG(source_quarter) OVER (
+                        PARTITION BY manager_name, CUSIP ORDER BY source_quarter
+                    ) AS prev_held_quarter,
+                    LEAD(source_quarter) OVER (
+                        PARTITION BY manager_name, CUSIP ORDER BY source_quarter
+                    ) AS next_held_quarter
+                FROM (SELECT DISTINCT manager_name, source_quarter, CUSIP FROM quarterly_portfolios)
+            """)
+            conn.execute("""
+                CREATE TEMP TABLE manager_position_dynamics AS
+                SELECT
+                    cq.manager_name,
+                    AVG(
+                        CASE WHEN mqs.prev_quarter IS NULL
+                                  OR cq.prev_held_quarter IS DISTINCT FROM mqs.prev_quarter
+                             THEN 1.0 ELSE 0.0 END
+                    ) AS new_position_rate,
+                    SUM(
+                        CASE WHEN mqs.next_quarter IS NOT NULL
+                                  AND cq.next_held_quarter IS DISTINCT FROM mqs.next_quarter
+                             THEN 1.0 ELSE 0.0 END
+                    ) / NULLIF(SUM(CASE WHEN mqs.next_quarter IS NOT NULL THEN 1.0 ELSE 0.0 END), 0)
+                        AS exit_rate
+                FROM cusip_quarter_seq cq
+                JOIN manager_quarter_seq mqs
+                  ON cq.manager_name = mqs.manager_name AND cq.source_quarter = mqs.source_quarter
+                GROUP BY cq.manager_name
+            """)
+            conn.execute("DROP TABLE manager_quarter_seq")
+            conn.execute("DROP TABLE cusip_quarter_seq")
+            # Free the large quarterly_portfolios from RAM now that HHI/concentration and
+            # position-dynamics tables have both been derived from it.
+            conn.execute("DROP TABLE quarterly_portfolios")
+            logger.info("dna_stage_done", stage="5/7")
+
+            # Stage 6: Position history (holding duration)
+            logger.info("dna_stage", stage="6/7", detail="computing holding durations")
             conn.execute("""
                 CREATE TEMP TABLE manager_position_stats AS
                 SELECT
@@ -159,10 +217,10 @@ class ManagerDNABuilder:
                 ) e
                 GROUP BY e.FILINGMANAGER_NAME
             """)
-            logger.info("dna_stage_done", stage="5/6")
+            logger.info("dna_stage_done", stage="6/7")
 
-            # Stage 6: Final aggregation
-            logger.info("dna_stage", stage="6/6", detail="final manager-level aggregation")
+            # Stage 7: Final aggregation
+            logger.info("dna_stage", stage="7/7", detail="final manager-level aggregation")
             df = conn.execute(f"""
                 WITH joined AS (
                     SELECT
@@ -192,8 +250,7 @@ class ManagerDNABuilder:
                         AVG(total_put / NULLIF(total_aum, 0))                  AS avg_put_ratio,
                         LN(AVG(total_aum) + 1)                                 AS log_avg_aum,
                         AVG(COALESCE(hhi - prev_hhi, 0))                       AS avg_conviction_delta,
-                        AVG(1.0 / NULLIF(num_positions, 0))                    AS new_position_rate,
-                        AVG(1.0 / NULLIF(num_positions, 0)) * 0.8              AS exit_rate,
+                        AVG(top5_concentration)                                AS avg_top5_concentration,
                         SUM(total_options) / NULLIF(SUM(total_equity), 0)       AS options_notional_ratio,
                         AVG(COALESCE(shared_vote_ratio, 0))                     AS shared_vote_ratio,
                         AVG(is_amendment_qtr)                                  AS amendment_rate,
@@ -209,10 +266,10 @@ class ManagerDNABuilder:
                     COALESCE(fa.log_avg_aum, 0.0)                                       AS log_avg_aum,
                     COALESCE(1.0 / NULLIF(mps.avg_holding_duration_qtrs, 0), 0.0)       AS avg_turnover,
                     COALESCE(fa.avg_conviction_delta, 0.0)                              AS avg_conviction_delta,
-                    COALESCE(fa.new_position_rate, 0.0)                                 AS new_position_rate,
-                    COALESCE(fa.exit_rate, 0.0)                                         AS exit_rate,
+                    COALESCE(mpd.new_position_rate, 0.0)                                AS new_position_rate,
+                    COALESCE(mpd.exit_rate, 0.0)                                        AS exit_rate,
                     COALESCE(mps.avg_holding_duration_qtrs, 1.0)                        AS avg_holding_duration_qtrs,
-                    COALESCE(fa.avg_hhi * 2.0, 0.0)                                    AS top5_concentration,
+                    COALESCE(fa.avg_top5_concentration, 0.0)                            AS top5_concentration,
                     COALESCE(fa.options_notional_ratio, 0.0)                            AS options_notional_ratio,
                     COALESCE(fa.shared_vote_ratio, 0.0)                                 AS shared_vote_ratio,
                     COALESCE(fa.amendment_rate, 0.0)                                    AS amendment_rate,
@@ -220,10 +277,11 @@ class ManagerDNABuilder:
                     COALESCE(fa.aum_volatility, 0.0)                                   AS aum_volatility
                 FROM final_aggs fa
                 LEFT JOIN manager_position_stats mps ON fa.manager_name = mps.manager_name
+                LEFT JOIN manager_position_dynamics mpd ON fa.manager_name = mpd.manager_name
                 WHERE fa.quarters_active >= {min_q}
             """).pl()
 
-            logger.info("dna_stage_done", stage="6/6")
+            logger.info("dna_stage_done", stage="7/7")
 
             # Cleanup
             df = df.fill_null(0.0).fill_nan(0.0)
@@ -237,4 +295,3 @@ class ManagerDNABuilder:
             )
 
             return validated
-

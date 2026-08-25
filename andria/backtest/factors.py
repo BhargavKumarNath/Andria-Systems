@@ -91,7 +91,15 @@ class RiskFactorModel:
         ff_combined = ff_combined.reset_index()
         ff_combined.columns = ["date", "mkt_rf", "smb", "hml", "rmw", "cma", "rf", "mom"]
 
-        if pd.api.types.is_datetime64_any_dtype(ff_combined["date"]):
+        # pandas_datareader's famafrench daily reader returns a PeriodIndex (dtype
+        # "period[D]"), not a DatetimeIndex -- verified live, not just in docs. The
+        # is_datetime64_any_dtype branch below is therefore never taken for the real
+        # data path, and pl.from_pandas() then silently converts the raw Period column
+        # to an Int64 ordinal, which breaks every downstream join_asof against a real
+        # Date column ("datatypes of join keys don't match ... date: i64").
+        if isinstance(ff_combined["date"].dtype, pd.PeriodDtype):
+            ff_combined["date"] = ff_combined["date"].dt.to_timestamp().dt.date
+        elif pd.api.types.is_datetime64_any_dtype(ff_combined["date"]):
             ff_combined["date"] = ff_combined["date"].dt.date
 
         df = pl.from_pandas(ff_combined)
@@ -118,7 +126,14 @@ class RiskFactorModel:
         if not req_cols.issubset(set(ledger.columns)):
             raise ValueError(f"Ledger missing columns: {req_cols - set(ledger.columns)}")
 
-        ledger = ledger.sort("exec_date")
+        # Ledgers arriving here may already carry their own "date" column (e.g. left
+        # over from ExecutionEngine's T+1 fill-price asof join) -- verified live, not
+        # just theoretical. Each of the two joins below also brings in `factors`'
+        # "date" column; left uncleared, the first join's auto-suffixed "date_right"
+        # collides with the second join's attempt to create the same suffix, raising
+        # "column with name 'date_right' already exists". Drop the join key from each
+        # side immediately after use instead of letting it accumulate.
+        ledger = ledger.drop("date", strict=False).sort("exec_date")
         factors = self._factors_df.sort("date")  # type: ignore[union-attr]
 
         cum_cols = [f"cum_{c}" for c in ["mkt_rf", "smb", "hml", "rmw", "cma", "rf", "mom"]]
@@ -128,7 +143,7 @@ class RiskFactorModel:
             left_on="exec_date",
             right_on="date",
             strategy="backward",
-        )
+        ).drop("date")
         entry_joined = entry_joined.rename({c: f"entry_{c}" for c in cum_cols})
 
         entry_joined = entry_joined.sort("actual_exit_date")

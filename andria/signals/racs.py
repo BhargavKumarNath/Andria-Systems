@@ -47,15 +47,18 @@ class RACSEngine:
 
         logger.info("computing_racs_v2", edgar=str(edgar_path), clusters=str(clusters_path))
 
-        # Register the regime dataframe in duckdb it can join it
-        # Since regime_df has a Date column and edgar has source_quarter (e.g. 2021Q1),
-        # We'll extract year/quarter from regime_df to match.
+        # Register the regime dataframe in duckdb so it can join it
+        # Since regime_df has a Date column and edgar has source_quarter (e.g. "2021Q1",
+        # no separator -- see EDGARIngester._build_combined), we extract year/quarter from
+        # regime_df and build the *same* unseparated format to match. A previous version of
+        # this code built "2021_Q1" (with an underscore) here, which never matched EDGAR's
+        # actual format and silently left every regime_label as "Unknown" downstream.
         regime_df = regime_df.with_columns(
             [
                 pl.col("date").dt.year().cast(pl.Utf8).alias("r_year"),
                 pl.col("date").dt.quarter().cast(pl.Utf8).alias("r_qtr"),
             ]
-        ).with_columns((pl.col("r_year") + "_Q" + pl.col("r_qtr")).alias("source_quarter"))
+        ).with_columns((pl.col("r_year") + "Q" + pl.col("r_qtr")).alias("source_quarter"))
 
         with self._factory.connect_parquet(edgar_path, view_name="edgar") as conn:
             # Register DataFrames as views
@@ -108,7 +111,7 @@ class RACSEngine:
 
             # Raw RACS scores (small – one row per CUSIP/quarter)
             logger.info("racs_stage", stage="3/5", detail="computing raw RACS scores")
-            conn.execute(f"""  # nosec B608
+            conn.execute(f"""
                 CREATE TEMP TABLE raw_racs AS
                 SELECT
                     source_quarter,
@@ -152,7 +155,7 @@ class RACSEngine:
 
             # Final join with regime + score adjustment
             logger.info("racs_stage", stage="5/5", detail="joining with regime and final scoring")
-            df = conn.execute(f"""  # nosec B608
+            df = conn.execute(f"""
                 SELECT
                     r.source_quarter                                         AS quarter,
                     r.CUSIP                                                  AS cusip,

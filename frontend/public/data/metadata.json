@@ -1,33 +1,22 @@
 {
-  "generated_at": "2026-05-25T18:32:00Z",
-  "run_id": "20260525T183200_a4f8e1",
-  "git_commit": "6508457",
+  "generated_at": "2026-08-25T23:03:04.561983+00:00",
+  "run_id": "20260825T230303_753ad8",
+  "git_commit": "6c1958f",
   "pipeline_version": "4.16",
   "data_vintage": {
-    "edgar_through": "2024_Q4",
-    "fred_through": "2024-12-31",
-    "total_filings_processed": 116000000,
-    "total_managers": 8934,
-    "total_cusips": 42817,
-    "source": "SEC EDGAR 13F (2000-2024)"
-  },
-  "pipeline_config": {
-    "hmm_states": 4,
-    "hdbscan_min_cluster_size": 100,
-    "racs_min_activist_buyers": 2,
-    "racs_regime_weight": 0.3,
-    "backtest_holding_days": 90,
-    "backtest_filing_lag": 45,
-    "cscv_partitions": 16,
-    "monte_carlo_n": 1000,
-    "global_seed": 42
+    "edgar_through": "2026Q1",
+    "fred_through": "2026-08-25",
+    "total_filings_processed": 120181830,
+    "total_managers": 15180,
+    "total_cusips": 163619,
+    "source": "SEC EDGAR 13F"
   },
   "artifact_hashes": {
-    "signals.json": "711a3338db80d000",
-    "regimes.json": "cd8c77a3b9734f50",
-    "clusters.json": "c3f7a91ecbb2c2e9",
-    "portfolio.json": "ee4c40ec518ff3d9",
-    "validation.json": "5e6623ef9fc53af8",
-    "backtest.json": "4b2859c5b70515ec"
+    "signals.json": "cfee76323c836b8f",
+    "regimes.json": "d15d6f5616c695af",
+    "clusters.json": "21f590f714ee80ba",
+    "portfolio.json": "aa72de85c6673791",
+    "validation.json": "413b5ba5c022d08e",
+    "backtest.json": "8f9e733a5e16c11a"
   }
 }

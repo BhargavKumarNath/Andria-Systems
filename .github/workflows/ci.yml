@@ -29,7 +29,9 @@ jobs:
 
     - name: Dependency Vulnerability Audit (pip-audit)
       run: |
-        pip-audit --ignore PYSEC-2024-271 --ignore PYSEC-2024-277 --ignore PYSEC-2026-89 --ignore PYSEC-2026-161
+        # PYSEC-2026-3552 (cryptography < 50.0.0): fix requires cryptography>=50, but
+        # mlflow 3.15.1 pins cryptography<50,>=43.0.0. Tracked; revisit when mlflow lifts the pin.
+        pip-audit --ignore PYSEC-2024-271 --ignore PYSEC-2024-277 --ignore PYSEC-2026-89 --ignore PYSEC-2026-161 --ignore PYSEC-2026-3552
 
     - name: Lint with Ruff
       run: |
@@ -41,7 +43,9 @@ jobs:
 
     - name: Run Tests & Coverage
       run: |
-        pytest tests/ -v --cov=andria --cov-report=xml
+        # Excludes integration tests (require live network access / real data files),
+        # matching the documented CI-safe invocation in README's Testing section.
+        pytest tests/ -v -m "not slow and not integration" --cov=andria --cov-report=xml
 
   deploy-to-hf-spaces:
     needs: validate

@@ -10,6 +10,7 @@ Commands:
 
     andria run phase1            Build Manager DNA features + clustering
     andria run phase2            Build signals + regime model
+    andria run phase3            Backtest + institutional validation (walk-forward, PBO, DSR, Monte Carlo)
 
     andria validate              Run data contract checks
     andria serve                 Launch Dash dashboard
@@ -132,6 +133,21 @@ def run_phase2(
 
     cfg = get_settings()
     PipelineOrchestrator(cfg).run_phase2()
+
+
+@run_app.command("phase3")
+def run_phase3(
+    log_level: LogLevel = "INFO",
+    json_logs: JsonLogs = False,
+) -> None:
+    """Run the backtest + institutional validation stack (leakage audit, execution
+    realism, walk-forward, capacity, signal decay, PBO/DSR, Monte Carlo, evaluation
+    gate) against real market pricing for the RACS signal universe."""
+    _setup(log_level, json_logs)
+    from andria.orchestration.pipeline import PipelineOrchestrator
+
+    cfg = get_settings()
+    PipelineOrchestrator(cfg).run_phase3()
 
 
 # andria validate

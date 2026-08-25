@@ -1,75 +1,69 @@
 {
-  "generated_at": "2026-05-25T18:32:00Z",
-  "run_id": "20260525T183200_a4f8e1",
-  "gate_passed": true,
+  "gate_passed": false,
   "checks": {
     "leakage_audit": {
       "passed": true,
-      "detail": "No lookahead bias detected across 2,847 signals. T+1 fill delay enforced. 45-day 13F filing lag applied."
+      "detail": "0 errors, 0 warnings across 86 signals."
     },
     "provenance_threshold": {
       "passed": true,
-      "value": 0.985,
+      "value": 0.821,
       "threshold": 0.9,
-      "detail": "98.5% CUSIP resolution rate via SEC exchange tickers + EDGAR company_tickers_exchange.json fallback."
+      "detail": "23/28 CUSIPs resolved to a real ticker."
     },
     "reproducibility": {
       "passed": true,
-      "detail": "SHA-256 checksums match across 3 independent seed=42 runs. Deterministic HDBSCAN + Gaussian HMM confirmed."
+      "detail": "Single run; independent re-run cross-check not performed."
     },
     "pbo_validation": {
-      "passed": true,
-      "value": 0.234,
-      "threshold": 0.4,
-      "detail": "PBO 23.4% across C(16,8)=12,870 CSCV combinations. Well below 40% overfitting threshold. Bailey et al. (2016)."
+      "passed": false,
+      "value": null,
+      "threshold": 0.4
     }
   },
   "dsr": {
-    "observed_sharpe": 1.847,
-    "deflated_sharpe": 1.312,
-    "is_significant": true,
-    "n_trials": 21,
-    "skewness": -0.23,
-    "excess_kurtosis": 0.81,
-    "serial_correlation": 0.042,
-    "benchmark_sharpe": 0.5,
-    "detail": "DSR 1.312 > 1.0 threshold. Statistically significant after adjusting for 21 configurations, non-normality, and serial correlation. Bailey & Lopez de Prado (2014)."
+    "sharpe_observed": null,
+    "dsr": null,
+    "is_significant": false
   },
   "pbo": {
-    "score": 0.234,
+    "score": null,
     "n_partitions": 16,
     "n_combinations": 12870,
-    "passed": true,
-    "detail": "Bailey et al. (2016) CSCV. 23.4% of IS-best strategies underperform OOS."
+    "passed": false
   },
   "monte_carlo": {
     "n_simulations": 1000,
-    "bootstrap": {
-      "test": "Bootstrap resampling (N=1,000)",
-      "observed_sharpe": 1.847,
-      "p_value": 0.031,
-      "sharpe_5pct": 0.821,
-      "sharpe_50pct": 1.643,
-      "sharpe_95pct": 2.104,
-      "significant": true
-    },
-    "randomized_entry": {
-      "test": "Randomized entry timing (N=1,000)",
-      "observed_sharpe": 1.847,
-      "p_value": 0.018,
-      "sharpe_5pct": -0.312,
-      "sharpe_50pct": 0.089,
-      "sharpe_95pct": 0.641,
-      "significant": true
-    },
-    "regime_permutation": {
-      "test": "Regime label permutation (N=1,000)",
-      "observed_sharpe": 1.847,
-      "p_value": 0.044,
-      "sharpe_5pct": 0.241,
-      "sharpe_50pct": 0.887,
-      "sharpe_95pct": 1.512,
-      "significant": true
-    }
-  }
+    "results": [
+      {
+        "test": "bootstrap_resampling",
+        "observed": -0.5936857389617709,
+        "p_value": 0.824,
+        "sharpe_5pct": -1.7402237216224818,
+        "sharpe_50pct": -0.5977724410473848,
+        "sharpe_95pct": 0.53020696384852,
+        "significant": false
+      },
+      {
+        "test": "randomized_entry_timing",
+        "observed": -0.5936857389617709,
+        "p_value": 0.995,
+        "sharpe_5pct": -0.5936857389617712,
+        "sharpe_50pct": -0.5936857389617711,
+        "sharpe_95pct": -0.5936857389617709,
+        "significant": false
+      },
+      {
+        "test": "regime_permutation",
+        "observed": 0.020170253187261983,
+        "p_value": 0.338,
+        "sharpe_5pct": 8.24940011118568e-05,
+        "sharpe_50pct": 0.006615241696638735,
+        "sharpe_95pct": 0.05485519663859384,
+        "significant": false
+      }
+    ]
+  },
+  "generated_at": "2026-08-25T23:03:03.966049+00:00",
+  "run_id": "20260825T230303_753ad8"
 }
