@@ -27,6 +27,7 @@ Or as a decorator::
 from __future__ import annotations
 
 import functools
+import os
 from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from pathlib import Path
@@ -54,6 +55,13 @@ class ExperimentTracker:
     def _setup_mlflow(self) -> bool:
         """Initialise MLflow with the configured tracking URI."""
         try:
+            # Recent MLflow versions refuse a plain filesystem tracking store
+            # ("./mlruns") unless this is set -- verified live, not just from
+            # changelog notes. The file-based store is a deliberate design choice
+            # here (no tracking server / DB required), so opt back in explicitly
+            # rather than switching to a DB-backed URI.
+            os.environ.setdefault("MLFLOW_ALLOW_FILE_STORE", "true")
+
             import mlflow
             tracking_uri = self._cfg.experiment.mlflow_tracking_uri
 

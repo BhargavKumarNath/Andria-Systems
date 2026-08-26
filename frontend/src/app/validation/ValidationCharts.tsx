@@ -211,11 +211,12 @@ export function PboGauge({ score, threshold }: { score: number; threshold: numbe
 }
 
 /* ─── Monte Carlo distribution visual ───────────────────────────────────────── */
-export function MonteCarloVisual({ test, p_value, observed_sharpe, sharpe_5pct, sharpe_50pct, sharpe_95pct, significant }: {
-  test: string; p_value: number; observed_sharpe: number;
+export function MonteCarloVisual({ test, p_value, observed, sharpe_5pct, sharpe_50pct, sharpe_95pct, significant }: {
+  test: string; p_value: number; observed: number;
   sharpe_5pct: number; sharpe_50pct: number; sharpe_95pct: number;
   significant: boolean;
 }) {
+  const observed_sharpe = observed;
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setTimeout(() => setMounted(true), 400); }, []);
 
@@ -242,7 +243,12 @@ export function MonteCarloVisual({ test, p_value, observed_sharpe, sharpe_5pct, 
   const toXPct = (v: number) => Math.max(0, Math.min(100, ((v - plotMin) / range) * 100));
   const observedPct = toXPct(observed_sharpe);
 
-  const shortName = test.replace(/\s*\(N=[\d,]+\)/i, "").replace("Bootstrap resampling", "Bootstrap").replace("Randomized entry timing", "Random Entry").replace("Regime label permutation", "Regime Permutation");
+  const TEST_LABELS: Record<string, string> = {
+    bootstrap_resampling: "Bootstrap",
+    randomized_entry_timing: "Random Entry",
+    regime_permutation: "Regime Permutation",
+  };
+  const shortName = TEST_LABELS[test] ?? test.replace(/_/g, " ");
 
   return (
     <div style={{

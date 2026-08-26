@@ -128,7 +128,7 @@ class PipelineOrchestrator:
             ) as progress:
                 p1 = progress.add_task("[cyan]Building Manager DNA features...", total=100)
                 
-                # Step 1: Build 15-feature Manager DNA
+                # Step 1: Build 14-feature Manager DNA
                 builder = ManagerDNABuilder(self._cfg)
                 dna_df = builder.build()
                 progress.update(p1, advance=50, description="[cyan]DNA Built. Saving features...")
@@ -155,6 +155,10 @@ class PipelineOrchestrator:
                 clust_latest = self._cfg.paths.artifacts / "clusters"
                 clust_latest.mkdir(parents=True, exist_ok=True)
                 shutil.copy(clust_path, clust_latest / "clustered_managers.parquet")
+
+                diag_path = clust_latest / "diagnostics.json"
+                diag_path.write_text(json.dumps(engine.last_diagnostics, indent=2))
+                shutil.copy(diag_path, run_dir / "clusters" / "diagnostics.json")
                 
                 progress.update(p1, advance=10, description="[green]Phase 1 Complete!")
 
@@ -254,6 +258,7 @@ class PipelineOrchestrator:
         from andria.core.evaluation_gate import EvaluationGate
         from andria.data.market_loader import MarketDataLoader
         from andria.data.provenance import ProvenanceTracker
+        from andria.research.experiment_tracker import ExperimentTracker
 
         if not self._registry.is_phase2_complete():
             raise DataNotFoundError("RACS signals/regime series — run 'andria run phase2' first")
@@ -311,6 +316,19 @@ class PipelineOrchestrator:
                 factor_result = rfm.last_diagnostics
             except Exception as exc:
                 factor_result = {"status": "failed", "error": str(exc)}
+
+            # Best-effort observability: a broken MLflow tracking store (seen live
+            # with mlflow>=3's filesystem backend) must not fail the backtest itself,
+            # same reasoning as the factor_result try/except above.
+            try:
+                exp_tracker = ExperimentTracker(self._cfg)
+                with exp_tracker.run(run_name=f"phase3_{run_id}"):
+                    exp_tracker.log_params(self._cfg)
+                    exp_tracker.log_backtest_results(result, ledger)
+                    exp_tracker.log_coverage_report(coverage_report)
+                    exp_tracker.log_rfn_diagnostics(factor_result)
+            except Exception as exc:
+                logger.warning("mlflow_tracking_failed", error=str(exc))
 
             wfv = WalkForwardValidator(window_type="expanding", train_years=5, test_years=1)
             folds = wfv.run(ledger)

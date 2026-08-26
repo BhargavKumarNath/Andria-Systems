@@ -71,6 +71,35 @@ async function RegimeContent() {
   const sortedByCount = [...distribution].sort((a, b) => b.count - a.count);
   const dominant = sortedByCount[0];
 
+  /* Transition matrix insight chips — derived from the real matrix, not hardcoded */
+  type PersistenceStat = { label: string; pct: number };
+  type EscapeStat = { from: string; to: string; pct: number };
+
+  function computeTransitionStats(tm: typeof transition_matrix): {
+    mostPersistent: PersistenceStat | null;
+    fastestResolving: PersistenceStat | null;
+    mostLikelyEscape: EscapeStat | null;
+  } {
+    if (!tm?.matrix?.length) return { mostPersistent: null, fastestResolving: null, mostLikelyEscape: null };
+    const { labels, matrix } = tm;
+    let mostPersistent: PersistenceStat | null = null;
+    let fastestResolving: PersistenceStat | null = null;
+    let mostLikelyEscape: EscapeStat | null = null;
+    for (let i = 0; i < matrix.length; i++) {
+      const persistence = matrix[i][i];
+      if (!mostPersistent || persistence > mostPersistent.pct) mostPersistent = { label: labels[i], pct: persistence };
+      if (!fastestResolving || persistence < fastestResolving.pct) fastestResolving = { label: labels[i], pct: persistence };
+      for (let j = 0; j < matrix[i].length; j++) {
+        if (i === j) continue;
+        const p = matrix[i][j];
+        if (!mostLikelyEscape || p > mostLikelyEscape.pct) mostLikelyEscape = { from: labels[i], to: labels[j], pct: p };
+      }
+    }
+    return { mostPersistent, fastestResolving, mostLikelyEscape };
+  }
+
+  const { mostPersistent, fastestResolving, mostLikelyEscape } = computeTransitionStats(transition_matrix);
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "2.5rem" }}>
 
@@ -309,7 +338,7 @@ async function RegimeContent() {
       </RevealContainer>
 
       {/* ── 5. Transition matrix heatmap ──────────────────────────────────────── */}
-      {transition_matrix?.matrix?.length > 0 && (
+      {(transition_matrix?.matrix?.length ?? 0) > 0 && (
         <RevealContainer threshold={0.15}>
           <SectionHeader
             title="State Transition Matrix"
@@ -319,10 +348,22 @@ async function RegimeContent() {
             {/* Key insight chips */}
             <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap", marginBottom: "1.25rem" }}>
               {[
-                { label: "Most persistent", value: "Goldilocks 78%", color: REGIME_COLORS["Goldilocks"] },
-                { label: "Fastest-resolving", value: "Recession Fear 51%", color: REGIME_COLORS["Recession_Fear"] },
+                {
+                  label: "Most persistent",
+                  value: mostPersistent ? `${REGIME_LABELS[mostPersistent.label] ?? mostPersistent.label} ${(mostPersistent.pct * 100).toFixed(0)}%` : "not available",
+                  color: mostPersistent ? REGIME_COLORS[mostPersistent.label] ?? "#a1a1aa" : "#a1a1aa",
+                },
+                {
+                  label: "Fastest-resolving",
+                  value: fastestResolving ? `${REGIME_LABELS[fastestResolving.label] ?? fastestResolving.label} ${(fastestResolving.pct * 100).toFixed(0)}%` : "not available",
+                  color: fastestResolving ? REGIME_COLORS[fastestResolving.label] ?? "#a1a1aa" : "#a1a1aa",
+                },
                 { label: "Avg persistence", value: `${avgPersistence != null ? (avgPersistence * 100).toFixed(0) : "--"}%`, color: "#8a2be2" },
-                { label: "Most likely escape", value: "Fear → Recovery 31%", color: REGIME_COLORS["Recovery"] },
+                {
+                  label: "Most likely escape",
+                  value: mostLikelyEscape ? `${REGIME_LABELS[mostLikelyEscape.from] ?? mostLikelyEscape.from} → ${REGIME_LABELS[mostLikelyEscape.to] ?? mostLikelyEscape.to} ${(mostLikelyEscape.pct * 100).toFixed(0)}%` : "not available",
+                  color: mostLikelyEscape ? REGIME_COLORS[mostLikelyEscape.to] ?? "#a1a1aa" : "#a1a1aa",
+                },
               ].map(({ label, value, color }) => (
                 <div key={label} style={{
                   padding: "0.35rem 0.85rem", borderRadius: 6,
@@ -335,8 +376,8 @@ async function RegimeContent() {
             </div>
 
             <TransitionHeatmap
-              labels={transition_matrix.labels}
-              matrix={transition_matrix.matrix}
+              labels={transition_matrix?.labels ?? []}
+              matrix={transition_matrix?.matrix ?? []}
             />
           </GlassCard>
         </RevealContainer>

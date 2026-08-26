@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-25T23:03:03.956304+00:00",
-  "run_id": "20260825T230303_753ad8",
+  "generated_at": "2026-08-26T10:47:19.784060+00:00",
+  "run_id": "20260826T104719_870246",
   "total_managers": 12667,
   "n_archetypes": 3,
   "algorithm": "HDBSCAN",

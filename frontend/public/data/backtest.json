@@ -140,11 +140,11 @@
       },
       {
         "horizon_days": 1,
-        "regime": "Recovery",
-        "ic": 0.42857,
-        "ic_tstat": 1.71,
-        "ic_pvalue": 0.111,
-        "n_obs": 15
+        "regime": "Goldilocks",
+        "ic": 0.17922,
+        "ic_tstat": 0.794,
+        "ic_pvalue": 0.437,
+        "n_obs": 21
       },
       {
         "horizon_days": 1,
@@ -156,11 +156,11 @@
       },
       {
         "horizon_days": 1,
-        "regime": "Goldilocks",
-        "ic": 0.17922,
-        "ic_tstat": 0.794,
-        "ic_pvalue": 0.437,
-        "n_obs": 21
+        "regime": "Recovery",
+        "ic": 0.42857,
+        "ic_tstat": 1.71,
+        "ic_pvalue": 0.111,
+        "n_obs": 15
       },
       {
         "horizon_days": 1,
@@ -180,11 +180,11 @@
       },
       {
         "horizon_days": 5,
-        "regime": "Recovery",
-        "ic": -0.25714,
-        "ic_tstat": -0.959,
-        "ic_pvalue": 0.3549,
-        "n_obs": 15
+        "regime": "Goldilocks",
+        "ic": -0.09351,
+        "ic_tstat": -0.409,
+        "ic_pvalue": 0.6868,
+        "n_obs": 21
       },
       {
         "horizon_days": 5,
@@ -196,11 +196,11 @@
       },
       {
         "horizon_days": 5,
-        "regime": "Goldilocks",
-        "ic": -0.09351,
-        "ic_tstat": -0.409,
-        "ic_pvalue": 0.6868,
-        "n_obs": 21
+        "regime": "Recovery",
+        "ic": -0.25714,
+        "ic_tstat": -0.959,
+        "ic_pvalue": 0.3549,
+        "n_obs": 15
       },
       {
         "horizon_days": 5,
@@ -220,11 +220,11 @@
       },
       {
         "horizon_days": 20,
-        "regime": "Recovery",
-        "ic": -0.11429,
-        "ic_tstat": -0.415,
-        "ic_pvalue": 0.6851,
-        "n_obs": 15
+        "regime": "Goldilocks",
+        "ic": 0.37792,
+        "ic_tstat": 1.779,
+        "ic_pvalue": 0.0912,
+        "n_obs": 21
       },
       {
         "horizon_days": 20,
@@ -236,11 +236,11 @@
       },
       {
         "horizon_days": 20,
-        "regime": "Goldilocks",
-        "ic": 0.37792,
-        "ic_tstat": 1.779,
-        "ic_pvalue": 0.0912,
-        "n_obs": 21
+        "regime": "Recovery",
+        "ic": -0.11429,
+        "ic_tstat": -0.415,
+        "ic_pvalue": 0.6851,
+        "n_obs": 15
       },
       {
         "horizon_days": 20,
@@ -260,11 +260,11 @@
       },
       {
         "horizon_days": 60,
-        "regime": "Recovery",
-        "ic": -0.26786,
-        "ic_tstat": -1.002,
-        "ic_pvalue": 0.3344,
-        "n_obs": 15
+        "regime": "Goldilocks",
+        "ic": 0.26364,
+        "ic_tstat": 1.191,
+        "ic_pvalue": 0.2482,
+        "n_obs": 21
       },
       {
         "horizon_days": 60,
@@ -276,11 +276,11 @@
       },
       {
         "horizon_days": 60,
-        "regime": "Goldilocks",
-        "ic": 0.26364,
-        "ic_tstat": 1.191,
-        "ic_pvalue": 0.2482,
-        "n_obs": 21
+        "regime": "Recovery",
+        "ic": -0.26786,
+        "ic_tstat": -1.002,
+        "ic_pvalue": 0.3344,
+        "n_obs": 15
       },
       {
         "horizon_days": 60,
@@ -292,6 +292,6 @@
       }
     ]
   },
-  "generated_at": "2026-08-25T23:03:03.966369+00:00",
-  "run_id": "20260825T230303_753ad8"
+  "generated_at": "2026-08-26T10:47:19.793939+00:00",
+  "run_id": "20260826T104719_870246"
 }

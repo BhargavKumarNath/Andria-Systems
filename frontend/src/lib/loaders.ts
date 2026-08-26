@@ -44,15 +44,13 @@ export interface RegimesArtifact {
   current: RegimePoint;
   history: RegimePoint[];
   distribution: { regime_label: string; count: number; pct: number }[];
-  transition_matrix: { labels: string[]; matrix: number[][] };
+  transition_matrix?: { labels: string[]; matrix: number[][] };
 }
 
 export interface ArchetypeMeta {
   archetype_label: string;
-  cluster_id: number;
   count: number;
   pct: number;
-  description: string;
 }
 
 export interface UmapPoint {
@@ -69,9 +67,9 @@ export interface ClustersArtifact {
   n_archetypes: number;
   algorithm: string;
   embedding: string;
-  min_cluster_size_sweep: number[];
-  best_min_cluster_size: number;
-  silhouette_score: number;
+  min_cluster_size_sweep?: number[];
+  best_min_cluster_size?: number;
+  silhouette_score?: number;
   archetypes: ArchetypeMeta[];
   umap_sample: UmapPoint[];
 }
@@ -80,36 +78,41 @@ export interface PortfolioArtifact {
   generated_at: string;
   run_id: string;
   summary: {
-    gross_exposure: number;
-    net_exposure: number;
-    estimated_turnover: number;
-    cash_drag: number;
     n_positions: number;
-    n_long: number;
-    n_short: number;
-    top_n_decile: number;
   };
   top_holdings: {
     rank: number;
-    ticker: string;
     cusip: string;
-    weight: number;
-    racs_score: number;
-    regime_label: string;
+    mean_return: number;
   }[];
-  costs: {
-    large_cap_bps: number;
-    small_cap_bps: number;
-    filing_lag_days: number;
-    holding_period_days: number;
-    fill_delay_days: number;
-  };
-  factor_risk: {
-    market_var: number;
-    factor_var: number;
-    idiosyncratic_var: number;
-    factor_pct: number;
-  };
+}
+
+export interface RegimeMetric {
+  n_obs: number;
+  mean_return: number;
+  sharpe: number;
+  max_dd: number;
+  raw_p_value: number;
+  fdr_significant: boolean;
+}
+
+export interface CapacityPoint {
+  aum_usd: number;
+  aum_label: string;
+  n_positions: number;
+  n_excluded: number;
+  exclusion_pct: number;
+  sharpe: number | null;
+  mean_return: number | null;
+}
+
+export interface SignalDecayPoint {
+  horizon_days: number;
+  regime: string;
+  ic: number;
+  ic_tstat: number;
+  ic_pvalue: number;
+  n_obs: number;
 }
 
 export interface ValidationArtifact {
@@ -117,34 +120,39 @@ export interface ValidationArtifact {
   run_id: string;
   gate_passed: boolean;
   checks: {
-    leakage_audit:       { passed: boolean; detail: string };
-    provenance_threshold:{ passed: boolean; value: number; threshold: number; detail: string };
-    reproducibility:     { passed: boolean; detail: string };
-    pbo_validation:      { passed: boolean; value: number; threshold: number; detail: string };
+    leakage_audit:        { passed: boolean; detail: string };
+    provenance_threshold: { passed: boolean; value: number; threshold: number; detail: string };
+    reproducibility:      { passed: boolean; detail: string };
+    pbo_validation:       { passed: boolean; value: number | null; threshold: number };
   };
   dsr: {
-    observed_sharpe: number;
-    deflated_sharpe: number;
+    sharpe_observed: number | null;
+    sharpe_benchmark?: number;
+    dsr: number | null;
     is_significant: boolean;
-    n_trials: number;
-    skewness: number;
-    excess_kurtosis: number;
-    serial_correlation: number;
-    benchmark_sharpe: number;
-    detail: string;
+    skewness?: number;
+    excess_kurtosis?: number;
+    serial_corr_lag1?: number;
+    n_effective?: number;
+    n_trials_adjusted_for?: number;
   };
   pbo: {
-    score: number;
+    score: number | null;
     n_partitions: number;
     n_combinations: number;
     passed: boolean;
-    detail: string;
   };
   monte_carlo: {
     n_simulations: number;
-    bootstrap:          { test: string; observed_sharpe: number; p_value: number; sharpe_5pct: number; sharpe_50pct: number; sharpe_95pct: number; significant: boolean };
-    randomized_entry:   { test: string; observed_sharpe: number; p_value: number; sharpe_5pct: number; sharpe_50pct: number; sharpe_95pct: number; significant: boolean };
-    regime_permutation: { test: string; observed_sharpe: number; p_value: number; sharpe_5pct: number; sharpe_50pct: number; sharpe_95pct: number; significant: boolean };
+    results: {
+      test: string;
+      observed: number;
+      p_value: number;
+      sharpe_5pct: number;
+      sharpe_50pct: number;
+      sharpe_95pct: number;
+      significant: boolean;
+    }[];
   };
 }
 
@@ -166,39 +174,37 @@ export interface BacktestArtifact {
   run_id: string;
   summary: {
     annualized_sharpe: number;
-    annualized_return: number;
-    max_drawdown: number;
-    hit_rate: number;
     total_trades: number;
     holding_period_days: number;
     filing_lag_days: number;
     fill_delay_days: number;
-    test_period: string;
+    survivorship_flags: number;
+    portfolio_turnover_annualized: number;
   };
+  metrics_by_regime: Record<string, RegimeMetric>;
   walk_forward_folds: WalkForwardFold[];
   factor_attribution: {
-    alpha_annualized: number;
-    alpha_t_stat: number;
-    market_beta: number;
-    smb: number;
-    hml: number;
-    rmw: number;
-    cma: number;
-    mom: number;
-    r_squared: number;
-    detail: string;
+    status: string;
+    reason?: string;
+    trades_survived?: number;
+    total_ledger?: number;
+    r_squared: number | null;
+    annualized_alpha_bps: number | null;
   };
-  capacity: {
-    estimated_capacity_usd: number;
-    adv_participation_limit_pct: number;
-    adv_cliff_at_aum_usd: number;
-    detail: string;
-  };
+  capacity: CapacityPoint[];
   signal_decay: {
     half_life_days: number;
-    peak_ic: number;
-    detail: string;
+    curve: SignalDecayPoint[];
   };
+}
+
+export interface RecentRun {
+  run_id: string;
+  stage: string;
+  status: string;
+  started_at: string;
+  completed_at: string;
+  git_sha: string;
 }
 
 export interface MetadataArtifact {
@@ -207,24 +213,14 @@ export interface MetadataArtifact {
   git_commit: string;
   pipeline_version: string;
   data_vintage: {
-    edgar_through: string;
-    fred_through: string;
-    total_filings_processed: number;
-    total_managers: number;
-    total_cusips: number;
+    edgar_through: string | null;
+    fred_through: string | null;
+    total_filings_processed: number | null;
+    total_managers?: number;
+    total_cusips?: number;
     source: string;
   };
-  pipeline_config: {
-    hmm_states: number;
-    hdbscan_min_cluster_size: number;
-    racs_min_activist_buyers: number;
-    racs_regime_weight: number;
-    backtest_holding_days: number;
-    backtest_filing_lag: number;
-    cscv_partitions: number;
-    monte_carlo_n: number;
-    global_seed: number;
-  };
+  recent_runs?: RecentRun[];
   artifact_hashes: Record<string, string>;
 }
 
@@ -277,13 +273,8 @@ export async function getPortfolioData(): Promise<PortfolioArtifact> {
   const data = await getStaticArtifact<PortfolioArtifact>("portfolio.json");
   return data ?? {
     generated_at: "", run_id: "NONE",
-    summary: {
-      gross_exposure: 0, net_exposure: 0, estimated_turnover: 0,
-      cash_drag: 0, n_positions: 0, n_long: 0, n_short: 0, top_n_decile: 0,
-    },
+    summary: { n_positions: 0 },
     top_holdings: [],
-    costs: { large_cap_bps: 0, small_cap_bps: 0, filing_lag_days: 0, holding_period_days: 0, fill_delay_days: 0 },
-    factor_risk: { market_var: 0, factor_var: 0, idiosyncratic_var: 0, factor_pct: 0 },
   };
 }
 
@@ -296,20 +287,11 @@ export async function getValidationData(): Promise<ValidationArtifact> {
       leakage_audit:        { passed: false, detail: "" },
       provenance_threshold: { passed: false, value: 0, threshold: 0.9, detail: "" },
       reproducibility:      { passed: false, detail: "" },
-      pbo_validation:       { passed: false, value: 1, threshold: 0.4, detail: "" },
+      pbo_validation:       { passed: false, value: null, threshold: 0.4 },
     },
-    dsr: {
-      observed_sharpe: 0, deflated_sharpe: 0, is_significant: false,
-      n_trials: 0, skewness: 0, excess_kurtosis: 0,
-      serial_correlation: 0, benchmark_sharpe: 0, detail: "",
-    },
-    pbo: { score: 1, n_partitions: 0, n_combinations: 0, passed: false, detail: "" },
-    monte_carlo: {
-      n_simulations: 0,
-      bootstrap:          { test: "", observed_sharpe: 0, p_value: 1, sharpe_5pct: 0, sharpe_50pct: 0, sharpe_95pct: 0, significant: false },
-      randomized_entry:   { test: "", observed_sharpe: 0, p_value: 1, sharpe_5pct: 0, sharpe_50pct: 0, sharpe_95pct: 0, significant: false },
-      regime_permutation: { test: "", observed_sharpe: 0, p_value: 1, sharpe_5pct: 0, sharpe_50pct: 0, sharpe_95pct: 0, significant: false },
-    },
+    dsr: { sharpe_observed: null, dsr: null, is_significant: false },
+    pbo: { score: null, n_partitions: 0, n_combinations: 0, passed: false },
+    monte_carlo: { n_simulations: 0, results: [] },
   };
 }
 
@@ -318,17 +300,17 @@ export async function getBacktestData(): Promise<BacktestArtifact> {
   return data ?? {
     generated_at: "", run_id: "NONE",
     summary: {
-      annualized_sharpe: 0, annualized_return: 0, max_drawdown: 0,
-      hit_rate: 0, total_trades: 0, holding_period_days: 0,
-      filing_lag_days: 0, fill_delay_days: 0, test_period: "",
+      annualized_sharpe: 0, total_trades: 0, holding_period_days: 0,
+      filing_lag_days: 0, fill_delay_days: 0, survivorship_flags: 0,
+      portfolio_turnover_annualized: 0,
     },
+    metrics_by_regime: {},
     walk_forward_folds: [],
     factor_attribution: {
-      alpha_annualized: 0, alpha_t_stat: 0, market_beta: 0,
-      smb: 0, hml: 0, rmw: 0, cma: 0, mom: 0, r_squared: 0, detail: "",
+      status: "skipped", reason: "no_data", r_squared: null, annualized_alpha_bps: null,
     },
-    capacity: { estimated_capacity_usd: 0, adv_participation_limit_pct: 0, adv_cliff_at_aum_usd: 0, detail: "" },
-    signal_decay: { half_life_days: 0, peak_ic: 0, detail: "" },
+    capacity: [],
+    signal_decay: { half_life_days: 0, curve: [] },
   };
 }
 

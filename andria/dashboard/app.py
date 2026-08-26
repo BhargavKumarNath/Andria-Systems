@@ -198,7 +198,7 @@ def _dna_page(artifacts: Path) -> Any:
     table = dbc.Table([
         html.Thead(html.Tr([html.Th("Archetype"), html.Th("Count"), html.Th("Share")])),
         html.Tbody(rows),
-    ], striped=True, bordered=True, hover=True, dark=True)
+    ], striped=True, bordered=True, hover=True, color="dark")
 
     return [
         html.H2("Manager DNA — Behavioral Archetypes"),
@@ -237,29 +237,80 @@ def _signals_page(artifacts: Path) -> Any:
     try:
         import polars as pl
         df = pl.read_parquet(signals_path)
-        cols = [c for c in ["cusip", "racs_final", "regime_label", "crowding_penalty"] if c in df.columns]
-        top = df.sort("racs_final", descending=True).head(50).select(cols) if "racs_final" in df.columns else df.head(50)
+        cols = [
+            c for c in ["cusip", "racs_score", "regime_label", "crowding_penalty", "regime_adjusted_racs"]
+            if c in df.columns
+        ]
+        top = (
+            df.sort("regime_adjusted_racs", descending=True).head(50).select(cols)
+            if "regime_adjusted_racs" in df.columns
+            else df.head(50)
+        )
         rows = [html.Tr([html.Td(str(v)) for v in row]) for row in top.iter_rows()]
         table = dbc.Table([
             html.Thead(html.Tr([html.Th(c) for c in cols])),
             html.Tbody(rows),
-        ], striped=True, bordered=True, hover=True, dark=True, size="sm")
+        ], striped=True, bordered=True, hover=True, color="dark", size="sm")
         return [html.H2("RACS Signal Leaderboard"), html.P(f"Top 50 of {df.height:,} signals"), table]
     except Exception as exc:
         return [html.H2("RACS Signals"), html.P(f"Error: {exc}")]
 
 
 def _backtest_page(artifacts: Path) -> Any:
-    mlflow_uri = artifacts / "mlflow"
+    summary = _load_json(artifacts / "backtest" / "walk_forward_summary.json")
+    gate = _load_json(artifacts / "validation" / "evaluation_gate.json")
+
+    if not summary and not gate:
+        return _no_data_card("Backtest Results", "andria run phase3")
+
     lines = [html.H2("Backtest Results")]
+
+    s = summary.get("summary", {})
+    gate_passed = bool(gate.get("gate_passed"))
+    lines.append(dbc.Row([
+        dbc.Col(dbc.Card(dbc.CardBody([
+            html.H6("Annualised Sharpe", className="text-muted"),
+            html.H3(f"{s.get('annualized_sharpe', 0):.3f}", className="text-info"),
+        ])), width=3),
+        dbc.Col(dbc.Card(dbc.CardBody([
+            html.H6("Total Trades", className="text-muted"),
+            html.H3(str(s.get("total_trades", 0)), className="text-light"),
+        ])), width=3),
+        dbc.Col(dbc.Card(dbc.CardBody([
+            html.H6("Portfolio Turnover", className="text-muted"),
+            html.H3(f"{s.get('portfolio_turnover_annualized', 0) * 100:.0f}%", className="text-light"),
+        ])), width=3),
+        dbc.Col(dbc.Card(dbc.CardBody([
+            html.H6("Evaluation Gate", className="text-muted"),
+            dbc.Badge("PASSED" if gate_passed else "FAILED", color="success" if gate_passed else "danger"),
+        ])), width=3),
+    ], className="mb-4"))
+
+    by_regime = summary.get("metrics_by_regime", {})
+    if by_regime:
+        rows = [
+            html.Tr([
+                html.Td(regime.replace("_", " ")),
+                html.Td(str(m.get("n_obs", 0))),
+                html.Td(f"{m.get('mean_return', 0) * 100:.1f}%"),
+                html.Td(f"{m.get('sharpe', 0):.2f}"),
+                html.Td("Yes" if m.get("fdr_significant") else "No"),
+            ])
+            for regime, m in by_regime.items()
+        ]
+        lines.append(dbc.Table([
+            html.Thead(html.Tr([
+                html.Th("Regime"), html.Th("Trades"), html.Th("Mean Return"),
+                html.Th("Sharpe"), html.Th("FDR Significant"),
+            ])),
+            html.Tbody(rows),
+        ], striped=True, bordered=True, hover=True, color="dark", size="sm"))
+
+    mlflow_uri = artifacts / "mlflow"
     if mlflow_uri.exists():
         lines.append(html.P([
             "MLflow experiment data available. Launch with: ",
             html.Code(f"mlflow ui --backend-store-uri {mlflow_uri}"),
         ]))
-    else:
-        lines.append(html.P(
-            "No backtest artifacts found. Run the AlphaFactoryEngine to generate results.",
-            className="text-muted",
-        ))
+
     return lines

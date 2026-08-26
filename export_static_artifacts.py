@@ -145,6 +145,8 @@ def export_regimes(run_id: str) -> None:
                 .sort("count", descending=True)
                 .to_dicts()
             )
+        transition_matrix = _empirical_transition_matrix(df) if "regime_label" in df.columns else None
+
         data: dict = {
             "generated_at": datetime.now(UTC).isoformat(),
             "run_id": run_id,
@@ -153,10 +155,38 @@ def export_regimes(run_id: str) -> None:
             "history": history,
             "distribution": dist,
         }
+        if transition_matrix is not None:
+            data["transition_matrix"] = transition_matrix
     else:
         data = _demo_fallback("regimes.json", "regimes", run_id)
 
     _write("regimes.json", data)
+
+
+def _empirical_transition_matrix(df) -> dict | None:
+    """Row-stochastic P(next quarter regime | current regime), estimated from the
+    actual observed sequence of HMM regime labels -- not a fabricated matrix.
+    """
+    ordered = df.sort("date")
+    seq = ordered["regime_label"].to_list()
+    if len(seq) < 2:
+        return None
+
+    canonical = ["Goldilocks", "Recovery", "Rate_Shock", "Recession_Fear"]
+    seen = list(dict.fromkeys(seq))
+    labels = [lbl for lbl in canonical if lbl in seen] + [lbl for lbl in seen if lbl not in canonical]
+
+    idx = {lbl: i for i, lbl in enumerate(labels)}
+    counts = [[0] * len(labels) for _ in labels]
+    for a, b in zip(seq[:-1], seq[1:], strict=True):
+        counts[idx[a]][idx[b]] += 1
+
+    matrix = []
+    for row in counts:
+        total = sum(row)
+        matrix.append([round(c / total, 4) for c in row] if total > 0 else [0.0] * len(row))
+
+    return {"labels": labels, "matrix": matrix}
 
 
 def export_clusters(run_id: str) -> None:
@@ -188,6 +218,18 @@ def export_clusters(run_id: str) -> None:
             .rename({"umap_1": "umap_x", "umap_2": "umap_y"})
             .to_dicts()
         ) if umap_cols else []
+
+        diag_path = (
+            _latest_run_file("clusters", "diagnostics.json")
+            or ARTIFACTS / "clusters" / "diagnostics.json"
+        )
+        diagnostics: dict = {}
+        if diag_path and diag_path.exists():
+            try:
+                diagnostics = json.loads(diag_path.read_text())
+            except Exception as exc:
+                print(f"  [WARN] clusters diagnostics.json: {exc}")
+
         data: dict = {
             "generated_at": datetime.now(UTC).isoformat(),
             "run_id": run_id,
@@ -197,6 +239,7 @@ def export_clusters(run_id: str) -> None:
             "embedding": "UMAP(n_components=2)",
             "archetypes": archetype_meta,
             "umap_sample": sample,
+            **diagnostics,
         }
     else:
         data = _demo_fallback("clusters.json", "clusters", run_id)
@@ -312,6 +355,30 @@ def _real_data_vintage() -> dict:
     return vintage
 
 
+def _recent_runs(limit: int = 5) -> list[dict]:
+    """Recent pipeline runs, read from the real manifest.json each `andria run`
+    invocation writes to artifacts/runs/{run_id}/ -- not a fabricated run log."""
+    runs_dir = ARTIFACTS / "runs"
+    if not runs_dir.exists():
+        return []
+    manifests = sorted(runs_dir.glob("*/manifest.json"), key=lambda p: p.stat().st_mtime, reverse=True)
+    out = []
+    for path in manifests[:limit]:
+        try:
+            m = json.loads(path.read_text())
+        except Exception:
+            continue
+        out.append({
+            "run_id": m.get("run_id"),
+            "stage": m.get("stage"),
+            "status": m.get("status"),
+            "started_at": m.get("started_at"),
+            "completed_at": m.get("completed_at"),
+            "git_sha": m.get("git_sha"),
+        })
+    return out
+
+
 def export_metadata(run_id: str) -> None:
     artifact_names = [
         "signals.json", "regimes.json", "clusters.json",
@@ -331,6 +398,7 @@ def export_metadata(run_id: str) -> None:
         "git_commit": _git_commit(),
         "pipeline_version": "4.16",
         "data_vintage": vintage,
+        "recent_runs": _recent_runs(),
         "artifact_hashes": {n: _file_sha16(n) for n in artifact_names},
     })
 

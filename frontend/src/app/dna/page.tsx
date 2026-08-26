@@ -86,7 +86,7 @@ async function DnaContent() {
   const data = await getDNAClusters();
   const { total_managers, archetypes, umap_sample, silhouette_score, best_min_cluster_size, min_cluster_size_sweep } = data;
 
-  const realArchetypes = archetypes.filter((a) => a.cluster_id !== -1);
+  const realArchetypes = archetypes.filter((a) => a.archetype_label !== "Noise");
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "3rem" }}>
@@ -175,8 +175,12 @@ async function DnaContent() {
           <GlassCard hierarchy="secondary">
             <MetricTile
               label="Best min_cluster_size"
-              value={best_min_cluster_size ?? "HDBSCAN"}
-              sub={`Tuned via sweep over ${min_cluster_size_sweep?.length ?? "N"} values`}
+              value={best_min_cluster_size ?? "--"}
+              sub={
+                min_cluster_size_sweep?.length
+                  ? `Tuned via sweep over ${min_cluster_size_sweep.length} values`
+                  : "Not recorded for this run"
+              }
             />
           </GlassCard>
         </div>

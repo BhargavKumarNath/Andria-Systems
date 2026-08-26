@@ -56,7 +56,7 @@ export default function UmapScatter({ points, archetypes }: Props) {
     <div>
       {/* Legend */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", marginBottom: "1.5rem" }}>
-        {[...archetypes, { archetype_label: "Noise", count: 0, cluster_id: -1, pct: 0, description: "" }].map((a) => {
+        {[...archetypes, { archetype_label: "Noise", count: 0, pct: 0 }].map((a) => {
           const color = ARCHETYPE_COLORS[a.archetype_label] ?? "#4b5563";
           const isHidden = hidden.has(a.archetype_label);
           return (

@@ -1,10 +1,10 @@
 export interface OverviewMetrics {
-  totalAUM: string;
-  activeSignals: number;
+  totalFilings: number | null;
   currentRegime: string;
   regimeProb: number;
   provenance: number;
-  managersProfiled: number;
+  sharpe: number | null;
+  walkForwardFolds: number;
 }
 
 export interface PipelineHistory {
@@ -13,4 +13,5 @@ export interface PipelineHistory {
   timestamp: string;
   duration: string;
   gitCommit?: string;
+  stage?: string;
 }

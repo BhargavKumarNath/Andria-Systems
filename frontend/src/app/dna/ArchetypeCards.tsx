@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import type { ArchetypeMeta } from "@/lib/loaders";
-import { ARCHETYPE_COLORS } from "@/lib/taxonomy";
+import { ARCHETYPE_COLORS, ARCHETYPE_SHORT_DESC } from "@/lib/taxonomy";
 
 /* ─── Rich detail for each archetype ────────────────────────────────────────── */
 const ARCHETYPE_DETAIL: Record<string, {
@@ -189,7 +189,7 @@ function ArchetypeCard({ archetype, active, onClick }: {
             backgroundColor: `${color}18`, color,
             border: `1px solid ${color}35`, marginBottom: "0.45rem",
           }}>
-            Archetype {archetype.cluster_id}
+            Archetype
           </div>
           <div style={{ fontWeight: 700, fontSize: "1rem", color: "var(--text-primary)" }}>
             {archetype.archetype_label}
@@ -207,7 +207,7 @@ function ArchetypeCard({ archetype, active, onClick }: {
 
       {/* Short description */}
       <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: 1.6, margin: "0 0 0.85rem" }}>
-        {archetype.description}
+        {ARCHETYPE_SHORT_DESC[archetype.archetype_label] ?? ""}
       </p>
 
       {/* Share bar */}

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-08-25T23:03:04.561983+00:00",
-  "run_id": "20260825T230303_753ad8",
-  "git_commit": "6c1958f",
+  "generated_at": "2026-08-26T10:47:20.432026+00:00",
+  "run_id": "20260826T104719_870246",
+  "git_commit": "79341bc",
   "pipeline_version": "4.16",
   "data_vintage": {
     "edgar_through": "2026Q1",
@@ -11,12 +11,54 @@
     "total_cusips": 163619,
     "source": "SEC EDGAR 13F"
   },
+  "recent_runs": [
+    {
+      "run_id": "20260826T104658_04d2b3",
+      "stage": "phase3",
+      "status": "success",
+      "started_at": "2026-08-26T10:46:58.995795+00:00",
+      "completed_at": "2026-08-26T10:47:05.121198+00:00",
+      "git_sha": "79341bc"
+    },
+    {
+      "run_id": "20260826T104540_6cedee",
+      "stage": "phase3",
+      "status": "success",
+      "started_at": "2026-08-26T10:45:40.333511+00:00",
+      "completed_at": "2026-08-26T10:45:48.071768+00:00",
+      "git_sha": "79341bc"
+    },
+    {
+      "run_id": "20260826T104528_a877ab",
+      "stage": "phase3",
+      "status": "success",
+      "started_at": "2026-08-26T10:45:28.682603+00:00",
+      "completed_at": "2026-08-26T10:45:33.895118+00:00",
+      "git_sha": "79341bc"
+    },
+    {
+      "run_id": "20260826T104328_6f5c78",
+      "stage": "phase3",
+      "status": "success",
+      "started_at": "2026-08-26T10:43:28.463295+00:00",
+      "completed_at": "2026-08-26T10:43:34.999417+00:00",
+      "git_sha": "79341bc"
+    },
+    {
+      "run_id": "20260826T104316_fe268e",
+      "stage": "phase3",
+      "status": "success",
+      "started_at": "2026-08-26T10:43:16.165897+00:00",
+      "completed_at": "2026-08-26T10:43:21.523556+00:00",
+      "git_sha": "79341bc"
+    }
+  ],
   "artifact_hashes": {
-    "signals.json": "cfee76323c836b8f",
-    "regimes.json": "d15d6f5616c695af",
-    "clusters.json": "21f590f714ee80ba",
-    "portfolio.json": "aa72de85c6673791",
-    "validation.json": "413b5ba5c022d08e",
-    "backtest.json": "8f9e733a5e16c11a"
+    "signals.json": "251e69ea830c084a",
+    "regimes.json": "9c9b3c5fd98021f7",
+    "clusters.json": "1fcce7daa1f67ea8",
+    "portfolio.json": "5a26ba571cbe0f8d",
+    "validation.json": "a039e88e9f021fef",
+    "backtest.json": "03e99dcedc92ce60"
   }
 }

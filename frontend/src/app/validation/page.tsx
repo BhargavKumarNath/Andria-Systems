@@ -95,9 +95,13 @@ async function ValidationContent() {
   const [val, backtest] = await Promise.all([getValidationData(), getBacktestData()]);
   const { gate_passed, checks, dsr, pbo, monte_carlo } = val;
   const gateColor = gate_passed ? "#10b981" : "#ef4444";
-  const allMcSignificant = monte_carlo.bootstrap.significant
-    && monte_carlo.randomized_entry.significant
-    && monte_carlo.regime_permutation.significant;
+  const allMcSignificant = monte_carlo.results.length > 0 && monte_carlo.results.every((r) => r.significant);
+  const testStarts = backtest.walk_forward_folds.map((f) => f.test_start);
+  const testPeriod = testStarts.length
+    ? (Math.min(...testStarts) === Math.max(...backtest.walk_forward_folds.map((f) => f.test_end))
+        ? `${Math.min(...testStarts)}`
+        : `${Math.min(...testStarts)}–${Math.max(...backtest.walk_forward_folds.map((f) => f.test_end))}`)
+    : "not available";
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "3rem" }}>
@@ -176,9 +180,9 @@ async function ValidationContent() {
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem", marginTop: "0.75rem" }}>
                 {[
-                  { label: "Deflated SR", value: dsr.deflated_sharpe.toFixed(3), ok: dsr.is_significant },
-                  { label: "PBO Score", value: `${(pbo.score * 100).toFixed(1)}%`, ok: pbo.passed },
-                  { label: "Monte Carlo", value: allMcSignificant ? "3 / 3" : "< 3", ok: allMcSignificant },
+                  { label: "Deflated SR", value: dsr.dsr !== null ? dsr.dsr.toFixed(3) : "not available", ok: dsr.is_significant },
+                  { label: "PBO Score", value: pbo.score !== null ? `${(pbo.score * 100).toFixed(1)}%` : "not available", ok: pbo.passed },
+                  { label: "Monte Carlo", value: `${monte_carlo.results.filter((r) => r.significant).length} / ${monte_carlo.results.length}`, ok: allMcSignificant },
                 ].map(({ label, value, ok }) => (
                   <div key={label} style={{ display: "flex", justifyContent: "space-between", gap: "1rem", alignItems: "center" }}>
                     <span style={{ fontSize: "0.65rem", color: "var(--text-muted)" }}>{label}</span>
@@ -260,8 +264,12 @@ async function ValidationContent() {
           <GateCheck
             label="Probability of Backtest Overfitting (PBO)"
             passed={checks.pbo_validation.passed}
-            detail={checks.pbo_validation.detail}
-            value={checks.pbo_validation.value}
+            detail={
+              checks.pbo_validation.value !== null
+                ? `PBO score ${(checks.pbo_validation.value * 100).toFixed(1)}%, threshold ${(checks.pbo_validation.threshold * 100).toFixed(0)}%.`
+                : "Not enough trades in this run to compute a PBO score."
+            }
+            value={checks.pbo_validation.value ?? undefined}
             threshold={checks.pbo_validation.threshold}
             icon="📊"
             description="CSCV overfitting score must stay below 40%"
@@ -292,16 +300,22 @@ async function ValidationContent() {
               </p>
             </div>
 
-            <DsrWaterfall observed={dsr.observed_sharpe} deflated={dsr.deflated_sharpe} />
+            {dsr.sharpe_observed !== null && dsr.dsr !== null ? (
+              <DsrWaterfall observed={dsr.sharpe_observed} deflated={dsr.dsr} />
+            ) : (
+              <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", lineHeight: 1.6 }}>
+                Not enough trades in this run to compute a Deflated Sharpe Ratio (minimum 10 required).
+              </p>
+            )}
 
             {/* Stats grid */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.75rem", marginTop: "1.25rem" }}>
               {[
-                { label: "n Trials", value: dsr.n_trials, color: "var(--text-secondary)" },
-                { label: "Skewness", value: dsr.skewness.toFixed(3), color: "var(--text-secondary)" },
-                { label: "Excess Kurtosis", value: dsr.excess_kurtosis.toFixed(3), color: "var(--text-secondary)" },
-                { label: "Serial Corr.", value: dsr.serial_correlation.toFixed(3), color: "var(--text-secondary)" },
-                { label: "Benchmark SR", value: dsr.benchmark_sharpe.toFixed(3), color: "var(--text-secondary)" },
+                { label: "n Trials Adj.", value: dsr.n_trials_adjusted_for ?? "not available", color: "var(--text-secondary)" },
+                { label: "Skewness", value: dsr.skewness !== undefined ? dsr.skewness.toFixed(3) : "not available", color: "var(--text-secondary)" },
+                { label: "Excess Kurtosis", value: dsr.excess_kurtosis !== undefined ? dsr.excess_kurtosis.toFixed(3) : "not available", color: "var(--text-secondary)" },
+                { label: "Serial Corr.", value: dsr.serial_corr_lag1 !== undefined ? dsr.serial_corr_lag1.toFixed(3) : "not available", color: "var(--text-secondary)" },
+                { label: "Benchmark SR", value: dsr.sharpe_benchmark !== undefined ? dsr.sharpe_benchmark.toFixed(3) : "not available", color: "var(--text-secondary)" },
                 { label: "Significant", value: dsr.is_significant ? "YES" : "NO", color: dsr.is_significant ? "#10b981" : "#ef4444" },
               ].map(({ label, value, color }) => (
                 <div key={label} style={{ padding: "0.65rem 0.75rem", borderRadius: 7, backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
@@ -331,7 +345,13 @@ async function ValidationContent() {
               </p>
             </div>
 
-            <PboGauge score={pbo.score} threshold={0.4} />
+            {pbo.score !== null ? (
+              <PboGauge score={pbo.score} threshold={0.4} />
+            ) : (
+              <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", lineHeight: 1.6 }}>
+                Not enough trades in this run to compute a PBO score (minimum {pbo.n_partitions * 5} required).
+              </p>
+            )}
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginTop: "1rem" }}>
               {[
@@ -384,9 +404,11 @@ async function ValidationContent() {
 
         {/* Monte Carlo visuals */}
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <MonteCarloVisual {...monte_carlo.bootstrap} />
-          <MonteCarloVisual {...monte_carlo.randomized_entry} />
-          <MonteCarloVisual {...monte_carlo.regime_permutation} />
+          {monte_carlo.results.length === 0 ? (
+            <p style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>No Monte Carlo results recorded for this run.</p>
+          ) : (
+            monte_carlo.results.map((r) => <MonteCarloVisual key={r.test} {...r} />)
+          )}
         </div>
       </RevealContainer>
 
@@ -395,40 +417,53 @@ async function ValidationContent() {
         <GlassCard hierarchy="primary">
           <SectionHeader
             title="Walk-Forward Validation"
-            description={`${backtest.walk_forward_folds.length} expanding-window folds (${backtest.summary.test_period}). Each fold trains on all prior data and tests on one unseen year. Hover a cell for details.`}
+            description={
+              backtest.walk_forward_folds.length > 0
+                ? `${backtest.walk_forward_folds.length} expanding-window folds (test years ${testPeriod}). Each fold trains on all prior data and tests on one unseen year. Hover a cell for details.`
+                : "No expanding-window folds recorded for this run."
+            }
           />
 
-          {/* What is walk-forward explainer */}
-          <div style={{
-            borderRadius: 9, border: "1px solid rgba(255,255,255,0.06)",
-            backgroundColor: "rgba(255,255,255,0.02)",
-            padding: "0.75rem 1rem", marginBottom: "1.5rem",
-            display: "flex", gap: "2rem", flexWrap: "wrap", alignItems: "flex-start",
-          }}>
-            <div style={{ flex: 1, minWidth: 200 }}>
-              <div style={{ fontSize: "0.62rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.3rem" }}>
-                What is walk-forward validation?
-              </div>
-              <p style={{ fontSize: "0.72rem", color: "var(--text-secondary)", lineHeight: 1.6, margin: 0 }}>
-                Unlike a single backtest, walk-forward validation tests whether the strategy generalises across time. Each fold uses only data that would have been available on the day; it is a simulation of actually trading year-by-year. Stable Sharpe across all folds is strong evidence against regime-specific overfitting.
-              </p>
-            </div>
-            <div style={{ display: "flex", gap: "1.5rem", flexShrink: 0 }}>
-              {[
-                { label: "Folds", value: backtest.walk_forward_folds.length },
-                { label: "Min Sharpe", value: Math.min(...backtest.walk_forward_folds.map(f => f.sharpe)).toFixed(2) },
-                { label: "Max Sharpe", value: Math.max(...backtest.walk_forward_folds.map(f => f.sharpe)).toFixed(2) },
-                { label: "Avg Sharpe", value: (backtest.walk_forward_folds.reduce((s, f) => s + f.sharpe, 0) / backtest.walk_forward_folds.length).toFixed(2) },
-              ].map(({ label, value }) => (
-                <div key={label} style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: "0.6rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.15rem" }}>{label}</div>
-                  <div style={{ fontSize: "1.2rem", fontWeight: 800, color: "var(--text-primary)", fontFamily: "monospace" }}>{value}</div>
+          {backtest.walk_forward_folds.length === 0 ? (
+            <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", lineHeight: 1.6 }}>
+              This run does not span enough calendar years to form a 5-year train / 1-year test fold.
+              More filing history needs to flow through the pipeline before walk-forward validation can run.
+            </p>
+          ) : (
+            <>
+              {/* What is walk-forward explainer */}
+              <div style={{
+                borderRadius: 9, border: "1px solid rgba(255,255,255,0.06)",
+                backgroundColor: "rgba(255,255,255,0.02)",
+                padding: "0.75rem 1rem", marginBottom: "1.5rem",
+                display: "flex", gap: "2rem", flexWrap: "wrap", alignItems: "flex-start",
+              }}>
+                <div style={{ flex: 1, minWidth: 200 }}>
+                  <div style={{ fontSize: "0.62rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.3rem" }}>
+                    What is walk-forward validation?
+                  </div>
+                  <p style={{ fontSize: "0.72rem", color: "var(--text-secondary)", lineHeight: 1.6, margin: 0 }}>
+                    Unlike a single backtest, walk-forward validation tests whether the strategy generalises across time. Each fold uses only data that would have been available on the day; it is a simulation of actually trading year-by-year. Stable Sharpe across all folds is strong evidence against regime-specific overfitting.
+                  </p>
                 </div>
-              ))}
-            </div>
-          </div>
+                <div style={{ display: "flex", gap: "1.5rem", flexShrink: 0 }}>
+                  {[
+                    { label: "Folds", value: backtest.walk_forward_folds.length },
+                    { label: "Min Sharpe", value: Math.min(...backtest.walk_forward_folds.map(f => f.sharpe)).toFixed(2) },
+                    { label: "Max Sharpe", value: Math.max(...backtest.walk_forward_folds.map(f => f.sharpe)).toFixed(2) },
+                    { label: "Avg Sharpe", value: (backtest.walk_forward_folds.reduce((s, f) => s + f.sharpe, 0) / backtest.walk_forward_folds.length).toFixed(2) },
+                  ].map(({ label, value }) => (
+                    <div key={label} style={{ textAlign: "center" }}>
+                      <div style={{ fontSize: "0.6rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.15rem" }}>{label}</div>
+                      <div style={{ fontSize: "1.2rem", fontWeight: 800, color: "var(--text-primary)", fontFamily: "monospace" }}>{value}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-          <WalkForwardHeatmap folds={backtest.walk_forward_folds} />
+              <WalkForwardHeatmap folds={backtest.walk_forward_folds} />
+            </>
+          )}
         </GlassCard>
       </RevealContainer>
 

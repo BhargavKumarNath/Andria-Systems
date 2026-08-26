@@ -23,6 +23,7 @@ class ClusteringEngine:
 
     def __init__(self, cfg: Settings) -> None:
         self._cfg = cfg
+        self.last_diagnostics: dict[str, object] = {}
 
         # Exclude names and non-behavioral info from feature space
         # All columns in ManagerDNAContract except manager_name
@@ -73,14 +74,15 @@ class ClusteringEngine:
             "Nimble Traders": [-0.5, 0.5, -1.0, 2.0, 0.0],  # Low AUM, High turnover
         }
 
-    def _sweep_hdbscan(self, X_scaled: np.ndarray) -> tuple[np.ndarray, np.ndarray, float]:
-        """Sweep HDBSCAN min_cluster_size and return best labels, probs, and silhouette."""
+    def _sweep_hdbscan(self, X_scaled: np.ndarray) -> tuple[np.ndarray, np.ndarray, float, int]:
+        """Sweep HDBSCAN min_cluster_size and return best labels, probs, silhouette, and size."""
         sizes = self._cfg.clustering.min_cluster_size_sweep
         ratio = self._cfg.clustering.min_samples_ratio
 
         best_sil = -2.0
         best_labels = None
         best_probs = None
+        best_size = sizes[0]
 
         for size in sizes:
             min_samples = max(2, int(size * ratio))
@@ -107,11 +109,12 @@ class ClusteringEngine:
                 best_sil = sil
                 best_labels = labels
                 best_probs = probs
+                best_size = size
 
         if best_labels is None:
             raise ClusteringError("HDBSCAN sweep failed to produce any clusters.")
 
-        return best_labels, best_probs, best_sil
+        return best_labels, best_probs, best_sil, best_size
 
     def _label_archetypes(
         self, df: pl.DataFrame, labels: np.ndarray, X_scaled: np.ndarray
@@ -177,9 +180,15 @@ class ClusteringEngine:
         X_scaled = scaler.fit_transform(X)
 
         # 2. HDBSCAN Sweep
-        labels, probs, best_sil = self._sweep_hdbscan(X_scaled)
+        labels, probs, best_sil, best_size = self._sweep_hdbscan(X_scaled)
         n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
         logger.info("clustering_sweep_complete", best_silhouette=best_sil, n_clusters=n_clusters)
+
+        self.last_diagnostics = {
+            "silhouette_score": round(float(best_sil), 4),
+            "best_min_cluster_size": int(best_size),
+            "min_cluster_size_sweep": list(self._cfg.clustering.min_cluster_size_sweep),
+        }
 
         if n_clusters < 2:
             logger.warning("few_clusters_found", n_clusters=n_clusters)

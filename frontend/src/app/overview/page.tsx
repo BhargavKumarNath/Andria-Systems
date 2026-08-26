@@ -37,9 +37,11 @@ async function OverviewContent() {
       color: "#10b981",
     },
     {
-      value: "1.847",
-      title: "Out-of-Sample Sharpe Ratio",
-      why: "Annualised risk-adjusted return across 10 walk-forward folds, 2010–2024. Each fold trains on expanding history and tests on a held-out year with no hindsight bias.",
+      value: metrics.sharpe !== null ? metrics.sharpe.toFixed(3) : "not available",
+      title: "Backtest Sharpe Ratio",
+      why: metrics.walkForwardFolds > 0
+        ? `Annualised risk-adjusted return across ${metrics.walkForwardFolds} walk-forward folds. Each fold trains on expanding history and tests on a held-out year with no hindsight bias.`
+        : "Annualised risk-adjusted return on the realized trade ledger, computed with T+1 execution and full transaction costs. Walk-forward folds need more calendar history than this run covers.",
       color: "#c4b5fd",
     },
     {
@@ -49,6 +51,10 @@ async function OverviewContent() {
       color: rColor,
     },
   ];
+
+  const filingsText = metrics.totalFilings
+    ? `${(metrics.totalFilings / 1_000_000).toFixed(0)} million SEC 13F filings`
+    : "SEC 13F filings";
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "3rem" }}>
@@ -80,7 +86,7 @@ async function OverviewContent() {
               </h1>
 
               <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", lineHeight: 1.7, maxWidth: "50ch", margin: 0 }}>
-                Processes <strong style={{ color: "var(--text-primary)" }}>116 million SEC 13F filings</strong> to surface
+                Processes <strong style={{ color: "var(--text-primary)" }}>{filingsText}</strong> to surface
                 regime-conditioned activist conviction signals. Combines unsupervised manager clustering
                 with Gaussian Hidden Markov Model macro detection to rank institutional equity plays.
               </p>
@@ -147,8 +153,11 @@ async function OverviewContent() {
       <RevealContainer threshold={0.1}>
         <SectionHeader
           title="Pipeline Run History"
-          description="Each successful run commits fresh artifacts to the repository, rebuilding this dashboard automatically via CI/CD."
+          description="Each row is one andria run/ingest invocation, read from its artifacts/runs/{run_id}/manifest.json."
         />
+        {history.length === 0 ? (
+          <p style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>No pipeline runs recorded yet.</p>
+        ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "0.65rem" }}>
           {history.map((run, idx) => {
             const ok = run.status === "success";
@@ -160,6 +169,11 @@ async function OverviewContent() {
                     backgroundColor: ok ? "#10b981" : "#ef4444",
                     boxShadow: `0 0 8px ${ok ? "rgba(16,185,129,0.5)" : "rgba(239,68,68,0.4)"}`,
                   }} />
+                  {run.stage && (
+                    <div style={{ fontSize: "0.62rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", flexShrink: 0, minWidth: 48 }}>
+                      {run.stage}
+                    </div>
+                  )}
                   <div style={{ fontFamily: "monospace", fontSize: "0.8rem", fontWeight: 600, color: ok ? "var(--text-primary)" : "var(--text-muted)", flex: 1 }}>
                     {run.id}
                   </div>
@@ -179,6 +193,7 @@ async function OverviewContent() {
             );
           })}
         </div>
+        )}
       </RevealContainer>
     </div>
   );

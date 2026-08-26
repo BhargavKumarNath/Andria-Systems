@@ -299,7 +299,14 @@ function ScoreDistribution({ scores }: { scores: number[] }) {
 async function SignalsContent() {
   const [data, backtest] = await Promise.all([getSignalsData(), getBacktestData()]);
   const { signals, total_signals, provenance_quality, validation_passed } = data;
-  const { signal_decay, summary: bSummary } = backtest;
+  const { signal_decay, walk_forward_folds } = backtest;
+
+  const allHorizonDecay = signal_decay.curve.filter((c) => c.regime === "All");
+  const peakIc = allHorizonDecay.length ? Math.max(...allHorizonDecay.map((c) => c.ic)) : 0;
+  const totalFoldTrades = walk_forward_folds.reduce((s, f) => s + f.n_trades, 0);
+  const hitRate = totalFoldTrades
+    ? walk_forward_folds.reduce((s, f) => s + f.hit_rate * f.n_trades, 0) / totalFoldTrades
+    : 0;
 
   /* Derived stats */
   const topSignal = signals[0];
@@ -425,8 +432,8 @@ async function SignalsContent() {
       <RevealContainer threshold={0.1}>
         <SignalQualityStrip
           halfLifeDays={signal_decay.half_life_days}
-          peakIc={signal_decay.peak_ic}
-          hitRate={bSummary.hit_rate}
+          peakIc={peakIc}
+          hitRate={hitRate}
         />
       </RevealContainer>
 

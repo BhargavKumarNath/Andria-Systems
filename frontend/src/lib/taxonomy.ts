@@ -37,3 +37,13 @@ export const REGIME_LABELS: Record<string, string> = {
   Rate_Shock:     "Rate Shock",
   Recession_Fear: "Recession Fear",
 };
+
+/** One-line archetype definition, matching the cosine-similarity prototype each
+ * archetype is labelled against in andria/models/clustering/engine.py. */
+export const ARCHETYPE_SHORT_DESC: Record<string, string> = {
+  "Conviction Activists": "High HHI, low put ratio, low turnover, long holding duration.",
+  "Index Huggers": "Low HHI, high AUM, low conviction delta, high quarters active.",
+  "Macro Tourists": "High put ratio, high turnover, high options notional.",
+  "Nimble Traders": "Low AUM, high turnover, high new position rate, high exit rate.",
+  "Noise": "No dense neighborhood under HDBSCAN — no stable behavioural profile.",
+};
