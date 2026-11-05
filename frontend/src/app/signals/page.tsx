@@ -1,5 +1,6 @@
 import React, { Suspense } from "react";
 import { getSignalsData, getBacktestData } from "@/lib/loaders";
+import { getDashboardFacts } from "@/lib/facts";
 import SectionHeader from "@/components/SectionHeader";
 import GlassCard from "@/components/GlassCard";
 import RevealContainer from "@/components/RevealContainer";
@@ -297,8 +298,12 @@ function ScoreDistribution({ scores }: { scores: number[] }) {
 }
 
 async function SignalsContent() {
-  const [data, backtest] = await Promise.all([getSignalsData(), getBacktestData()]);
-  const { signals, total_signals, provenance_quality, validation_passed } = data;
+  const [data, backtest, facts] = await Promise.all([getSignalsData(), getBacktestData(), getDashboardFacts()]);
+  const { signals, total_signals } = data;
+  // Gate outcome and provenance come from validation.json, the gate's own
+  // record; signals.json leaves both null, which used to render as "0.0%".
+  const validation_passed = facts.gatePassed;
+  const provenance_quality = facts.provenanceValue;
   const { signal_decay, walk_forward_folds } = backtest;
 
   const allHorizonDecay = signal_decay.curve.filter((c) => c.regime === "All");
@@ -364,10 +369,10 @@ async function SignalsContent() {
                   color: validation_passed ? "#10b981" : "#ef4444",
                   border: `1px solid ${validation_passed ? "rgba(16,185,129,0.28)" : "rgba(239,68,68,0.25)"}`,
                 }}>
-                  EvalGate: {validation_passed ? "PASSED" : "FAILED"}
+                  EvalGate: {validation_passed ? "PASSED" : "REJECTED"}
                 </span>
                 <span style={{ padding: "0.22rem 0.7rem", borderRadius: 6, fontSize: "0.72rem", fontWeight: 700, backgroundColor: "rgba(138,43,226,0.12)", color: "#c4b5fd", border: "1px solid rgba(138,43,226,0.25)" }}>
-                  {(provenance_quality * 100).toFixed(1)}% ticker provenance
+                  {provenance_quality === null ? "n/a" : `${(provenance_quality * 100).toFixed(1)}%`} ticker provenance
                 </span>
                 <span style={{ padding: "0.22rem 0.7rem", borderRadius: 6, fontSize: "0.72rem", fontWeight: 700, backgroundColor: "rgba(59,130,246,0.1)", color: "#3b82f6", border: "1px solid rgba(59,130,246,0.2)" }}>
                   {total_signals.toLocaleString()} pipeline signals scored
@@ -414,7 +419,7 @@ async function SignalsContent() {
       <RevealContainer threshold={0.1}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1.25rem" }}>
           {[
-            { label: "Pipeline signals", value: total_signals.toLocaleString(), sub: "Ticker-quarters scored across 12 data quarters", color: "#8a2be2" },
+            { label: "Pipeline signals", value: total_signals.toLocaleString(), sub: `Ticker-quarters scored across ${data.data_quarters.length} data quarters`, color: "#8a2be2" },
             { label: "Avg activist buyers", value: avgActivists, sub: "Independent managers per displayed signal", color: "#3b82f6" },
             { label: "High-conviction", value: strongConviction, sub: "Signals with 5+ strong-buy managers", color: "#10b981" },
             { label: "Avg crowding", value: `${(avgCrowding * 100).toFixed(1)}%`, sub: "Mean crowding penalty (lower is better)", color: "#f59e0b" },

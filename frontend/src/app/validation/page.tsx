@@ -151,13 +151,13 @@ async function ValidationContent() {
                   border: `1px solid ${gateColor}44`,
                   letterSpacing: "0.06em",
                 }}>
-                  Gate {gate_passed ? "PASSED" : "FAILED"}
+                  Gate {gate_passed ? "PASSED" : "REJECTED"}
                 </span>
                 <span style={{ padding: "0.22rem 0.7rem", borderRadius: 6, fontSize: "0.72rem", fontWeight: 700, backgroundColor: "rgba(255,255,255,0.05)", color: "var(--text-secondary)", border: "1px solid rgba(255,255,255,0.09)" }}>
-                  4 / 4 criteria
+                  {Object.values(checks).filter((c) => c.passed).length} / {Object.keys(checks).length} criteria passed
                 </span>
                 <span style={{ padding: "0.22rem 0.7rem", borderRadius: 6, fontSize: "0.72rem", fontWeight: 700, backgroundColor: "rgba(138,43,226,0.12)", color: "#c4b5fd", border: "1px solid rgba(138,43,226,0.25)" }}>
-                  3 Monte Carlo tests
+                  {monte_carlo.results.length} Monte Carlo tests
                 </span>
               </div>
             </div>

@@ -1,0 +1,91 @@
+┌─────────────────────────────────────┐
+│┌───────────────────────────────────┐│
+││    Query Profiling Information    ││
+│└───────────────────────────────────┘│
+└─────────────────────────────────────┘
+EXPLAIN ANALYZE SELECT symbol, COUNT(*) n, AVG(close), SUM(volume)                 FROM read_parquet('/home/bhargav-kr-nath/Projects/personal/Andria-Systems/.tmp/ohlcv-analysis-reviewed/bars/**/*.parquet', hive_partitioning=true)                 WHERE trade_date=DATE '2020-01-15' AND symbol < 5                 GROUP BY symbol ORDER BY symbol
+┌────────────────────────────────────────────────┐
+│┌──────────────────────────────────────────────┐│
+││              Total Time: 0.0051s             ││
+│└──────────────────────────────────────────────┘│
+└────────────────────────────────────────────────┘
+┌───────────────────────────┐
+│           QUERY           │
+└─────────────┬─────────────┘
+┌─────────────┴─────────────┐
+│      EXPLAIN_ANALYZE      │
+│    ────────────────────   │
+│                           │
+│           0 rows          │
+│           0.00s           │
+└─────────────┬─────────────┘
+┌─────────────┴─────────────┐
+│          ORDER_BY         │
+│    ────────────────────   │
+│  read_parquet.symbol ASC  │
+│                           │
+│                           │
+│                           │
+│           5 rows          │
+│           0.00s           │
+└─────────────┬─────────────┘
+┌─────────────┴─────────────┐
+│       HASH_GROUP_BY       │
+│    ────────────────────   │
+│         Groups: #0        │
+│                           │
+│        Aggregates:        │
+│        count_star()       │
+│          avg(#1)          │
+│          sum(#2)          │
+│                           │
+│                           │
+│                           │
+│           5 rows          │
+│           0.00s           │
+└─────────────┬─────────────┘
+┌─────────────┴─────────────┐
+│         PROJECTION        │
+│    ────────────────────   │
+│           symbol          │
+│           close           │
+│           volume          │
+│                           │
+│                           │
+│                           │
+│         7,200 rows        │
+│           0.00s           │
+└─────────────┬─────────────┘
+┌─────────────┴─────────────┐
+│         TABLE_SCAN        │
+│    ────────────────────   │
+│         Function:         │
+│        READ_PARQUET       │
+│                           │
+│        Projections:       │
+│           symbol          │
+│           close           │
+│           volume          │
+│                           │
+│     Filters: symbol<5     │
+│                           │
+│       File Filters:       │
+│ (trade_date = '2020-01-15'│
+│          ::DATE)          │
+│                           │
+│    Scanning Files: 1/35   │
+│    Total Files Read: 1    │
+│                           │
+│        Filename(s):       │
+│   /home/bhargav-kr-nath   │
+│ /Projects/personal/Andria │
+│    -Systems/.tmp/ohlcv    │
+│  -analysis-reviewed/bars  │
+│   /trade_date=2020-01-15  │
+│      /data_0.parquet      │
+│                           │
+│                           │
+│                           │
+│         7,200 rows        │
+│           0.00s           │
+└───────────────────────────┘

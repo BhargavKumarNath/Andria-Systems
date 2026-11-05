@@ -319,7 +319,9 @@ def _real_data_vintage() -> dict:
     edgar_dir = PROJECT_ROOT / "dataset" / "processed" / "edgar"
     fred_path = PROJECT_ROOT / "dataset" / "processed" / "FRED_preprocess.parquet"
     vintage = {
+        "edgar_from": None,
         "edgar_through": None,
+        "total_quarters": None,
         "fred_through": None,
         "total_filings_processed": None,
         "total_managers": None,
@@ -333,7 +335,8 @@ def _real_data_vintage() -> dict:
             con.execute("SET memory_limit='2GB'")
             row = con.execute(f"""
                 SELECT MAX(source_quarter), COUNT(*),
-                       COUNT(DISTINCT FILINGMANAGER_NAME), COUNT(DISTINCT CUSIP)
+                       COUNT(DISTINCT FILINGMANAGER_NAME), COUNT(DISTINCT CUSIP),
+                       MIN(source_quarter), COUNT(DISTINCT source_quarter)
                 FROM read_parquet('{edgar_dir}/**/*.parquet', hive_partitioning=true)
             """).fetchone()
             if row:
@@ -341,6 +344,8 @@ def _real_data_vintage() -> dict:
                 vintage["total_filings_processed"] = row[1]
                 vintage["total_managers"] = row[2]
                 vintage["total_cusips"] = row[3]
+                vintage["edgar_from"] = row[4]
+                vintage["total_quarters"] = row[5]
             con.close()
         if fred_path.exists():
             con = duckdb.connect()

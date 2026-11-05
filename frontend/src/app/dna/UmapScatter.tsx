@@ -100,7 +100,7 @@ export default function UmapScatter({ points, archetypes }: Props) {
         </ScatterChart>
       </ResponsiveContainer>
       <div style={{ textAlign: "center", fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: "0.5rem" }}>
-        {visible.length.toLocaleString()} of {points.length.toLocaleString()} managers shown &nbsp;·&nbsp; UMAP(n_components=2, n_neighbors=15)
+        {visible.length.toLocaleString()} of {points.length.toLocaleString()} managers shown &nbsp;·&nbsp; UMAP(n_components=2, n_neighbors=30)
       </div>
     </div>
   );

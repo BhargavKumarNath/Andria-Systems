@@ -9,7 +9,7 @@
 [![Dashboard](https://img.shields.io/badge/dashboard-live-brightgreen)](https://bhargav12321-andria-backend.hf.space)
 [![Frontend](https://img.shields.io/badge/frontend-live-brightgreen)](https://andria-systems.vercel.app)
 
-*Turns 116M+ SEC 13F institutional holdings filings into behavioral archetypes, macro regime labels, and a regime-conditioned "smart money" signal.*
+*Turns 120.2M SEC 13F institutional holdings rows (89 quarters, 2004 Q1 to 2026 Q1) into behavioral archetypes, macro regime labels, and a regime-conditioned "smart money" signal.*
 
 **[Live dashboard →](https://andria-systems.vercel.app)**
 
@@ -189,7 +189,7 @@ Only **Conviction Activists** feed into the RACS signal. The other three archety
 
 ### Detecting the macro regime
 
-A 4-state Gaussian HMM with full covariance is fit on five standardized macro features (VIX, the 10Y-2Y yield spread, high-yield credit spreads, the change in Fed funds, and the OFR/NFCI stress index), resampled to quarter-end so it lines up with the 13F filing cadence. I went with full covariance rather than the cheaper diagonal version on purpose: VIX and credit spreads move together strongly during stress periods, and a diagonal covariance structurally can't represent that correlation. It costs more parameters and makes the fit more sensitive to initialization, but mischaracterizing the joint distribution during a recession-fear regime felt like the worse trade.
+A 4-state Gaussian HMM with full covariance is fit on five standardized macro features (VIX, the 10Y-2Y yield spread, high-yield credit spreads, the change in Fed funds, and the Chicago Fed NFCI risk subindex from FRED, standing in for the OFR stress index), resampled to quarter-end so it lines up with the 13F filing cadence. I went with full covariance rather than the cheaper diagonal version on purpose: VIX and credit spreads move together strongly during stress periods, and a diagonal covariance structurally can't represent that correlation. It costs more parameters and makes the fit more sensitive to initialization, but mischaracterizing the joint distribution during a recession-fear regime felt like the worse trade.
 
 The same cosine-similarity trick used for archetype labeling shows up again here: each HMM state gets matched against four calibrated prototype vectors (`Goldilocks`, `Recovery`, `Rate_Shock`, `Recession_Fear`) instead of being left as an arbitrary state index. Unsupervised models don't guarantee that "state 2" means the same thing on every retrain; anchoring the labels to fixed prototypes is what keeps them stable and interpretable across runs.
 
@@ -254,6 +254,8 @@ Two heavier-duty checks come from the overfitting-detection literature: the **Pr
 There's also a three-way Monte Carlo layer: bootstrap resampling of the trade returns, randomized entry timing, and regime-label permutation, each one testing a different version of "could this have happened by chance." And a Fama-French 5-factor plus momentum regression that checks whether RACS returns survive after removing exposure to market, size, value, profitability, investment, and momentum factors. If the alpha disappears once you control for those, it wasn't really alpha.
 
 Every one of these (the leakage audit, the provenance quality of the CUSIP-to-ticker mapping, reproducibility across reruns, and the PBO score) feeds into a formal **evaluation gate**. A run only gets marked "published" if all four pass; if any one fails, the run is rejected with the specific reasons attached, rather than being allowed to quietly ship a result that hasn't earned it.
+
+The latest real run (89 quarters to 2026 Q1, 144 signals, 9 priced trades) was **rejected**. Provenance came in at 82.1% (23 of 28 signal CUSIPs resolved to a ticker) against the 90% threshold, and PBO could not be estimated (its 16 partitions need at least 80 trades; the run had 9), so that check fails closed. The live dashboard shows the run as rejected for those two reasons.
 
 ---
 
@@ -473,7 +475,7 @@ Reproducibility isn't just claimed, it's enforced: every run writes a manifest w
 
 ## Where this breaks down at scale
 
-The system is built for workstation-scale operation right now: 116M+ EDGAR rows inside a 10GB memory budget, with peak usage around 2-3GB during the backtest's pricing joins. DuckDB handles roughly 100M rows a minute on a modern laptop with vectorized execution, so the current dataset sits comfortably inside that. If the EDGAR data grew to 500M+ rows (more quarters, or a jump to daily rather than quarterly granularity), the memory-staged DuckDB approach would need to become out-of-core or partitioned instead.
+The system is built for workstation-scale operation right now: 120.2M EDGAR rows inside a 10GB memory budget, with peak usage around 2-3GB during the backtest's pricing joins. DuckDB handles roughly 100M rows a minute on a modern laptop with vectorized execution, so the current dataset sits comfortably inside that. If the EDGAR data grew to 500M+ rows (more quarters, or a jump to daily rather than quarterly granularity), the memory-staged DuckDB approach would need to become out-of-core or partitioned instead.
 
 The backtest engine currently uses Polars in eager mode rather than its lazy API, on purpose (more on that below), which leaves some memory savings on the table: my rough estimate is 30-40% at the hot paths if I ever needed to switch. If I had to scale this up 10x, the obvious moves are: partitioned ingestion straight from S3 instead of single-threaded TSV parsing, parallelizing the Manager DNA computation by CIK, GPU-accelerated clustering via RAPIDS cuML, and pushing the RACS SQL pipeline's intermediate tables into a cloud warehouse instead of local temp tables.
 

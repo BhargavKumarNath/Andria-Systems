@@ -213,7 +213,9 @@ export interface MetadataArtifact {
   git_commit: string;
   pipeline_version: string;
   data_vintage: {
+    edgar_from?: string | null;
     edgar_through: string | null;
+    total_quarters?: number | null;
     fred_through: string | null;
     total_filings_processed: number | null;
     total_managers?: number;

@@ -3,7 +3,8 @@ import { useOverviewData } from "./useOverviewData";
 import GlassCard from "@/components/GlassCard";
 import RevealContainer from "@/components/RevealContainer";
 import SectionHeader from "@/components/SectionHeader";
-import PipelineFlow from "./PipelineFlow";
+import PipelineFlow, { type PipelineFacts } from "./PipelineFlow";
+import { formatInt, formatQuarter, getDashboardFacts } from "@/lib/facts";
 
 function OverviewSkeleton() {
   return <div className="skeleton-shimmer" style={{ width: "100%", height: 500 }} />;
@@ -18,7 +19,31 @@ interface ContextCard {
 }
 
 async function OverviewContent() {
-  const { metrics, history } = await useOverviewData();
+  const [{ metrics, history }, facts] = await Promise.all([useOverviewData(), getDashboardFacts()]);
+
+  // Provenance comes from the evaluation gate's own record (validation.json),
+  // the same value the gate judged, not from signals.json, which leaves it null.
+  const provenance = facts.provenanceValue;
+  const provenanceThreshold = facts.provenanceThreshold ?? 0.9;
+  const provenanceOk = provenance !== null && provenance >= provenanceThreshold;
+  const pct = (v: number | null) => (v === null ? "n/a" : `${(v * 100).toFixed(1)}%`);
+
+  const pipelineFacts: PipelineFacts = {
+    filingsRowsShort: facts.filingsRowsShort,
+    firstQuarter: formatQuarter(facts.firstQuarter),
+    lastQuarter: formatQuarter(facts.lastQuarter),
+    totalQuarters: formatInt(facts.totalQuarters),
+    totalManagers: formatInt(facts.totalManagers),
+    clusteredManagers: formatInt(facts.clusteredManagers),
+    namedArchetypes: facts.archetypes.filter((a) => a.label !== "Noise").map((a) => a.label),
+    noisePct: facts.noisePct === null ? "none" : `${(facts.noisePct * 100).toFixed(0)}%`,
+    totalSignals: formatInt(facts.totalSignals),
+    signalQuarters: facts.signalQuarters,
+    provenancePct: pct(provenance),
+    provenanceDetail: facts.provenanceDetail,
+    gatePassed: facts.gatePassed,
+    failedGateChecks: facts.failedGateChecks,
+  };
 
   const regimeColor: Record<string, string> = {
     Goldilocks: "#10b981",
@@ -31,10 +56,10 @@ async function OverviewContent() {
 
   const contextCards: ContextCard[] = [
     {
-      value: `${(metrics.provenance * 100).toFixed(1)}%`,
+      value: pct(provenance),
       title: "Data Provenance Quality",
-      why: "Share of holdings records that matched a live exchange ticker via OpenFIGI. High provenance means signals are based on real, tradeable securities, not stale or delisted names.",
-      color: "#10b981",
+      why: `Share of signal CUSIPs that resolved to a real exchange ticker via OpenFIGI (${facts.provenanceDetail.replace(/\.$/, "")}). The evaluation gate requires ${(provenanceThreshold * 100).toFixed(0)}%; ${provenanceOk ? "this run meets it" : "this run falls short, one reason the gate rejected it"}.`,
+      color: provenanceOk ? "#10b981" : "#ef4444",
     },
     {
       value: metrics.sharpe !== null ? metrics.sharpe.toFixed(3) : "not available",
@@ -47,7 +72,7 @@ async function OverviewContent() {
     {
       value: `${(metrics.regimeProb * 100).toFixed(0)}%`,
       title: `Model Confidence · ${regimeLabel}`,
-      why: "Probability assigned by the Gaussian HMM to the current macro regime state. Drives the regime multiplier applied to every RACS score. The higher the confidence, the stronger the signal tilt.",
+      why: "Probability the Gaussian HMM assigns to the current macro regime; it scales every RACS score. Read with caution: on the real macro history the HMM did not converge, so this is a best-effort fit rather than a validated estimate.",
       color: rColor,
     },
   ];
@@ -90,6 +115,24 @@ async function OverviewContent() {
                 regime-conditioned activist conviction signals. Combines unsupervised manager clustering
                 with Gaussian Hidden Markov Model macro detection to rank institutional equity plays.
               </p>
+
+              <div style={{
+                display: "inline-flex", alignItems: "center", gap: "0.5rem", marginTop: "1.1rem",
+                padding: "0.4rem 0.8rem", borderRadius: 8,
+                backgroundColor: facts.gatePassed ? "rgba(16,185,129,0.1)" : "rgba(239,68,68,0.1)",
+                border: `1px solid ${facts.gatePassed ? "rgba(16,185,129,0.3)" : "rgba(239,68,68,0.3)"}`,
+                fontSize: "0.75rem", color: "var(--text-secondary)",
+              }}>
+                <strong style={{ color: facts.gatePassed ? "#10b981" : "#ef4444", letterSpacing: "0.04em" }}>
+                  Evaluation gate: {facts.gatePassed ? "PASSED" : "REJECTED"}
+                </strong>
+                {!facts.gatePassed && (
+                  <span>
+                    {facts.totalTrades ?? 0} priced trades, Sharpe {facts.annualizedSharpe?.toFixed(2) ?? "n/a"};
+                    failed {facts.failedGateChecks.join(" and ")}
+                  </span>
+                )}
+              </div>
             </div>
 
             {/* Current regime card */}
@@ -142,10 +185,10 @@ async function OverviewContent() {
       <RevealContainer threshold={0.1}>
         <SectionHeader
           title="How the Pipeline Works"
-          description="Six stages from raw SEC filings to validated, deployable signals. Click any stage to understand what it does, how it works, and why it matters."
+          description="Six stages from raw SEC filings to a gated research result. Click any stage to see what it does, how it works, and what the real run produced."
         />
         <GlassCard hierarchy="primary">
-          <PipelineFlow />
+          <PipelineFlow facts={pipelineFacts} />
         </GlassCard>
       </RevealContainer>
 

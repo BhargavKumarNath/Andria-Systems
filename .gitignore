@@ -58,3 +58,5 @@ tmp/
 
 # Research notebooks (output-heavy, not versioned)
 notebooks/
+CLAUDE.md
+.gitignore

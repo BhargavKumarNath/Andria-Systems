@@ -255,7 +255,13 @@ class PipelineOrchestrator:
         from andria.backtest.signal_decay import SignalDecayAnalyzer
         from andria.backtest.walk_forward import WalkForwardValidator
         from andria.core.artifact_registry import ArtifactRegistry
-        from andria.core.evaluation_gate import EvaluationGate
+        from andria.core.evaluation_gate import (
+            PBO_THRESHOLD,
+            PROVENANCE_THRESHOLD,
+            EvaluationGate,
+            pbo_passes,
+            provenance_passes,
+        )
         from andria.data.market_loader import MarketDataLoader
         from andria.data.provenance import ProvenanceTracker
         from andria.research.experiment_tracker import ExperimentTracker
@@ -364,12 +370,12 @@ class PipelineOrchestrator:
                         "passed": leakage_passed,
                         "detail": f"{result['leakage_audit'].error_count} errors, "
                                   f"{result['leakage_audit'].warning_count} warnings across "
-                                  f"{signals_priced.height} signals.",
+                                  f"{signals_priced.height} priced signals (of {signals.height}).",
                     },
                     "provenance_threshold": {
-                        "passed": coverage_report.coverage_pct >= 70.0,
+                        "passed": provenance_passes(coverage_report.coverage_pct / 100.0),
                         "value": round(coverage_report.coverage_pct / 100.0, 4),
-                        "threshold": 0.90,
+                        "threshold": PROVENANCE_THRESHOLD,
                         "detail": f"{coverage_report.mapped_count}/{coverage_report.total_cusips} "
                                   f"CUSIPs resolved to a real ticker.",
                     },
@@ -378,15 +384,15 @@ class PipelineOrchestrator:
                         "detail": "Single run; independent re-run cross-check not performed.",
                     },
                     "pbo_validation": {
-                        "passed": bool(pbo_score <= 0.40) if pbo_score == pbo_score else False,
+                        "passed": pbo_passes(pbo_score),
                         "value": round(pbo_score, 4) if pbo_score == pbo_score else None,
-                        "threshold": 0.40,
+                        "threshold": PBO_THRESHOLD,
                     },
                 },
                 "dsr": dsr_result,
                 "pbo": {"score": round(pbo_score, 4) if pbo_score == pbo_score else None,
                         "n_partitions": 16, "n_combinations": 12870,
-                        "passed": bool(pbo_score <= 0.40) if pbo_score == pbo_score else False},
+                        "passed": pbo_passes(pbo_score)},
                 "monte_carlo": {
                     "n_simulations": 1000,
                     "results": [

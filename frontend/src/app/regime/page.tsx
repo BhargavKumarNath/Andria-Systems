@@ -51,7 +51,7 @@ const REGIME_META: Record<string, {
   Recession_Fear: {
     multiplier: "−25% RACS",
     positive: false,
-    chips: ["OFR FSI spiked", "HY spreads > 600bp", "VIX > 30", "Systematic deleveraging", "Redemptions dominate flow"],
+    chips: ["Financial stress spiked", "HY spreads > 600bp", "VIX > 30", "Systematic deleveraging", "Redemptions dominate flow"],
   },
 };
 
@@ -134,7 +134,7 @@ async function RegimeContent() {
               </div>
               {/* HMM inputs */}
               <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
-                {["VIX", "Yield curve slope (10Y-2Y)", "HY credit spreads", "Fed funds delta", "OFR stress index"].map((f) => (
+                {["VIX", "Yield curve slope (10Y-2Y)", "HY credit spreads", "Fed funds delta", "NFCI risk (OFR stand-in)"].map((f) => (
                   <Chip key={f} text={f} color="#8a2be2" />
                 ))}
               </div>
@@ -293,7 +293,7 @@ async function RegimeContent() {
       {/* ── 4. Distribution stacked bar ───────────────────────────────────────── */}
       <RevealContainer threshold={0.1}>
         <SectionHeader
-          title="24-Quarter Regime Distribution"
+          title={`${total_observations}-Quarter Regime Distribution`}
           description="Time spent in each state across the full training window."
         />
         <GlassCard hierarchy="secondary">

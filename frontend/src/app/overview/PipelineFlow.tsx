@@ -16,86 +16,110 @@ interface Stage {
   };
 }
 
-const PIPELINE: Stage[] = [
-  {
-    n: 1,
-    color: "#3b82f6",
-    title: "SEC EDGAR Filings",
-    metric: "116M rows",
-    desc: "Bulk-download all Form 13F XML filings via EDGAR Full-Text Search. 81 quarters, 2004–2024.",
-    detail: {
-      what: "The U.S. SEC requires every institution managing over $100M to publicly disclose all stock holdings each quarter via Form 13F. This creates a complete, auditable record of where the world's largest investors are putting their money.",
-      how: "We download all 13F filings through the EDGAR Full-Text Search (EFTS) bulk API, parse the XML, deduplicate amended filings, and store 116 million normalised records in a DuckDB columnar database on local NVMe, completing the full ingest in under 20 minutes.",
-      why: "This is the raw signal source. Every downstream model depends on the completeness and accuracy of this data. Without reliable coverage across all 8,934 institutional managers and 81 quarters, no conviction signal would be meaningful.",
-      tags: ["EDGAR EFTS API", "Form 13F", "XML parsing", "DuckDB", "Parquet"],
+/** Serializable subset of DashboardFacts passed down from the server page. */
+export interface PipelineFacts {
+  filingsRowsShort: string;
+  firstQuarter: string;
+  lastQuarter: string;
+  totalQuarters: string;
+  totalManagers: string;
+  clusteredManagers: string;
+  namedArchetypes: string[];
+  noisePct: string;
+  totalSignals: string;
+  signalQuarters: number;
+  provenancePct: string;
+  provenanceDetail: string;
+  gatePassed: boolean;
+  failedGateChecks: string[];
+}
+
+function buildPipeline(f: PipelineFacts): Stage[] {
+  return [
+    {
+      n: 1,
+      color: "#3b82f6",
+      title: "SEC EDGAR Filings",
+      metric: `${f.filingsRowsShort} rows`,
+      desc: `All 53 SEC Form 13F structured-data bulk files, ingested into Hive-partitioned Parquet. ${f.totalQuarters} quarters, ${f.firstQuarter} to ${f.lastQuarter}.`,
+      detail: {
+        what: "The U.S. SEC requires every institution managing over $100M to publicly disclose its equity holdings each quarter via Form 13F. This creates an auditable record of where the largest investors are putting their money.",
+        how: `Each bulk file (INFOTABLE and COVERPAGE TSVs) is ingested one batch at a time in an isolated subprocess under a 2 GB DuckDB memory cap, after an unbounded first attempt crashed the machine. The result is ${f.filingsRowsShort} filing rows from ${f.totalManagers} managers. SEC's structured data starts in 2013 Q2; quarters before that come only from late amendments inside newer files, so pre-2013 coverage is partial.`,
+        why: "Every downstream model depends on the completeness and accuracy of this data. Partial early coverage is stated rather than presented as a complete 2004 archive.",
+        tags: ["SEC 13F bulk TSV", "Hive-partitioned Parquet", "DuckDB", "Subprocess isolation"],
+      },
     },
-  },
-  {
-    n: 2,
-    color: "#8b5cf6",
-    title: "CUSIP Resolution",
-    metric: "3.4M mappings",
-    desc: "OpenFIGI batch API resolves CUSIP identifiers to live exchange tickers with an LRU cache.",
-    detail: {
-      what: "Every 13F filing identifies securities by CUSIP, a 9-character alphanumeric code, not a familiar ticker like AAPL or MSFT. CUSIPs can become invalid when companies merge, spin off, or get delisted, creating silent data quality failures.",
-      how: "The OpenFIGI API maps each unique CUSIP to a live exchange ticker via batch requests. Results are cached in an LRU store so that only expired or novel CUSIPs require a fresh API call. The provenance score (98.5%) measures how many holdings resolved successfully.",
-      why: "Signals built on unresolvable or delisted securities are worthless; they cannot be acted on in the market. High provenance is a precondition for the EvaluationGate to pass, ensuring every ranked signal points to something you can actually buy.",
-      tags: ["OpenFIGI API", "CUSIP", "LRU cache", "3.4M mappings", "98.5% provenance"],
+    {
+      n: 2,
+      color: "#8b5cf6",
+      title: "CUSIP Resolution",
+      metric: `${f.provenancePct} resolved`,
+      desc: "OpenFIGI batch API maps the CUSIPs in the signal universe to exchange tickers, cached to Parquet.",
+      detail: {
+        what: "13F filings identify securities by CUSIP, a 9-character code, not a ticker. CUSIPs can go stale after mergers, spin-offs, or delistings, creating silent data-quality failures.",
+        how: `Keyless OpenFIGI accepts at most 10 identifiers per request (larger batches return HTTP 413), so the mapper batches at 10 with a delay between requests and caches results to Parquet. In the real run: ${f.provenanceDetail} An unmapped CUSIP is left unmapped rather than guessed.`,
+        why: "Signals on securities that cannot be resolved cannot be traded. Provenance below the gate's 90% threshold is one of the reasons this run was rejected.",
+        tags: ["OpenFIGI API", "CUSIP", "Batch size 10", `${f.provenancePct} provenance`],
+      },
     },
-  },
-  {
-    n: 3,
-    color: "#8a2be2",
-    title: "Behavioral Feature Engineering",
-    metric: "14 dimensions",
-    desc: "Polars computes 14 per-manager features (turnover, conviction delta, sector HHI, filing lag) in a single lazy scan.",
-    detail: {
-      what: "Raw 13F data tells us who owns what, but not how they trade. We compute 14 behavioral features per manager per quarter that compress an institution's entire investment personality into a numeric vector: their trading style, risk tolerance, and conviction patterns.",
-      how: "Polars lazy evaluation chains all 14 computations in a single pass: portfolio HHI (concentration), quarter-over-quarter turnover, conviction delta (how much position sizes change), filing lag (how quickly they report after quarter-end), small-cap exposure, activist frequency, and 8 more. Runs in under 3 minutes on 116M rows.",
-      why: "These 14 numbers are the input to HDBSCAN clustering. Without behavioural features, you cannot distinguish a conviction activist from an index hugger, even if they hold the same stocks. The feature space is what separates signal from noise in the downstream ranking.",
-      tags: ["Polars", "14 features", "Portfolio HHI", "Conviction delta", "Filing lag"],
+    {
+      n: 3,
+      color: "#8a2be2",
+      title: "Behavioral Feature Engineering",
+      metric: "14 dimensions",
+      desc: "A staged DuckDB pipeline computes 14 behavioural features per manager (concentration, turnover, holding duration and more).",
+      detail: {
+        what: "Raw 13F data tells us who owns what, but not how they trade. Fourteen behavioural features per manager compress an institution's investment style into a numeric vector.",
+        how: `A six-stage DuckDB pipeline (eligible-manager filter, quarterly portfolios, quarterly aggregates, HHI and top-N concentration, holding-duration statistics, final join) uses staged temp tables. Only managers with at least four filed quarters qualify: ${f.clusteredManagers} of ${f.totalManagers}.`,
+        why: "These 14 numbers are the input to HDBSCAN clustering. Without behavioural features you cannot tell a conviction activist from an index hugger, even if they hold the same stocks.",
+        tags: ["DuckDB", "14 features", "Portfolio HHI", "Holding duration", "≥4 quarters"],
+      },
     },
-  },
-  {
-    n: 4,
-    color: "#f59e0b",
-    title: "HDBSCAN + Gaussian HMM",
-    metric: "4 archetypes · 4 regimes",
-    desc: "UMAP reduces to 2D, HDBSCAN labels manager archetypes. Gaussian HMM classifies macro states from VIX, yield curve and credit spreads.",
-    detail: {
-      what: "Two separate unsupervised models run in parallel. HDBSCAN segments 8,934 managers into behavioral archetypes. A Gaussian Hidden Markov Model classifies each quarter into one of four macro regimes: Goldilocks, Recovery, Rate Shock, or Recession Fear.",
-      how: "UMAP first reduces the 14-dimensional feature space to 2D, preserving local and global manifold structure. HDBSCAN then finds density-connected clusters without requiring a fixed k; managers who do not fit any cluster are labelled Noise. Separately, the HMM trains on five macro indicators (VIX, yield-curve slope, credit spreads, Fed funds delta, OFR stress index) using Baum-Welch EM, then classifies each quarter via Viterbi decoding.",
-      why: "The regime state directly multiplies every RACS score. A signal scoring 0.25 in a Goldilocks regime becomes 0.29 (+15%). This is the same risk-on / risk-off logic that institutional quant desks apply when adjusting factor tilts across the business cycle.",
-      tags: ["UMAP", "HDBSCAN", "Gaussian HMM", "hmmlearn", "Baum-Welch EM", "Viterbi"],
+    {
+      n: 4,
+      color: "#f59e0b",
+      title: "HDBSCAN + Gaussian HMM",
+      metric: `${f.namedArchetypes.length} archetypes · 4 regimes`,
+      desc: `UMAP reduces to 2D for display, HDBSCAN labels manager archetypes (${f.noisePct} left as noise). A Gaussian HMM labels macro regimes.`,
+      detail: {
+        what: `Two separate unsupervised models. HDBSCAN segments ${f.clusteredManagers} managers into ${f.namedArchetypes.join(" and ")}, with ${f.noisePct} labelled noise. A four-state Gaussian HMM labels each quarter as Goldilocks, Recovery, Rate Shock, or Recession Fear.`,
+        how: "HDBSCAN finds density-connected clusters without a fixed k; managers who fit no cluster are labelled Noise rather than forced into one. The HMM is fit on five macro indicators (VIX, 10Y-2Y spread, high-yield credit spread, Fed funds delta, and FRED NFCIRISK standing in for unavailable OFR stress data). On the real macro history the full-covariance HMM did not converge, a logged finding reported as-is.",
+        why: "The regime probability scales each RACS score. A high noise share and a non-converged HMM are reasons for caution about this run, and are shown rather than hidden.",
+        tags: ["UMAP", "HDBSCAN", "Gaussian HMM", "hmmlearn", "Did not converge"],
+      },
     },
-  },
-  {
-    n: 5,
-    color: "#10b981",
-    title: "RACS Signal Generation",
-    metric: "2,847 signals/quarter",
-    desc: "RACS = consensus_weight × log(activist_buyers + 1.1) × (1 − crowding) × regime_multiplier. Top 500 ranked per quarter.",
-    detail: {
-      what: "RACS (Regime-Adjusted Conviction Score) is a composite formula that answers one question: which stocks have the strongest combination of broad institutional consensus, deep activist conviction, manageable crowding risk, and macro tailwind right now?",
-      how: "The formula multiplies four components: (1) consensus_weight: fraction of institutions holding the stock, AUM-weighted; (2) log(activist_buyers + 1.1): log-scaled activist buyer count, damping outliers; (3) (1 - crowding): penalises overcrowded trades that face forced-selling risk; (4) regime_multiplier: amplifies by +15% in Goldilocks, dampens by -20% in Recession Fear. Top 500 signals per quarter are exported.",
-      why: "No single factor predicts returns reliably. RACS only scores high when all four signals align simultaneously: breadth, depth, safety, and timing. This multi-factor gate reduces false positives that plague simpler momentum or consensus screens.",
-      tags: ["RACS formula", "Regime multiplier", "Crowding penalty", "Activist conviction", "500 signals"],
+    {
+      n: 5,
+      color: "#10b981",
+      title: "RACS Signal Generation",
+      metric: `${f.totalSignals} signals`,
+      desc: `RACS combines consensus weight, activist conviction, a crowding discount, and regime probability. ${f.totalSignals} signals across ${f.signalQuarters} quarters.`,
+      detail: {
+        what: "RACS (Regime-Adjusted Conviction Score) ranks stocks by the combination of broad institutional consensus, activist conviction, crowding risk, and macro regime.",
+        how: "racs_raw = consensus_weight × ln(activist_buyers + 1.1), requiring at least two distinct Conviction Activist buyers, then discounted for crowding and blended with the regime as racs_raw × (1 + 0.3 × regime_confidence). Computed in DuckDB SQL with temp-table staging.",
+        why: `Requiring several independent conditions to align keeps the signal universe small: ${f.totalSignals} signals over ${f.signalQuarters} quarters on real data, too few for strong statistical claims.`,
+        tags: ["RACS formula", "regime_weight 0.3", "Crowding discount", "≥2 activist buyers"],
+      },
     },
-  },
-  {
-    n: 6,
-    color: "#10b981",
-    title: "EvaluationGate",
-    metric: "PASSED",
-    desc: "DSR > 1.0, PBO <= 40%, three Monte Carlo null tests. Bailey & Lopez de Prado (2016) criteria. Blocks deployment on failure.",
-    detail: {
-      what: "The EvaluationGate is a four-condition publication gate that must pass before any signal can be deployed. It is designed to catch the two most common failure modes in quantitative finance: overfitting to historical noise, and fooling yourself with a lucky backtest.",
-      how: "Condition 1: Deflated Sharpe Ratio (DSR) must exceed 1.0; this adjusts the observed Sharpe for the number of strategy configurations tested, non-normal returns, and serial autocorrelation. Condition 2: Probability of Backtest Overfitting (PBO) must stay below 40%; computed via CSCV across 12,870 train/test combinations. Conditions 3-4: Three Monte Carlo null tests at N=1,000 each (bootstrap resampling, randomised entry timing, regime permutation) must all produce p < 0.05.",
-      why: "A strategy that only looks good because of data mining or lucky timing will fail at least one of these four gates. This is the same validation framework described in Bailey & Lopez de Prado (2016) Journal of Portfolio Management; the same standard institutional quant teams use before deploying capital.",
-      tags: ["DSR", "PBO", "CSCV", "Monte Carlo", "Bailey et al. 2016", "12,870 splits"],
+    {
+      n: 6,
+      color: f.gatePassed ? "#10b981" : "#ef4444",
+      title: "EvaluationGate",
+      metric: f.gatePassed ? "PASSED" : "REJECTED",
+      desc: f.gatePassed
+        ? "Every publication check passed."
+        : `Rejected this run. Failed: ${f.failedGateChecks.join(", ")}.`,
+      detail: {
+        what: "The EvaluationGate must pass before any signal is published. It targets the two most common failure modes in quantitative research: overfitting to historical noise, and trusting a lucky backtest.",
+        how: "Four checks must all pass: a look-ahead leakage audit, provenance of at least 90% of CUSIPs resolved, reproducibility, and a Probability of Backtest Overfitting (CSCV) of at most 40%. Deflated Sharpe and three Monte Carlo null tests (bootstrap, randomised entry timing, regime permutation) are reported alongside.",
+        why: f.gatePassed
+          ? "A strategy that only looks good because of data mining or lucky timing should fail at least one of these checks."
+          : "With nine priced trades, PBO and Deflated Sharpe could not be estimated, and provenance was below threshold. Rejecting the run is the gate working as designed, so the dashboard reports it rather than the earlier demo results.",
+        tags: ["Leakage audit", "Provenance ≥ 90%", "PBO ≤ 40%", "Deflated Sharpe", "Monte Carlo"],
+      },
     },
-  },
-];
+  ];
+}
 
 function Arrow() {
   return (
@@ -269,7 +293,8 @@ function PipelineNode({ stage, active, onClick }: { stage: Stage; active: boolea
   );
 }
 
-export default function PipelineFlow() {
+export default function PipelineFlow({ facts }: { facts: PipelineFacts }) {
+  const PIPELINE = buildPipeline(facts);
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
 
   const toggle = (i: number) => setActiveIdx((prev) => (prev === i ? null : i));

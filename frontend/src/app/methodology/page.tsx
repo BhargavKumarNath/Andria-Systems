@@ -2,6 +2,7 @@ import React from "react";
 import SectionHeader from "@/components/SectionHeader";
 import GlassCard from "@/components/GlassCard";
 import RevealContainer from "@/components/RevealContainer";
+import { formatInt, formatQuarter, getDashboardFacts } from "@/lib/facts";
 import {
   InteractiveFormula,
   UmapScatterSim,
@@ -26,7 +27,8 @@ function FeatureChip({ label }: { label: string }) {
   );
 }
 
-export default function MethodologyPage() {
+export default async function MethodologyPage() {
+  const facts = await getDashboardFacts();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "3.5rem" }}>
 
@@ -61,15 +63,15 @@ export default function MethodologyPage() {
           <p style={{ fontSize: "0.95rem", color: "var(--text-secondary)", lineHeight: 1.6, maxWidth: "60ch", margin: "0 0 2rem" }}>
             Every modelling decision maps to a peer-reviewed academic standard.
             We replace traditional discretionary analysis with unsupervised machine learning to extract
-            behavioural alpha from 20 years of SEC filings.
+            behavioural alpha from SEC 13F filings spanning {formatQuarter(facts.firstQuarter)} to {formatQuarter(facts.lastQuarter)}.
           </p>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem" }}>
             {[
-              { label: "Raw Filings", value: "116M", color: "#3b82f6" },
-              { label: "Quarters", value: "81", color: "#8a2be2" },
-              { label: "Unique Managers", value: "8,934", color: "#f59e0b" },
-              { label: "CUSIP Mappings", value: "3.4M", color: "#10b981" },
+              { label: "Filing Rows", value: facts.filingsRowsShort, color: "#3b82f6" },
+              { label: "Quarters", value: formatInt(facts.totalQuarters), color: "#8a2be2" },
+              { label: "Unique Managers", value: formatInt(facts.totalManagers), color: "#f59e0b" },
+              { label: "Distinct CUSIPs", value: formatInt(facts.totalCusips), color: "#10b981" },
             ].map(({ label, value, color }) => (
               <div key={label} style={{ padding: "1rem", borderRadius: 12, backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
                 <div style={{ fontSize: "2.2rem", fontWeight: 800, color, lineHeight: 1, marginBottom: "0.4rem", letterSpacing: "-0.03em" }}>{value}</div>
@@ -95,7 +97,7 @@ export default function MethodologyPage() {
       <RevealContainer threshold={0.1}>
         <SectionHeader
           title="2. Unsupervised Learning: Manager DNA"
-          description="Segmentation of 8,934 institutional managers into behavioural archetypes using dimensionality reduction and density clustering."
+          description={`Segmentation of ${formatInt(facts.clusteredManagers)} institutional managers (those with at least four filed quarters) into behavioural archetypes using dimensionality reduction and density clustering.`}
         />
         <GlassCard hierarchy="primary">
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "2rem", alignItems: "center" }}>
@@ -140,7 +142,7 @@ export default function MethodologyPage() {
       <RevealContainer threshold={0.1}>
         <SectionHeader
           title="3. Macro Intelligence: Gaussian HMM"
-          description="A 4-state Hidden Markov Model trained on macroeconomic indicators (VIX, yield curve, credit spreads, Fed funds, OFR stress)."
+          description="A 4-state Hidden Markov Model trained on macroeconomic indicators (VIX, yield curve, credit spreads, Fed funds, and the NFCI risk subindex standing in for OFR stress)."
         />
         <GlassCard hierarchy="primary">
           <HmmVisuals />

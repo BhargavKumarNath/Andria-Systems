@@ -11,7 +11,6 @@ export function transformOverviewMetrics(
     totalFilings: metadata?.data_vintage?.total_filings_processed ?? null,
     currentRegime: regimes.current?.regime_label ?? "Unknown",
     regimeProb: regimes.current?.regime_prob ?? 0,
-    provenance: signals.provenance_quality ?? 0,
     sharpe: backtest.summary.total_trades > 0 ? backtest.summary.annualized_sharpe : null,
     walkForwardFolds: backtest.walk_forward_folds.length,
   };

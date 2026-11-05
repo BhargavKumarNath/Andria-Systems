@@ -2,7 +2,6 @@ export interface OverviewMetrics {
   totalFilings: number | null;
   currentRegime: string;
   regimeProb: number;
-  provenance: number;
   sharpe: number | null;
   walkForwardFolds: number;
 }

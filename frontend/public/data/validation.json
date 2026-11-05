@@ -3,10 +3,10 @@
   "checks": {
     "leakage_audit": {
       "passed": true,
-      "detail": "0 errors, 0 warnings across 86 signals."
+      "detail": "0 errors, 0 warnings across 86 priced signals (of 144)."
     },
     "provenance_threshold": {
-      "passed": true,
+      "passed": false,
       "value": 0.821,
       "threshold": 0.9,
       "detail": "23/28 CUSIPs resolved to a real ticker."

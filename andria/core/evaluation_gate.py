@@ -5,6 +5,20 @@ from andria.core.artifact_registry import ArtifactRegistry
 
 logger = structlog.get_logger(__name__)
 
+# Publication thresholds. The exported validation.json reports pass/fail with
+# these same constants, so the dashboard can never disagree with the gate.
+PROVENANCE_THRESHOLD = 0.90
+PBO_THRESHOLD = 0.40
+
+
+def provenance_passes(provenance_quality: float) -> bool:
+    return provenance_quality >= PROVENANCE_THRESHOLD
+
+
+def pbo_passes(pbo_score: float) -> bool:
+    # NaN compares False, so an unestimable PBO fails closed.
+    return pbo_score <= PBO_THRESHOLD
+
 
 class GateCheckResult(BaseModel):
     passed: bool
@@ -42,16 +56,24 @@ class EvaluationGate:
                 reason="Leakage audit failed" if not leakage_passed else "Pass"
             ),
             "provenance_threshold": GateCheckResult(
-                passed=provenance_quality >= 0.90,
-                reason=f"Provenance {provenance_quality:.2f} below 0.90 threshold" if provenance_quality < 0.90 else "Pass"
+                passed=provenance_passes(provenance_quality),
+                reason=(
+                    f"Provenance {provenance_quality:.2f} below {PROVENANCE_THRESHOLD:.2f} threshold"
+                    if not provenance_passes(provenance_quality)
+                    else "Pass"
+                ),
             ),
             "reproducibility": GateCheckResult(
                 passed=reproducibility_passed,
                 reason="Deterministic reproducibility failed" if not reproducibility_passed else "Pass"
             ),
             "pbo_validation": GateCheckResult(
-                passed=pbo_score <= 0.40,
-                reason=f"PBO score {pbo_score:.2f} exceeds 0.40 limit" if pbo_score > 0.40 else "Pass"
+                passed=pbo_passes(pbo_score),
+                reason=(
+                    f"PBO score {pbo_score:.2f} exceeds {PBO_THRESHOLD:.2f} limit"
+                    if not pbo_passes(pbo_score)
+                    else "Pass"
+                ),
             )
         }
         

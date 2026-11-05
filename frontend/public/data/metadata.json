@@ -4,7 +4,9 @@
   "git_commit": "79341bc",
   "pipeline_version": "4.16",
   "data_vintage": {
+    "edgar_from": "2004Q1",
     "edgar_through": "2026Q1",
+    "total_quarters": 89,
     "fred_through": "2026-08-25",
     "total_filings_processed": 120181830,
     "total_managers": 15180,

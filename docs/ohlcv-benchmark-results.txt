@@ -1,0 +1,148 @@
+{
+  "rows": 5000000,
+  "symbols": 100,
+  "bars_per_symbol": 50000,
+  "repeats": 3,
+  "versions": {
+    "duckdb": "1.5.5",
+    "pandas": "3.0.5",
+    "polars": "1.44.2"
+  },
+  "cpu_logical": 16,
+  "setup_seconds": 2.36500110399993,
+  "parquet_write_seconds": 0.45162399700075184,
+  "csv_bytes": 573448225,
+  "parquet_bytes": 37559209,
+  "parquet_files": 35,
+  "cache": "OS cache not cleared; local disk, repeated runs",
+  "equivalence": "Full feature summaries match within rtol=1e-9, atol=1e-10; subset matches CSV scan",
+  "summary": {
+    "pandas_csv": {
+      "median_seconds": 3.135234995999781,
+      "max_peak_rss_mib": 628.109375
+    },
+    "pandas_parquet": {
+      "median_seconds": 0.7704291339996416,
+      "max_peak_rss_mib": 874.06640625
+    },
+    "duckdb_csv": {
+      "median_seconds": 0.55442618699999,
+      "max_peak_rss_mib": 531.54296875
+    },
+    "duckdb_parquet": {
+      "median_seconds": 0.29425778000040737,
+      "max_peak_rss_mib": 344.93359375
+    },
+    "duckdb_subset": {
+      "median_seconds": 0.013314373000866908,
+      "max_peak_rss_mib": 143.3515625
+    }
+  },
+  "runs": [
+    {
+      "mode": "pandas_csv",
+      "seconds": 3.135234995999781,
+      "peak_rss_mib": 628.109375,
+      "result_rows": 100,
+      "repeat": 1
+    },
+    {
+      "mode": "pandas_parquet",
+      "seconds": 0.7704291339996416,
+      "peak_rss_mib": 853.984375,
+      "result_rows": 100,
+      "repeat": 1
+    },
+    {
+      "mode": "duckdb_csv",
+      "seconds": 0.5590232009999454,
+      "peak_rss_mib": 531.54296875,
+      "result_rows": 100,
+      "repeat": 1
+    },
+    {
+      "mode": "duckdb_parquet",
+      "seconds": 0.29425778000040737,
+      "peak_rss_mib": 338.3671875,
+      "result_rows": 100,
+      "repeat": 1
+    },
+    {
+      "mode": "duckdb_subset",
+      "seconds": 0.011858075000418467,
+      "peak_rss_mib": 143.2421875,
+      "result_rows": 5,
+      "repeat": 1
+    },
+    {
+      "mode": "pandas_parquet",
+      "seconds": 0.6941445140000724,
+      "peak_rss_mib": 874.06640625,
+      "result_rows": 100,
+      "repeat": 2
+    },
+    {
+      "mode": "duckdb_csv",
+      "seconds": 0.5224729629999274,
+      "peak_rss_mib": 416.35546875,
+      "result_rows": 100,
+      "repeat": 2
+    },
+    {
+      "mode": "duckdb_parquet",
+      "seconds": 0.2912730690004537,
+      "peak_rss_mib": 344.93359375,
+      "result_rows": 100,
+      "repeat": 2
+    },
+    {
+      "mode": "duckdb_subset",
+      "seconds": 0.013314373000866908,
+      "peak_rss_mib": 143.2109375,
+      "result_rows": 5,
+      "repeat": 2
+    },
+    {
+      "mode": "pandas_csv",
+      "seconds": 3.039366125000015,
+      "peak_rss_mib": 609.30859375,
+      "result_rows": 100,
+      "repeat": 2
+    },
+    {
+      "mode": "duckdb_csv",
+      "seconds": 0.55442618699999,
+      "peak_rss_mib": 420.3984375,
+      "result_rows": 100,
+      "repeat": 3
+    },
+    {
+      "mode": "duckdb_parquet",
+      "seconds": 0.314419244000419,
+      "peak_rss_mib": 340.7890625,
+      "result_rows": 100,
+      "repeat": 3
+    },
+    {
+      "mode": "duckdb_subset",
+      "seconds": 0.013842350000231818,
+      "peak_rss_mib": 143.3515625,
+      "result_rows": 5,
+      "repeat": 3
+    },
+    {
+      "mode": "pandas_csv",
+      "seconds": 3.499985516000379,
+      "peak_rss_mib": 616.0390625,
+      "result_rows": 100,
+      "repeat": 3
+    },
+    {
+      "mode": "pandas_parquet",
+      "seconds": 0.848557117999917,
+      "peak_rss_mib": 857.77734375,
+      "result_rows": 100,
+      "repeat": 3
+    }
+  ]
+}
