@@ -6,7 +6,7 @@ Assessment date: 2026-10-23. Scope: the local checkout, selected existing tests,
 
 Reuse the data-processing design if profiling shows that loading, filtering, joining, resampling, or reusable feature calculations dominate runtime. There is direct code evidence and a local OHLCV benchmark supporting that design. There is no evidence yet that adopting Andria will eliminate the user's hour-long development phases.
 
-The user clarified that Claude Code completes each development phase in roughly an hour and that the project uses OHLCV data. That elapsed time has not been separated into agent work, package installation, downloads, tests, processing, backtests, or training. It is therefore not currently a measured 1–3 hour data-processing bottleneck.
+The user clarified that each development phase completes in roughly an hour and that the project uses OHLCV data. That elapsed time has not been separated into agent work, package installation, downloads, tests, processing, backtests, or training. It is therefore not currently a measured 1–3 hour data-processing bottleneck.
 
 Andria itself is a quarterly institutional-holdings research application. Its manager profiling, clustering, macro-regime estimation, and RACS strategy are specialized to SEC 13F holdings. Its reusable contribution for an OHLCV system is the storage/query pattern, rather than the complete application.
 
@@ -103,7 +103,7 @@ A leakage audit and passing fixture tests do not by themselves resolve these iss
 
 ## What would establish whether the user's hour is recoverable
 
-Record one ordinary slow phase before changing architecture. Distinguish total Claude Code elapsed time from the wall time of the commands it executes. Within those commands, separate download, file loading, cleaning/sorting, feature generation, simulation, model fitting, validation and export. Record input rows/bytes, selected symbols/dates, peak RSS and whether the OS swaps or DuckDB spills.
+Record one ordinary slow phase before changing architecture. Distinguish total elapsed time per phase from the wall time of the commands it executes. Within those commands, separate download, file loading, cleaning/sorting, feature generation, simulation, model fitting, validation and export. Record input rows/bytes, selected symbols/dates, peak RSS and whether the OS swaps or DuckDB spills.
 
 Use a representative frozen dataset and compare identical outputs under the existing implementation, Pandas with Parquet, and DuckDB or Polars. Keep first-run conversion separate from later development runs. Time materialization and export if the real caller needs all per-bar features. Inspect `EXPLAIN ANALYZE` for scans, filters, sorts and join expansion. See [primary references](duckdb-performance-references.md).
 
