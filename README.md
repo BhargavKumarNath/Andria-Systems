@@ -195,6 +195,32 @@ The same cosine-similarity trick used for archetype labeling shows up again here
 
 ---
 
+## Phase 4: signal quality, ablations and regime covariance
+
+Protocol (written before any data was pulled): [`docs/phase4_protocol.md`](docs/phase4_protocol.md). Scripts: `experiments/phase4/p4_signal_quality.py`, `p4_regime_covariance.py`. Outputs: `results/phase4/`. The raw 13F data is not on the analysis machine, so inputs are the published `signals.json`, yfinance prices and public FRED series.
+
+**Signal quality.** 86 of the 144 signals could be priced (127 have a ticker; five delisted names have no free price history; six CUSIPs do not resolve in OpenFIGI by CUSIP or ISIN). Entry is the open after the filing-public date plus one day. Spearman IC against excess return over SPY, quarter-level bootstrap CI:
+
+| Score | 5d | 20d | 60d | 90 cal. days |
+| :--- | :--- | :--- | :--- | :--- |
+| Full | -0.088 (-0.30 to 0.13) | -0.048 (-0.28 to 0.18) | -0.008 (-0.25 to 0.24) | 0.027 (-0.22 to 0.29) |
+| No crowding | -0.134 | -0.020 | -0.001 | 0.023 |
+| No regime | -0.135 | 0.002 | -0.055 | -0.052 |
+| Conviction only | -0.205 | -0.006 | -0.074 | -0.056 |
+
+No variant is distinguishable from zero and no paired difference between the full score and an ablation excludes zero. These data do not show that the crowding or regime term helps, or that the score predicts returns.
+
+**Regime covariance** (89 quarters, 30 restarts, expanding-window out-of-sample over the last 40 quarters):
+
+| Covariance | Params | BIC | OOS log-lik/quarter | Restart stability (ARI) |
+| :--- | :--- | :--- | :--- | :--- |
+| Full (shipped) | 95 | 775 | -10.2 | 0.49 |
+| Tied | 50 | 1,007 | -7.1 | 0.55 |
+| Diagonal | 55 | 882 | -5.8 | 0.84 |
+| Spherical | 39 | 975 | -5.8 | 0.93 |
+
+Full covariance wins on in-sample BIC and loses out of sample; the regime labels depend heavily on the choice (22% to 41% agreement with the full model on signal quarters). The pipeline's SQL fills missing macro values with constants; replicated on public FRED data this silently defaults the high-yield spread in 79 of 90 quarters (`regime_covariance_repo_logic.json`). The reported run forward-fills and substitutes Baa-10Y for the high-yield spread (a deviation recorded in the protocol). The shipped model is not changed by this work.
+
 ## RACS: turning conviction into a score
 
 This is where the two halves of the system come together. Given the clustered managers and the regime time series, the RACS engine runs as five DuckDB stages:
