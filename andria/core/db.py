@@ -10,10 +10,10 @@ Usage:
     from andria.core.db import db_factory
 
     with db_factory.connect() as conn:
-        df = conn.execute("SELECT 1").pl()
+        df = pl.from_arrow(conn.sql("SELECT 1").to_arrow_table())
 
     with db_factory.connect_parquet(cfg.paths.processed / "edgar") as conn:
-        df = conn.execute("SELECT * FROM edgar LIMIT 10").pl()
+        df = pl.from_arrow(conn.sql("SELECT * FROM edgar LIMIT 10").to_arrow_table())
 """
 
 from __future__ import annotations

@@ -155,7 +155,7 @@ class RACSEngine:
 
             # Final join with regime + score adjustment
             logger.info("racs_stage", stage="5/5", detail="joining with regime and final scoring")
-            df = conn.execute(f"""
+            df = pl.from_arrow(conn.sql(f"""
                 SELECT
                     r.source_quarter                                         AS quarter,
                     r.CUSIP                                                  AS cusip,
@@ -179,7 +179,7 @@ class RACSEngine:
                 FROM raw_racs r
                 JOIN crowding c ON r.source_quarter = c.source_quarter AND r.CUSIP = c.CUSIP
                 LEFT JOIN regimes rg ON r.source_quarter = rg.source_quarter
-            """).pl()
+            """).to_arrow_table())
             logger.info("racs_stage_done", stage="5/5")
 
         validated = RACSContract.validate(df)

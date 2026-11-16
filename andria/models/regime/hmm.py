@@ -91,7 +91,7 @@ class MacroRegimeDetector:
         """
 
         with self._factory.connect() as conn:
-            df = conn.execute(query).pl()
+            df = pl.from_arrow(conn.sql(query).to_arrow_table())
 
         # Ensure we have the required columns
         for col in self._feature_cols:

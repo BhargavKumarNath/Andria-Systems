@@ -221,7 +221,7 @@ class ManagerDNABuilder:
 
             # Stage 7: Final aggregation
             logger.info("dna_stage", stage="7/7", detail="final manager-level aggregation")
-            df = conn.execute(f"""
+            df = pl.from_arrow(conn.sql(f"""
                 WITH joined AS (
                     SELECT
                         qma.manager_name,
@@ -279,7 +279,7 @@ class ManagerDNABuilder:
                 LEFT JOIN manager_position_stats mps ON fa.manager_name = mps.manager_name
                 LEFT JOIN manager_position_dynamics mpd ON fa.manager_name = mpd.manager_name
                 WHERE fa.quarters_active >= {min_q}
-            """).pl()
+            """).to_arrow_table())
 
             logger.info("dna_stage_done", stage="7/7")
 
